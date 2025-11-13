@@ -35,7 +35,7 @@ import { Progress } from '../ui/progress';
 type AIState = {
   explanation: string;
   suggestedCategory: string;
-  llmReranked: boolean;
+  llmReRanked: boolean;
   semanticFingerprint: string;
   counterfactual: string;
   attributions: string[];
@@ -86,7 +86,7 @@ export function TransactionDetailSheet({
   const [aiState, setAiState] = React.useState<AIState>({
     explanation: '',
     suggestedCategory: '',
-    llmReranked: false,
+    llmReRanked: false,
     semanticFingerprint: '',
     counterfactual: '',
     attributions: [],
@@ -102,7 +102,7 @@ export function TransactionDetailSheet({
         setAiState({
           explanation: '',
           suggestedCategory: '',
-          llmReranked: false,
+          llmReRanked: false,
           semanticFingerprint: '',
           counterfactual: '',
           attributions: [],
