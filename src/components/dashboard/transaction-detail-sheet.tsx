@@ -26,7 +26,7 @@ import { generateCounterfactualExplanation } from '@/ai/flows/generate-counterfa
 import { getTokenAttributions } from '@/ai/flows/get-token-attributions';
 import { findSimilarMerchants } from '@/ai/flows/find-similar-merchants';
 import { decodeSpendingIntent } from '@/ai/flows/decode-spending-intent';
-import { Loader2, Wand2, Lightbulb, Repeat, CheckCircle, SearchCode, Cpu, ShieldCheck, AlertTriangle, Network, Eye, Sparkles, MessageSquareHeart, TrendingUp, UserCheck } from 'lucide-react';
+import { Loader2, Wand2, Lightbulb, Repeat, CheckCircle, SearchCode, Cpu, ShieldCheck, AlertTriangle, Network, Eye, Sparkles, MessageSquareHeart, TrendingUp, UserCheck, Bot, Target } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '../ui/badge';
@@ -234,6 +234,23 @@ export function TransactionDetailSheet({
     };
     return personaMap[categoryValue] || 'Your General Spending Persona was used.';
   }
+  
+   const getPurchasePurpose = (categoryValue: string) => {
+    const purposeMap: Record<string, string> = {
+        'food-drink': 'Social / Enjoyment',
+        'shopping': 'Personal / Gifting',
+        'transport': 'Necessity / Commute',
+        'groceries': 'Necessity / Home',
+        'home': 'Necessity / Improvement',
+        'entertainment': 'Relaxation / Leisure',
+        'health': 'Well-being / Necessity',
+        'utilities': 'Necessity / Household',
+        'travel': 'Leisure / Work',
+        'personal-care': 'Self-care / Routine',
+        'coffee-runs': 'Routine / Work',
+    };
+    return purposeMap[categoryValue] || 'General';
+  }
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -249,8 +266,8 @@ export function TransactionDetailSheet({
               <div className="flex items-start gap-3 rounded-md bg-destructive/10 p-3 text-destructive border border-destructive/20">
                 <AlertTriangle className="h-5 w-5 mt-0.5 flex-shrink-0" />
                 <div className='text-sm'>
-                  <p className="font-semibold">Flagged by Generative Error Simulation Engine (GESE)</p>
-                  <p>The system predicted a high probability of misclassification for this item, requiring human confirmation to ensure accuracy.</p>
+                  <p className="font-semibold">Flagged by Smart Friction Alert (SFA) / GESE</p>
+                  <p>This transaction was flagged due to unusual timing or amount, suggesting hesitation. The system requires human confirmation to ensure accuracy.</p>
                 </div>
               </div>
             )}
@@ -363,8 +380,9 @@ export function TransactionDetailSheet({
                   <p className="text-xs text-muted-foreground text-right">{(aiState.confidence * 100).toFixed(0)}% Confidence</p>
                 </div>
                  <div className="rounded-lg border bg-background p-4 leading-relaxed">
-                  <p className="font-medium text-foreground mb-2 flex items-center gap-2"><Sparkles className="h-4 w-4 text-amber-500"/>Predicted Intent:</p>
+                  <p className="font-medium text-foreground mb-2 flex items-center gap-2"><Sparkles className="h-4 w-4 text-amber-500"/>Predicted Intent (TEM):</p>
                   <p className="text-muted-foreground">{aiState.spendingIntent || "Not available."}</p>
+                   <p className="text-xs text-muted-foreground mt-1">This reflects how you might have felt, like comfort-spending after a long day.</p>
                 </div>
                 <div className="rounded-lg border bg-background p-4 leading-relaxed">
                   <p className="font-medium text-foreground mb-2 flex items-center gap-2"><MessageSquareHeart className="h-4 w-4 text-rose-500"/>Transaction Story:</p>
@@ -381,14 +399,20 @@ export function TransactionDetailSheet({
                       <li>This purchase lowers your 'Shopping' budget health score by <span className='font-semibold'>3%</span> this week.</li>
                       <li>Your next 'Shopping' purchase is predicted in <span className='font-semibold'>~4 days</span> based on your habits.</li>
                       <li><span className='font-semibold'>(POA):</span> AI suggests this purchase was likely influenced by a <span className='font-semibold'>seasonal discount</span>.</li>
+                       <li><span className='font-semibold'>Ripple Effect (PCV):</span> This reduces your available savings this month, potentially delaying your 'New Gadget' goal by <span className='font-semibold'>2 days</span>.</li>
                   </ul>
                 </div>
+                <div className="rounded-lg border bg-background p-4 space-y-2">
+                    <p className="font-medium text-foreground flex items-center gap-2"><Bot className="h-4 w-4"/>AI Financial Twin&apos;s Advice (AIFT / GIP):</p>
+                    <p className="text-muted-foreground leading-relaxed">&quot;Your Financial Twin would have considered waiting for a better deal. This purchase reduces your primary vacation savings goal by 2%.&quot;</p>
+                </div>
                  <div className="rounded-lg border bg-background p-4 space-y-2">
-                   <p className="font-medium text-foreground flex items-center gap-2"><UserCheck className="h-4 w-4"/>Spending Persona (TPG):</p>
+                   <p className="font-medium text-foreground flex items-center gap-2"><UserCheck className="h-4 w-4"/>Spending Persona & Purpose (TPG/HPFA/PPT):</p>
                   <p className="text-muted-foreground leading-relaxed">{getSpendingPersona(currentCategory)}</p>
+                  <p className="text-muted-foreground leading-relaxed">Purpose: <span className="font-semibold">{getPurchasePurpose(currentCategory)}</span></p>
                 </div>
                 <div className="rounded-lg border bg-background p-4 space-y-3">
-                    <p className="font-medium text-foreground flex items-center gap-2"><Network className="h-4 w-4"/>Zero Interpretation Loss Embedding (ZILE):</p>
+                    <p className="font-medium text-foreground flex items-center gap-2"><Network className="h-4 w-4"/>Spending Black Box (SBBR):</p>
                     <div>
                         <p className="text-xs font-semibold text-muted-foreground">Base Sequence (S-DNA)</p>
                         <p className="text-muted-foreground leading-relaxed font-mono text-xs break-all">{aiState.zile?.baseSequence || "Not available."}</p>

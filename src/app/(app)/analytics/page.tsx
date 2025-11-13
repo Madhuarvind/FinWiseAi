@@ -1,11 +1,12 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ConfusionMatrix } from '@/components/analytics/confusion-matrix';
-import { Frown, Gauge, Target, Scale, ShieldCheck, TrendingUp, HelpCircle, Bot } from 'lucide-react';
+import { Frown, Gauge, Target, Scale, ShieldCheck, TrendingUp, HelpCircle, Bot, Users } from 'lucide-react';
 import { PerCategoryAccuracyChart } from '@/components/analytics/per-category-accuracy-chart';
 import { FairnessMetricsTable } from '@/components/analytics/fairness-metrics-table';
 import { MerchantDriftChart } from '@/components/analytics/merchant-drift-chart';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { SocialSpendingChart } from '@/components/analytics/social-spending-chart';
 
 const performanceData = {
   macroF1: 0.92,
@@ -50,6 +51,10 @@ const performanceData = {
     { month: 'Apr', drift: 0.15, merchant: "Starbucks" },
     { month: 'May', drift: 0.12, merchant: "Starbucks" },
     { month: 'Jun', drift: 0.11, merchant: "Starbucks" },
+  ],
+  socialSpending: [
+    { name: 'You', value: 450, fill: 'hsl(var(--primary))' },
+    { name: 'Peer Group', value: 550, fill: 'hsl(var(--secondary))' },
   ],
 };
 
@@ -203,28 +208,52 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-        <div className="space-y-6 pt-4">
-         <div>
-            <h2 className="font-headline text-2xl font-semibold tracking-tight text-foreground flex items-center gap-2">
-                <TrendingUp className="text-primary"/>
-                Merchant Evolution Report (METS)
-            </h2>
-            <p className="text-muted-foreground">
-                Tracking how merchant semantics change over time.
-            </p>
-         </div>
-         <Card>
-            <CardHeader>
-                <CardTitle>Semantic Drift: &quot;Starbucks&quot;</CardTitle>
-                 <CardDescription>
-                    Tracking the change in transaction meaning. A drift in April was detected, corresponding to a new &quot;Reserve&quot; store rollout.
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <MerchantDriftChart data={performanceData.merchantDrift} />
-            </CardContent>
-         </Card>
-       </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-6">
+                <div>
+                    <h2 className="font-headline text-2xl font-semibold tracking-tight text-foreground flex items-center gap-2">
+                        <TrendingUp className="text-primary"/>
+                        Merchant Evolution Report (METS)
+                    </h2>
+                    <p className="text-muted-foreground">
+                        Tracking how merchant semantics change over time.
+                    </p>
+                </div>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Semantic Drift: &quot;Starbucks&quot;</CardTitle>
+                        <CardDescription>
+                            Tracking the change in transaction meaning. A drift in April was detected, corresponding to a new &quot;Reserve&quot; store rollout.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <MerchantDriftChart data={performanceData.merchantDrift} />
+                    </CardContent>
+                </Card>
+            </div>
+             <div className="space-y-6">
+                <div>
+                    <h2 className="font-headline text-2xl font-semibold tracking-tight text-foreground flex items-center gap-2">
+                        <Users className="text-primary"/>
+                        Social Spending Benchmark (SSSC)
+                    </h2>
+                    <p className="text-muted-foreground">
+                        Comparing your spending to a synthetic, anonymized peer group.
+                    </p>
+                </div>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Dining Spend: You vs. Peers</CardTitle>
+                        <CardDescription>
+                            Your spending is slightly below the average for your anonymized demographic cluster.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <SocialSpendingChart data={performanceData.socialSpending} />
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
     </div>
     </TooltipProvider>
   );

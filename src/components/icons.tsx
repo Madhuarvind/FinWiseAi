@@ -35,6 +35,7 @@ import {
   MessageSquareHeart,
   TrendingUp,
   UserCheck,
+  Users,
 } from 'lucide-react';
 
 export const Logo = () => (

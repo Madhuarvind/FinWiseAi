@@ -148,7 +148,7 @@ export default function DashboardPage() {
                         </CardTitle>
                         <p className="text-sm text-muted-foreground mt-1">This looks like impulsive nighttime shopping. Shall I set a spending lock for this category after 10 PM?</p>
                     </div>
-                    <Button variant="ghost" size="sm" className=" -mt-1 -mr-2">Set Lock</Button>
+                    <Button variant="ghost" size="sm" className=" -mt-1 -mr-2">Pause Category</Button>
                 </CardHeader>
             </Card>
             <Card className="bg-secondary/30 border-secondary/50">
@@ -156,9 +156,9 @@ export default function DashboardPage() {
                     <div>
                         <CardTitle className="text-base font-semibold flex items-center gap-2">
                             <BookText className="h-5 w-5 text-secondary-foreground"/>
-                            Purchase Reflection AI (PRA)
+                            Financial Story of the Day (FSOD)
                         </CardTitle>
-                        <p className="text-sm text-muted-foreground mt-1">This week's story includes routine coffees, a surprise shopping spree, and one purchase that didn't align with your goals.</p>
+                        <p className="text-sm text-muted-foreground mt-1">Today was a disciplined day—one essential purchase and no impulsive buys. A perfect step towards your goals.</p>
                     </div>
                     <Button variant="ghost" size="sm" className=" -mt-1 -mr-2">View Full Report</Button>
                 </CardHeader>
