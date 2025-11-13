@@ -1,6 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ConfusionMatrix } from '@/components/analytics/confusion-matrix';
-import { Frown, Gauge, Target } from 'lucide-react';
+import { Frown, Gauge, Target, Scale, ShieldCheck } from 'lucide-react';
+import { PerCategoryAccuracyChart } from '@/components/analytics/per-category-accuracy-chart';
+import { FairnessMetricsTable } from '@/components/analytics/fairness-metrics-table';
 
 const performanceData = {
   macroF1: 0.92,
@@ -13,6 +15,29 @@ const performanceData = {
       [3, 150, 5, 2],
       [0, 1, 95, 0],
       [1, 0, 0, 78],
+    ],
+  },
+  perCategoryAccuracy: [
+    { category: 'Food', accuracy: 0.98 },
+    { category: 'Shopping', accuracy: 0.94 },
+    { category: 'Transport', accuracy: 0.95 },
+    { category: 'Home', accuracy: 0.99 },
+    { category: 'Entertainment', accuracy: 0.88 },
+    { category: 'Health', accuracy: 0.96 },
+  ],
+  fairnessMetrics: {
+    groups: ['Low Value (<$20)', 'Med Value ($20-$100)', 'High Value (>$100)'],
+    metrics: [
+      {
+        metric: 'Equal Opportunity',
+        scores: [0.94, 0.95, 0.93],
+        description: 'Measures if the model performs equally well for all groups on positive outcomes.',
+      },
+      {
+        metric: 'Predictive Parity',
+        scores: [0.98, 0.97, 0.98],
+        description: 'Ensures the probability of a correct prediction is the same for all groups.',
+      },
     ],
   },
 };
@@ -74,7 +99,7 @@ export default function AnalyticsPage() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card>
           <CardHeader>
             <CardTitle>Confusion Matrix</CardTitle>
@@ -86,7 +111,41 @@ export default function AnalyticsPage() {
             <ConfusionMatrix data={performanceData.confusionMatrix} />
           </CardContent>
         </Card>
+        <Card>
+            <CardHeader>
+                <CardTitle>Per-Category Accuracy</CardTitle>
+                 <p className="text-sm text-muted-foreground pt-1">
+                    Identifying performance variations between categories.
+                </p>
+            </CardHeader>
+            <CardContent>
+                <PerCategoryAccuracyChart data={performanceData.perCategoryAccuracy} />
+            </CardContent>
+        </Card>
       </div>
+
+       <div className="space-y-6 pt-4">
+         <div>
+            <h2 className="font-headline text-2xl font-semibold tracking-tight text-foreground flex items-center gap-2">
+                <ShieldCheck className="text-primary"/>
+                Fairness & Bias Report
+            </h2>
+            <p className="text-muted-foreground">
+                Auditing model performance across different transaction segments.
+            </p>
+         </div>
+         <Card>
+            <CardHeader>
+                <CardTitle>Fairness Metrics</CardTitle>
+                 <p className="text-sm text-muted-foreground pt-1">
+                    Ensuring equitable performance across transaction value tiers.
+                </p>
+            </CardHeader>
+            <CardContent>
+                <FairnessMetricsTable data={performanceData.fairnessMetrics} />
+            </CardContent>
+         </Card>
+       </div>
     </div>
   );
 }

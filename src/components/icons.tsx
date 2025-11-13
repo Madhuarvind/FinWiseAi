@@ -16,7 +16,9 @@ import {
   ToyBrick,
   AreaChart,
   Settings,
-  LifeBuoy
+  LifeBuoy,
+  ShieldCheck,
+  Scale
 } from 'lucide-react';
 
 export const Logo = () => (
@@ -45,7 +47,9 @@ export const navIcons = {
   ModelHub: ToyBrick,
   Analytics: AreaChart,
   Settings: Settings,
-  Support: LifeBuoy
+  Support: LifeBuoy,
+  Bias: Scale,
+  Security: ShieldCheck,
 };
 
 export const getCategoryIcon = (
