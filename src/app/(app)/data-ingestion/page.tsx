@@ -24,7 +24,7 @@ export default function DataIngestionPage() {
   // Manual entry state
   const [description, setDescription] = React.useState('');
   const [amount, setAmount] = React.useState('');
-  const [date, setDate] = React.useState<Date | undefined>(new Date());
+  const [date, setDate] = React.useState<Date | undefined>();
   
   // Table state
   const [allTransactions, setAllTransactions] = React.useState(preprocessTransactions(initialTransactionsData));
@@ -37,6 +37,10 @@ export default function DataIngestionPage() {
   const [isGenerating, setIsGenerating] = React.useState(false);
   const [numToGenerate, setNumToGenerate] = React.useState("5");
   const [categoryToGenerate, setCategoryToGenerate] = React.useState<string>(categories[0]?.value || '');
+
+  React.useEffect(() => {
+    setDate(new Date());
+  }, []);
 
   const handleAddTransaction = (e: React.FormEvent) => {
     e.preventDefault();
