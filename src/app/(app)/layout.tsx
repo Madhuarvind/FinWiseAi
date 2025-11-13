@@ -45,15 +45,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const auth = useAuth();
 
   React.useEffect(() => {
+    // This effect only handles redirecting unauthenticated users.
+    // The post-login redirect is now handled inside AuthForm.
     if (!isUserLoading && !user) {
       router.push('/login');
     }
-    if (!isUserLoading && user) {
-        if(pathname === '/login' || pathname === '/register') {
-             router.push('/dashboard');
-        }
-    }
-  }, [isUserLoading, user, router, pathname]);
+  }, [isUserLoading, user, router]);
 
   const handleSignOut = async () => {
     await auth.signOut();
@@ -61,6 +58,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   };
 
   if (isUserLoading || !user) {
+    // This loading state is crucial for protecting routes.
+    // It prevents a flash of content before the auth check completes.
     return (
       <div className="flex h-screen w-full items-center justify-center">
         <Skeleton className="h-full w-full" />

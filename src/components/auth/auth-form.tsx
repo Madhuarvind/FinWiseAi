@@ -18,9 +18,11 @@ import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import {
-  initiateEmailSignUp,
-  initiateEmailSignIn,
-} from '@/firebase/non-blocking-login';
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  Unsubscribe,
+} from 'firebase/auth';
 import { useAuth } from '@/firebase';
 
 const formSchema = z.object({
@@ -51,29 +53,51 @@ export function AuthForm({ mode }: AuthFormProps) {
   const onSubmit = async (values: AuthFormValues) => {
     setIsLoading(true);
 
-    try {
-      if (mode === 'register') {
-        initiateEmailSignUp(auth, values.email, values.password);
-      } else {
-        initiateEmailSignIn(auth, values.email, values.password);
-      }
-      // The onAuthStateChanged listener in FirebaseProvider will handle the redirect.
-      // We can just show a toast and wait.
-      toast({
-        title: mode === 'register' ? 'Registration successful!' : 'Login successful!',
-        description: 'Redirecting you to the dashboard...',
+    const authAction =
+      mode === 'register'
+        ? createUserWithEmailAndPassword(auth, values.email, values.password)
+        : signInWithEmailAndPassword(auth, values.email, values.password);
+
+    authAction
+      .then((userCredential) => {
+        // The onAuthStateChanged listener below will handle the redirect.
+        toast({
+          title: mode === 'register' ? 'Registration successful!' : 'Login successful!',
+          description: 'Redirecting you to the dashboard...',
+        });
+      })
+      .catch((error) => {
+        toast({
+          variant: 'destructive',
+          title: 'Authentication Failed',
+          description: error.message || 'An unexpected error occurred.',
+        });
+        setIsLoading(false);
       });
-      // The redirect will be handled by the layout component. Do not push here.
-    } catch (error: any) {
-      toast({
-        variant: 'destructive',
-        title: 'Authentication Failed',
-        description: error.message || 'An unexpected error occurred.',
-      });
-      setIsLoading(false);
-    }
-    // Don't setIsLoading(false) on success, because the page will redirect.
   };
+  
+  React.useEffect(() => {
+    let unsubscribe: Unsubscribe;
+    
+    // Only set up the listener if we are not already redirecting
+    if (isLoading) {
+        unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in, redirect to the dashboard.
+                router.push('/dashboard');
+                // We don't setIsLoading(false) because we are navigating away.
+            }
+        });
+    }
+
+    // Cleanup subscription on unmount
+    return () => {
+        if (unsubscribe) {
+            unsubscribe();
+        }
+    };
+}, [isLoading, auth, router]);
+
 
   return (
     <Form {...form}>
