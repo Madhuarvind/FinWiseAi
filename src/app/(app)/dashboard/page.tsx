@@ -1,3 +1,6 @@
+'use client';
+
+import * as React from 'react';
 import {
   Card,
   CardContent,
@@ -5,14 +8,40 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import TransactionTable from '@/components/dashboard/transaction-table';
-import { transactions as rawTransactions, categories } from '@/lib/data';
+import { transactions as rawTransactions, categories as allCategories, universes } from '@/lib/data';
+import type { Category, Transaction, Universe } from '@/lib/types';
 import { preprocessTransactions } from '@/lib/preprocessing';
 import { DollarSign, ListChecks, AlertTriangle, Activity } from 'lucide-react';
 import { SpendingByCategoryChart } from '@/components/dashboard/spending-by-category-chart';
+import { UniverseSelector } from '@/components/dashboard/universe-selector';
 
 export default function DashboardPage() {
-  // Preprocess transactions before using them
-  const transactions = preprocessTransactions(rawTransactions);
+  const [activeUniverseId, setActiveUniverseId] = React.useState<Universe['id']>('banking');
+  
+  // Memoize the initial preprocessing, so it only runs once
+  const baseTransactions = React.useMemo(() => preprocessTransactions(rawTransactions), []);
+
+  // State for transactions that can be updated by child components
+  const [transactions, setTransactions] = React.useState<Transaction[]>(() => 
+    baseTransactions.map(t => ({
+      ...t,
+      category: t.multiCategory[activeUniverseId] || 'other'
+    }))
+  );
+
+  // Update transaction categories when the universe changes
+  React.useEffect(() => {
+    setTransactions(currentTxs => 
+      currentTxs.map(t => {
+        const originalTx = baseTransactions.find(bt => bt.id === t.id) || t;
+        return {
+          ...t,
+          category: originalTx.multiCategory[activeUniverseId] || 'other',
+        };
+      })
+    );
+  }, [activeUniverseId, baseTransactions]);
+
 
   const totalSpending = transactions.reduce(
     (sum, t) => (t.amount < 0 ? sum + t.amount : sum),
@@ -25,16 +54,29 @@ export default function DashboardPage() {
     (t) => t.status === 'flagged'
   ).length;
 
+  const activeCategories = React.useMemo(() => {
+    const categoriesForUniverse = new Set(transactions.map(t => t.category));
+    return allCategories.filter(c => categoriesForUniverse.has(c.value));
+  }, [transactions]);
+
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-headline text-3xl font-semibold tracking-tight text-foreground">
-          Transaction Dashboard
-        </h1>
-        <p className="text-muted-foreground">
-          Review, categorize, and analyze your financial transactions with
-          AI-powered insights.
-        </p>
+      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+        <div>
+          <h1 className="font-headline text-3xl font-semibold tracking-tight text-foreground">
+            Transaction Dashboard
+          </h1>
+          <p className="text-muted-foreground">
+            Review, categorize, and analyze your financial transactions with
+            AI-powered insights.
+          </p>
+        </div>
+        <UniverseSelector
+          universes={universes}
+          activeUniverse={activeUniverseId}
+          onUniverseChange={setActiveUniverseId}
+        />
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -103,7 +145,7 @@ export default function DashboardPage() {
           <CardContent className="pl-2">
             <TransactionTable
               initialTransactions={transactions}
-              categories={categories}
+              categories={allCategories}
             />
           </CardContent>
         </Card>
@@ -114,7 +156,7 @@ export default function DashboardPage() {
           <CardContent>
             <SpendingByCategoryChart
               transactions={transactions}
-              categories={categories}
+              categories={activeCategories}
             />
           </CardContent>
         </Card>

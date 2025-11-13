@@ -55,6 +55,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { suggestTransactionCategories } from '@/ai/flows/suggest-transaction-categories';
 import { Badge } from '../ui/badge';
+import { universes } from '@/lib/data';
 
 function CategoryForm({
   category,
@@ -80,6 +81,7 @@ function CategoryForm({
         label.toLowerCase().replace(/\s+/g, '-'),
       label,
       icon: icon as keyof typeof categoryIcons,
+      universes: category?.universes || ['banking'],
     };
     onSave(newCategory);
   };
@@ -239,6 +241,10 @@ export default function CategoryManager({
       });
   }
 
+  const getUniverseLabel = (universeId: string) => {
+    return universes.find(u => u.id === universeId)?.label || universeId;
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex justify-end gap-2">
@@ -268,36 +274,43 @@ export default function CategoryManager({
             {categories.map((category) => {
             const Icon = getCategoryIcon(category.icon);
             return (
-                <Card key={category.value}>
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-base font-medium">
-                    {category.label}
-                    </CardTitle>
-                    <Icon className="h-5 w-5 text-muted-foreground" />
-                </CardHeader>
-                <CardFooter>
-                    <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0 ml-auto">
-                        <span className="sr-only">Open menu</span>
-                        <MoreVertical className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleEdit(category)}>
-                        <Pencil className="mr-2 h-4 w-4" />
-                        Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                        onClick={() => handleDelete(category)}
-                        className="text-destructive"
-                        >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Delete
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                    </DropdownMenu>
-                </CardFooter>
+                <Card key={category.value} className="flex flex-col">
+                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                        <CardTitle className="text-base font-medium">
+                        {category.label}
+                        </CardTitle>
+                        <Icon className="h-5 w-5 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent className="flex-grow">
+                        <div className="flex flex-wrap gap-1">
+                            {category.universes?.map(universeId => (
+                                <Badge key={universeId} variant="secondary">{getUniverseLabel(universeId)}</Badge>
+                            ))}
+                        </div>
+                    </CardContent>
+                    <CardFooter>
+                        <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0 ml-auto">
+                            <span className="sr-only">Open menu</span>
+                            <MoreVertical className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => handleEdit(category)}>
+                            <Pencil className="mr-2 h-4 w-4" />
+                            Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                            onClick={() => handleDelete(category)}
+                            className="text-destructive"
+                            >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Delete
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                        </DropdownMenu>
+                    </CardFooter>
                 </Card>
             );
             })}

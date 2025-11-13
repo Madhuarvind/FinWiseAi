@@ -29,6 +29,9 @@ import {
   UserX,
   Telescope,
   Landmark,
+  Wand2,
+  Sparkles,
+  CircleDashed,
 } from 'lucide-react';
 
 export const Logo = () => (
@@ -49,6 +52,10 @@ export const categoryIcons = {
   Lightbulb,
   Plane,
   Smile,
+  Wand2,
+  Sparkles,
+  Cpu,
+  CircleDashed,
 };
 
 export const navIcons = {
