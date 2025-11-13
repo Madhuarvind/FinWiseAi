@@ -22,17 +22,46 @@ import type { Transaction, Category } from '@/lib/types';
 import { categorizeTransactionWithLLM } from '@/ai/flows/categorize-transaction-with-llm';
 import { explainTransactionClassification } from '@/ai/flows/explain-transaction-classification';
 import { generateSemanticFingerprint } from '@/ai/flows/generate-semantic-fingerprint';
-import { Loader2, Wand2, Lightbulb, Fingerprint } from 'lucide-react';
+import { generateCounterfactualExplanation } from '@/ai/flows/generate-counterfactual-explanation';
+import { getTokenAttributions } from '@/ai/flows/get-token-attributions';
+import { Loader2, Wand2, Lightbulb, Fingerprint, Repeat, CheckCircle } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from '../ui/badge';
+import { cn } from '@/lib/utils';
 
 type AIState = {
   explanation: string;
   suggestedCategory: string;
   llmReranked: boolean;
   semanticFingerprint: string;
+  counterfactual: string;
+  attributions: string[];
   isLoading: boolean;
 };
+
+const HighlightedDescription = ({ description, words }: { description: string; words: string[] }) => {
+  if (words.length === 0) {
+    return <span>{description}</span>;
+  }
+  const regex = new RegExp(`(${words.join('|')})`, 'gi');
+  const parts = description.split(regex);
+
+  return (
+    <span>
+      {parts.map((part, i) =>
+        words.some(w => w.toLowerCase() === part.toLowerCase()) ? (
+          <mark key={i} className="bg-primary/20 text-primary-foreground rounded-sm px-1 py-0.5">
+            {part}
+          </mark>
+        ) : (
+          part
+        )
+      )}
+    </span>
+  );
+};
+
 
 export function TransactionDetailSheet({
   isOpen,
@@ -55,6 +84,8 @@ export function TransactionDetailSheet({
     suggestedCategory: '',
     llmReranked: false,
     semanticFingerprint: '',
+    counterfactual: '',
+    attributions: [],
     isLoading: true,
   });
   const { toast } = useToast();
@@ -67,17 +98,18 @@ export function TransactionDetailSheet({
           suggestedCategory: '',
           llmReranked: false,
           semanticFingerprint: '',
+          counterfactual: '',
+          attributions: [],
           isLoading: true,
         });
 
         try {
-          // Simulate a low confidence score to trigger the LLM reranker
-          const confidenceScore = 0.5;
+          const confidenceScore = 0.5; // Simulate a low confidence score to trigger the LLM reranker
 
-          const [categorizationResult, explanationResult, fingerprintResult] = await Promise.all([
+          const [categorizationResult, explanationResult, fingerprintResult, attributionsResult] = await Promise.all([
             categorizeTransactionWithLLM({
               transactionDescription: transaction.description,
-              confidenceScore: confidenceScore, 
+              confidenceScore: confidenceScore,
               candidateCategories: categories.map((c) => c.label),
             }),
             explainTransactionClassification({
@@ -87,16 +119,30 @@ export function TransactionDetailSheet({
                   ?.label || transaction.category,
               confidenceScore: 0.85, // Mock confidence for explanation
             }),
-            generateSemanticFingerprint(transaction.description)
+            generateSemanticFingerprint(transaction.description),
+            getTokenAttributions({
+                transactionDescription: transaction.description,
+                category: categories.find((c) => c.value === transaction.category)?.label || transaction.category,
+            })
           ]);
           
           const suggestedCategoryValue = categories.find(c => c.label === categorizationResult.category)?.value || transaction.category;
+          
+          const plausibleAlternative = categories.find(c => c.value !== suggestedCategoryValue)?.label || 'Shopping';
+
+          const counterfactualResult = await generateCounterfactualExplanation({
+            transactionDescription: transaction.description,
+            originalCategory: categorizationResult.category,
+            targetCategory: plausibleAlternative,
+          });
 
           setAiState({
             explanation: explanationResult.explanation,
             suggestedCategory: suggestedCategoryValue,
             llmReranked: categorizationResult.llmReRanked,
             semanticFingerprint: fingerprintResult.semanticFingerprint,
+            counterfactual: counterfactualResult.counterfactualExplanation,
+            attributions: attributionsResult.influentialWords,
             isLoading: false,
           });
 
@@ -123,20 +169,25 @@ export function TransactionDetailSheet({
     setIsOpen(false);
     toast({
       title: 'Transaction Updated',
-      description: `Categorized as ${
-        categories.find((c) => c.value === currentCategory)?.label
-      }.`,
+      description: (
+        <div className="flex items-center gap-2">
+            <CheckCircle className="text-accent"/>
+            <span>Categorized as <strong>{categories.find((c) => c.value === currentCategory)?.label}</strong>.</span>
+        </div>
+      ),
     });
   };
 
   const InfoBlock = ({
     label,
     value,
+    className
   }: {
     label: string;
-    value: string | number;
+    value: React.ReactNode;
+    className?: string;
   }) => (
-    <div>
+    <div className={className}>
       <p className="text-sm text-muted-foreground">{label}</p>
       <p className="font-medium text-foreground">{value}</p>
     </div>
@@ -144,16 +195,20 @@ export function TransactionDetailSheet({
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetContent className="sm:max-w-xl w-full flex flex-col">
+      <SheetContent className="sm:max-w-2xl w-full flex flex-col">
         <SheetHeader>
-          <SheetTitle>Transaction Details</SheetTitle>
+          <SheetTitle>Transaction Details &amp; XAI</SheetTitle>
           <SheetDescription>
-            Review and re-categorize with AI-powered assistance.
+            Review, re-categorize, and understand the AI's reasoning.
           </SheetDescription>
         </SheetHeader>
         <div className="flex-1 space-y-6 overflow-y-auto pr-2">
           <div className="grid grid-cols-2 gap-4 rounded-lg border bg-card p-4">
-            <InfoBlock label="Description" value={transaction.description} />
+            <InfoBlock 
+              label="Description" 
+              value={<HighlightedDescription description={transaction.description} words={aiState.isLoading ? [] : aiState.attributions} />}
+              className="col-span-2"
+            />
             <InfoBlock
               label="Amount"
               value={transaction.amount.toLocaleString('en-US', {
@@ -165,7 +220,18 @@ export function TransactionDetailSheet({
               label="Date"
               value={new Date(transaction.date).toLocaleDateString()}
             />
-            <InfoBlock label="Status" value={transaction.status} />
+             <InfoBlock label="Status" value={<Badge
+                variant={
+                    transaction.status === 'reviewed'
+                    ? 'secondary'
+                    : transaction.status === 'pending'
+                    ? 'outline'
+                    : 'destructive'
+                }
+                className="capitalize"
+                >
+                {transaction.status}
+                </Badge>} />
           </div>
 
           <Separator />
@@ -193,25 +259,10 @@ export function TransactionDetailSheet({
                 </SelectContent>
               </Select>
             </div>
-          </div>
-
-          <div className="space-y-4">
-            <h3 className="font-semibold text-foreground flex items-center gap-2">
-              <Lightbulb className="text-primary" /> AI Analysis
-            </h3>
-            {aiState.isLoading ? (
-              <div className="space-y-4">
-                <Skeleton className="h-4 w-1/4" />
-                <Skeleton className="h-16 w-full" />
-                <Skeleton className="h-4 w-1/2" />
-                <Skeleton className="h-10 w-full" />
-              </div>
-            ) : (
-              <div className="space-y-4 text-sm">
-                {aiState.llmReranked && (
-                  <div className="flex items-center gap-2 rounded-md bg-secondary p-3 text-secondary-foreground">
-                    <Wand2 className="h-5 w-5" />
-                    <p>
+             {aiState.llmReranked && !aiState.isLoading && (
+                  <div className="flex items-start gap-3 rounded-md bg-secondary p-3 text-secondary-foreground">
+                    <Wand2 className="h-5 w-5 mt-0.5 flex-shrink-0" />
+                    <p className="text-sm">
                       Our LLM re-ranked this and suggests{' '}
                       <span className="font-semibold">
                         {
@@ -220,13 +271,33 @@ export function TransactionDetailSheet({
                           )?.label
                         }
                       </span>
-                      .
+                      . The category has been pre-selected for you.
                     </p>
                   </div>
                 )}
-                <div className="rounded-lg border bg-background p-4 leading-relaxed text-muted-foreground">
-                  <p className="font-medium text-foreground mb-2">Explanation:</p>
-                  {aiState.explanation || "No explanation available."}
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="font-semibold text-foreground flex items-center gap-2">
+              <Lightbulb className="text-primary" /> Explainable AI (XAI) Analysis
+            </h3>
+            {aiState.isLoading ? (
+              <div className="space-y-4 pt-2">
+                <Skeleton className="h-4 w-1/4" />
+                <Skeleton className="h-16 w-full" />
+                <Skeleton className="h-4 w-1/2" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+            ) : (
+              <div className="space-y-4 text-sm">
+                
+                <div className="rounded-lg border bg-background p-4 leading-relaxed">
+                  <p className="font-medium text-foreground mb-2">Classification Rationale:</p>
+                  <p className="text-muted-foreground">{aiState.explanation || "No explanation available."}</p>
+                </div>
+                 <div className="rounded-lg border bg-background p-4 leading-relaxed">
+                  <p className="font-medium text-foreground mb-2 flex items-center gap-2"><Repeat className="h-4 w-4"/>Counterfactual:</p>
+                  <p className="text-muted-foreground">{aiState.counterfactual || "Not available."}</p>
                 </div>
                 <div className="rounded-lg border bg-background p-4 space-y-2">
                   <p className="font-medium text-foreground flex items-center gap-2"><Fingerprint className="h-4 w-4"/>Semantic Fingerprint:</p>
@@ -236,7 +307,7 @@ export function TransactionDetailSheet({
             )}
           </div>
         </div>
-        <SheetFooter className="mt-auto pt-4">
+        <SheetFooter className="mt-auto pt-4 border-t">
           <Button variant="outline" onClick={() => setIsOpen(false)}>
             Cancel
           </Button>
@@ -244,7 +315,7 @@ export function TransactionDetailSheet({
             {aiState.isLoading ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : null}
-            Confirm
+            Confirm Category
           </Button>
         </SheetFooter>
       </SheetContent>
