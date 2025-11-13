@@ -30,7 +30,8 @@ import { getCategoryIcon } from '@/components/icons';
 import { useUser, useFirestore } from '@/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 
-type SortKey = keyof Transaction | '';
+type SortKey = keyof Transaction | 'createdAt' | '';
+
 
 export default function TransactionTable({
   transactions,
@@ -44,27 +45,30 @@ export default function TransactionTable({
   const [selectedTransaction, setSelectedTransaction] =
     React.useState<Transaction | null>(null);
   const [isSheetOpen, setSheetOpen] = React.useState(false);
-  const [sortKey, setSortKey] = React.useState<SortKey>('date');
+  const [sortKey, setSortKey] = React.useState<SortKey>('createdAt');
   const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>('desc');
   const { user } = useUser();
   const firestore = useFirestore();
 
   // Used to highlight newly added rows
   const [highlightedRows, setHighlightedRows] = React.useState<Set<string>>(new Set());
+  const prevTransactionIds = React.useRef(new Set(transactions.map(t => t.id)));
+
 
   React.useEffect(() => {
-    // When new transactions appear, highlight them and then fade the highlight.
-    const newTransactionIds = new Set(transactions.map(t => t.id));
-    const previousTransactionIds = new Set(transactions.slice(highlightedRows.size).map(t => t.id));
-    const newlyAdded = new Set([...newTransactionIds].filter(id => !previousTransactionIds.has(id)));
+      const currentTransactionIds = new Set(transactions.map(t => t.id));
+      const newlyAdded = new Set([...currentTransactionIds].filter(id => !prevTransactionIds.current.has(id)));
 
-    if (newlyAdded.size > 0) {
-      setHighlightedRows(current => new Set([...current, ...newlyAdded]));
-      const timer = setTimeout(() => {
-        setHighlightedRows(new Set());
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
+      if (newlyAdded.size > 0) {
+          setHighlightedRows(current => new Set([...current, ...newlyAdded]));
+          const timer = setTimeout(() => {
+              setHighlightedRows(new Set());
+          }, 2000); 
+          
+          prevTransactionIds.current = new Set([...prevTransactionIds.current, ...newlyAdded]);
+          
+          return () => clearTimeout(timer);
+      }
   }, [transactions]);
 
 
@@ -81,16 +85,18 @@ export default function TransactionTable({
     if (!sortKey || !transactions) return transactions || [];
     
     return [...transactions].sort((a, b) => {
-      const aValue = a.createdAt || a[sortKey as keyof Transaction];
-      const bValue = b.createdAt || b[sortKey as keyof Transaction];
+      const aValue = a[sortKey as keyof Transaction] ?? (a.createdAt ? (a.createdAt.seconds * 1000 + a.createdAt.nanoseconds / 1000000) : 0);
+      const bValue = b[sortKey as keyof Transaction] ?? (b.createdAt ? (b.createdAt.seconds * 1000 + b.createdAt.nanoseconds / 1000000) : 0);
 
-      if (a.createdAt && b.createdAt) { // Sort by server timestamp if available
-         if (sortDirection === 'asc') {
-           return a.createdAt.seconds - b.createdAt.seconds;
-         }
-         return b.createdAt.seconds - a.createdAt.seconds;
+      // Handle server timestamps properly
+      if (a.createdAt && b.createdAt) {
+        const aTime = a.createdAt.seconds * 1000 + a.createdAt.nanoseconds / 1000000;
+        const bTime = b.createdAt.seconds * 1000 + b.createdAt.nanoseconds / 1000000;
+        if (aTime < bTime) return sortDirection === 'asc' ? -1 : 1;
+        if (aTime > bTime) return sortDirection === 'asc' ? 1 : -1;
+        return 0;
       }
-      
+
       if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
       if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
       return 0;
@@ -128,7 +134,7 @@ export default function TransactionTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <SortableHeader tKey="date" label="Date" />
+              <SortableHeader tKey="createdAt" label="Date" />
               <TableHead>Description</TableHead>
               <SortableHeader tKey="amount" label="Amount" />
               <SortableHeader tKey="category" label="Category" />
@@ -143,6 +149,12 @@ export default function TransactionTable({
 
               const moodColor = categoryDetails?.moodColor || 'bg-muted';
               const isHighlighted = highlightedRows.has(transaction.id);
+              
+              let dateToShow = transaction.date;
+              if (transaction.createdAt && transaction.createdAt.seconds) {
+                dateToShow = new Date(transaction.createdAt.seconds * 1000).toLocaleDateString();
+              }
+
 
               return (
                 <TableRow 
@@ -154,7 +166,7 @@ export default function TransactionTable({
                     isHighlighted && 'bg-primary/10'
                   )}
                 >
-                  <TableCell>{new Date(transaction.date).toLocaleDateString()}</TableCell>
+                  <TableCell>{dateToShow}</TableCell>
                   <TableCell className="font-medium">{transaction.description}</TableCell>
                   <TableCell
                     className={cn(transaction.amount > 0 ? 'text-green-600' : 'text-foreground')}
@@ -211,3 +223,5 @@ export default function TransactionTable({
     </>
   );
 }
+
+    

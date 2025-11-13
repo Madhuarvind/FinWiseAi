@@ -98,7 +98,7 @@ export default function DataIngestionPage() {
 
     try {
       const collectionRef = collection(firestore, 'users', user.uid, 'transactions');
-      const docRef = await addDoc(collectionRef, newTransactionData);
+      await addDoc(collectionRef, newTransactionData);
 
       toast({
         title: 'Transaction Added',
@@ -144,7 +144,7 @@ export default function DataIngestionPage() {
 
     // In a real app, you'd parse the CSV/JSON file here.
     // For this demo, we'll simulate the file content.
-    const fileTransactions: Omit<Transaction, 'id' | 'userProfileId'>[] = [
+    const fileTransactions: Omit<Transaction, 'id' | 'userProfileId' | 'createdAt'>[] = [
       { date: '2024-07-20', description: 'DELTA AIRLINES', amount: -672.55, category: 'travel', status: 'pending', multiCategory: { banking: 'travel', behavioral: 'luxury', personalized: 'travel', minimalist: 'wants' } },
       { date: '2024-07-20', description: 'HOME DEPOT #123', amount: -88.12, category: 'home', status: 'pending', multiCategory: { banking: 'home', behavioral: 'necessity', personalized: 'home', minimalist: 'necessity' } },
       { date: '2024-07-20', description: 'Vendor without amount', amount: 0, category: 'home', status: 'flagged', multiCategory: { banking: 'home', behavioral: 'other', personalized: 'other', minimalist: 'other' } },
@@ -212,7 +212,7 @@ export default function DataIngestionPage() {
       const collectionRef = collection(firestore, 'users', user.uid, 'transactions');
       const generatedForLiveDisplay: Transaction[] = [];
 
-      result.transactions.forEach((tx, index) => {
+      result.transactions.forEach((tx) => {
         const docRef = doc(collectionRef);
         const newTx: Transaction = {
           id: docRef.id, // Use the generated ID for the key
@@ -222,7 +222,7 @@ export default function DataIngestionPage() {
           category: categoryToGenerate,
           status: 'pending',
           userProfileId: user.uid,
-          createdAt: serverTimestamp(),
+          createdAt: new Date(), // Use client-side date for instant sorting
           multiCategory: {
             banking: categoryToGenerate,
             behavioral: 'other',
@@ -230,7 +230,7 @@ export default function DataIngestionPage() {
             minimalist: 'other',
           },
         };
-        batch.set(docRef, newTx);
+        batch.set(docRef, { ...newTx, createdAt: serverTimestamp() }); // Use server timestamp for DB
         generatedForLiveDisplay.push(newTx);
       });
       
@@ -418,6 +418,7 @@ export default function DataIngestionPage() {
             <TransactionTable
               transactions={allTransactions}
               categories={categories || []}
+              activeUniverse="banking"
             />
           )}
         </CardContent>
@@ -425,3 +426,5 @@ export default function DataIngestionPage() {
     </div>
   );
 }
+
+    
