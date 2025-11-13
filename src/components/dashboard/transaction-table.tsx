@@ -55,9 +55,8 @@ export default function TransactionTable({
 
   const sortedTransactions = React.useMemo(() => {
     if (!sortKey) return transactions;
-    // Show only the first 5 transactions
-    const limitedTransactions = transactions.slice(0, 5);
-    return [...limitedTransactions].sort((a, b) => {
+    
+    return [...transactions].sort((a, b) => {
       const aValue = a[sortKey as keyof Transaction];
       const bValue = b[sortKey as keyof Transaction];
       
