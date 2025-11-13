@@ -78,6 +78,7 @@ export const categoryIcons = {
   Gem,
   Briefcase,
   Luggage,
+  Users,
 };
 
 export const navIcons = {
