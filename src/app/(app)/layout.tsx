@@ -68,6 +68,21 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     );
   }
 
+  const activeNavItems = navItems.filter(item => {
+    if (pathname.startsWith('/responsible-ai') || pathname.startsWith('/security')) {
+      // If we are on responsible-ai or security, we want to show a combined item
+      // and hide the individual ones. We will inject a new combined item.
+      return item.href !== '/responsible-ai' && item.href !== '/security';
+    }
+    return true;
+  });
+
+  // Inject the combined "Responsible AI & Governance" item
+  if (pathname.startsWith('/responsible-ai') || pathname.startsWith('/security')) {
+      activeNavItems.splice(7, 0, { href: '/responsible-ai', label: 'Responsible AI & Governance', icon: 'Bias' });
+  }
+
+
   return (
     <SidebarProvider>
       <Sidebar>
@@ -76,13 +91,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
-            {navItems.map((item) => {
+            {activeNavItems.map((item) => {
               const Icon = navIcons[item.icon as keyof typeof navIcons];
+              const isActive = item.href === '/responsible-ai' 
+                  ? (pathname.startsWith('/responsible-ai') || pathname.startsWith('/security'))
+                  : pathname.startsWith(item.href);
+
               return (
                 <SidebarMenuItem key={item.label}>
                   <SidebarMenuButton
                     href={item.href}
-                    isActive={pathname.startsWith(item.href)}
+                    isActive={isActive}
                     asChild
                     tooltip={item.label}
                   >
