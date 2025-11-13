@@ -30,13 +30,22 @@ export default function DataIngestionPage() {
   const [amount, setAmount] = React.useState('');
   const [date, setDate] = React.useState<Date | undefined>(new Date());
 
+  // This state will hold newly generated transactions for the "live" effect
+  const [liveGeneratedTransactions, setLiveGeneratedTransactions] = React.useState<Transaction[]>([]);
+
   // Data from Firestore
   const transactionsQuery = useMemoFirebase(() => {
     if (!user || !firestore) return null;
     return collection(firestore, 'users', user.uid, 'transactions');
   }, [user, firestore]);
   const { data: rawTransactions, isLoading: isLoadingTransactions } = useCollection<Transaction>(transactionsQuery);
-  const allTransactions = React.useMemo(() => preprocessTransactions(rawTransactions || []), [rawTransactions]);
+
+  // Combine Firestore transactions with newly generated live ones
+  const allTransactions = React.useMemo(() => {
+    const processedFirestoreTx = preprocessTransactions(rawTransactions || []);
+    return [...liveGeneratedTransactions, ...processedFirestoreTx];
+  }, [rawTransactions, liveGeneratedTransactions]);
+
 
   const categoriesQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -135,10 +144,10 @@ export default function DataIngestionPage() {
 
     // In a real app, you'd parse the CSV/JSON file here.
     // For this demo, we'll simulate the file content.
-    const fileTransactions: Omit<Transaction, 'id'>[] = [
-      { date: '2024-07-20', description: 'DELTA AIRLINES', amount: -672.55, category: 'travel', status: 'pending', multiCategory: { banking: 'travel', behavioral: 'luxury', personalized: 'travel', minimalist: 'wants' }, userProfileId: user.uid },
-      { date: '2024-07-20', description: 'HOME DEPOT #123', amount: -88.12, category: 'home', status: 'pending', multiCategory: { banking: 'home', behavioral: 'necessity', personalized: 'home', minimalist: 'necessity' }, userProfileId: user.uid },
-      { date: '2024-07-20', description: 'Vendor without amount', amount: 0, category: 'home', status: 'flagged', multiCategory: { banking: 'home', behavioral: 'other', personalized: 'other', minimalist: 'other' }, userProfileId: user.uid },
+    const fileTransactions: Omit<Transaction, 'id' | 'userProfileId'>[] = [
+      { date: '2024-07-20', description: 'DELTA AIRLINES', amount: -672.55, category: 'travel', status: 'pending', multiCategory: { banking: 'travel', behavioral: 'luxury', personalized: 'travel', minimalist: 'wants' } },
+      { date: '2024-07-20', description: 'HOME DEPOT #123', amount: -88.12, category: 'home', status: 'pending', multiCategory: { banking: 'home', behavioral: 'necessity', personalized: 'home', minimalist: 'necessity' } },
+      { date: '2024-07-20', description: 'Vendor without amount', amount: 0, category: 'home', status: 'flagged', multiCategory: { banking: 'home', behavioral: 'other', personalized: 'other', minimalist: 'other' } },
     ];
     
     const validTransactions = fileTransactions.filter(t => t.amount !== 0);
@@ -150,7 +159,7 @@ export default function DataIngestionPage() {
       
       validTransactions.forEach(txData => {
         const docRef = doc(collectionRef); // Create a new doc with a unique ID
-        batch.set(docRef, { ...txData, createdAt: serverTimestamp() });
+        batch.set(docRef, { ...txData, userProfileId: user.uid, createdAt: serverTimestamp() });
       });
 
       await batch.commit();
@@ -189,6 +198,7 @@ export default function DataIngestionPage() {
     }
     
     setIsGenerating(true);
+    setLiveGeneratedTransactions([]); // Clear previous live data
     toast({ title: "Generating synthetic data...", description: "The AI is creating new transaction records." });
 
     try {
@@ -200,10 +210,12 @@ export default function DataIngestionPage() {
       
       const batch = writeBatch(firestore);
       const collectionRef = collection(firestore, 'users', user.uid, 'transactions');
+      const generatedForLiveDisplay: Transaction[] = [];
 
-      result.transactions.forEach(tx => {
+      result.transactions.forEach((tx, index) => {
         const docRef = doc(collectionRef);
-        const newTx = {
+        const newTx: Transaction = {
+          id: docRef.id, // Use the generated ID for the key
           description: tx.description,
           amount: -Math.abs(tx.amount),
           date: format(new Date(), 'yyyy-MM-dd'),
@@ -211,7 +223,7 @@ export default function DataIngestionPage() {
           status: 'pending',
           userProfileId: user.uid,
           createdAt: serverTimestamp(),
-          multiCategory: { // Add default multi-category
+          multiCategory: {
             banking: categoryToGenerate,
             behavioral: 'other',
             personalized: 'other',
@@ -219,13 +231,20 @@ export default function DataIngestionPage() {
           },
         };
         batch.set(docRef, newTx);
+        generatedForLiveDisplay.push(newTx);
       });
-
+      
+      // Show transactions appearing one by one
+      for (let i = 0; i < generatedForLiveDisplay.length; i++) {
+        await new Promise(resolve => setTimeout(resolve, 300)); // Stagger the appearance
+        setLiveGeneratedTransactions(prev => [generatedForLiveDisplay[i], ...prev]);
+      }
+      
       await batch.commit();
 
       toast({
         title: "Generation Complete",
-        description: `${result.transactions.length} new transactions have been added.`,
+        description: `${result.transactions.length} new transactions have been added and saved.`,
       });
 
     } catch (error) {
