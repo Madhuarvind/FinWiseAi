@@ -24,6 +24,7 @@ import Link from 'next/link';
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: 'Dashboard' },
+  { href: '/journal', label: 'Journal', icon: 'BookText' },
   { href: '/data-ingestion', label: 'Data Ingestion', icon: 'DataManager' },
   { href: '/taxonomy', label: 'Taxonomy', icon: 'Taxonomy' },
   { href: '/model-hub', label: 'Model Hub', icon: 'ModelHub' },

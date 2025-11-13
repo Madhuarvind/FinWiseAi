@@ -44,6 +44,7 @@ import {
   Users,
   Receipt,
   Activity,
+  BookText,
 } from 'lucide-react';
 
 export const Logo = () => (
@@ -91,6 +92,7 @@ export const navIcons = {
   Bias: Scale,
   Security: ShieldCheck,
   Trips: Briefcase,
+  BookText: BookText,
 };
 
 export const getCategoryIcon = (

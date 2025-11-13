@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Card,
   CardContent,
@@ -25,6 +26,7 @@ export default function DashboardPage() {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const router = useRouter();
 
   const transactionsQuery = useMemoFirebase(() => {
     if (!user || !firestore) return null;
@@ -83,10 +85,7 @@ export default function DashboardPage() {
   };
 
   const handleViewJournal = () => {
-    toast({
-      title: 'Journal Feature',
-      description: 'The full financial journal page is coming soon!',
-    });
+    router.push('/journal');
   };
 
   return (
