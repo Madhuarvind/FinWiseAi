@@ -54,7 +54,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { suggestTransactionCategories } from '@/ai/flows/suggest-transaction-categories';
 import { Badge } from '../ui/badge';
 import { initialCategoriesForSeed, universes } from '@/lib/data';
 import { useFirestore } from '@/firebase';
@@ -123,7 +122,7 @@ function CategoryForm({
           </SelectContent>
         </Select>
       </div>
-       <div className="space-y-2">
+      <div className="space-y-2">
         <Label>Universes</Label>
          <div className='flex flex-wrap gap-2'>
            {universes.map(u => (
@@ -144,6 +143,16 @@ function CategoryForm({
            ))}
         </div>
       </div>
+      <div className="space-y-2">
+        <Label htmlFor="mood-color">Mood Color</Label>
+        <Input
+          id="mood-color"
+          value={moodColor}
+          onChange={(e) => setMoodColor(e.target.value)}
+          placeholder="e.g., bg-blue-500"
+        />
+        <p className="text-xs text-muted-foreground">Use Tailwind CSS color classes (e.g., `bg-red-500`).</p>
+      </div>
       <DialogFooter>
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancel
@@ -156,8 +165,12 @@ function CategoryForm({
 
 export default function CategoryManager({
   initialCategories,
+  onSuggestClick,
+  isSuggesting,
 }: {
   initialCategories: Category[];
+  onSuggestClick: () => void;
+  isSuggesting: boolean;
 }) {
   const [isFormOpen, setFormOpen] = React.useState(false);
   const [isDeleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
@@ -167,9 +180,6 @@ export default function CategoryManager({
   const { toast } = useToast();
   const firestore = useFirestore();
 
-  const [isSuggesting, setIsSuggesting] = React.useState(false);
-  const [suggestedCategories, setSuggestedCategories] = React.useState<string[]>([]);
-  const [isSuggestionDialogOpen, setSuggestionDialogOpen] = React.useState(false);
   const [isSeeding, setIsSeeding] = React.useState(false);
 
   const handleAddNew = () => {
@@ -235,42 +245,6 @@ export default function CategoryManager({
     }
   };
   
-  const handleSuggestCategories = async () => {
-    setIsSuggesting(true);
-    setSuggestedCategories([]);
-    try {
-        const exampleDescriptions = "Based on transactions like 'NETFLIX.COM', 'SPOTIFY AB', and 'DISNEY PLUS', suggest some new categories.";
-        const suggestions = await suggestTransactionCategories(exampleDescriptions);
-        
-        const existingCategoryLabels = new Set(initialCategories.map(c => c.label.toLowerCase()));
-        const newSuggestions = suggestions.filter(s => !existingCategoryLabels.has(s.toLowerCase()));
-
-        setSuggestedCategories(newSuggestions);
-        setSuggestionDialogOpen(true);
-
-    } catch (error) {
-        console.error("Failed to suggest categories:", error);
-        toast({
-            variant: "destructive",
-            title: "Suggestion Failed",
-            description: "Could not get AI-powered category suggestions."
-        });
-    } finally {
-        setIsSuggesting(false);
-    }
-  };
-
-  const addSuggestedCategory = (label: string) => {
-    const newCategoryData: Omit<Category, 'id'> = {
-        label,
-        icon: 'ShoppingCart',
-        universes: ['banking'],
-        moodColor: 'bg-gray-500'
-    };
-    handleSave(newCategoryData);
-    setSuggestedCategories(prev => prev.filter(s => s !== label));
-  }
-
   const handleSeedData = async () => {
     if (!firestore) return;
     setIsSeeding(true);
@@ -310,7 +284,7 @@ export default function CategoryManager({
           )}
           Seed Categories
         </Button>
-        <Button variant="outline" onClick={handleSuggestCategories} disabled={isSuggesting}>
+        <Button variant="outline" onClick={onSuggestClick} disabled={isSuggesting}>
           {isSuggesting ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : (
@@ -400,34 +374,6 @@ export default function CategoryManager({
         </DialogContent>
       </Dialog>
       
-      <Dialog open={isSuggestionDialogOpen} onOpenChange={setSuggestionDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>AI-Suggested Categories</DialogTitle>
-            <DialogDescription>
-              Based on your data, here are some suggested new categories. Click to add them.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            {suggestedCategories.length > 0 ? (
-                 <div className="flex flex-wrap gap-2">
-                    {suggestedCategories.map(suggestion => (
-                        <Button key={suggestion} variant="secondary" onClick={() => addSuggestedCategory(suggestion)}>
-                            <PlusCircle className='mr-2 h-4 w-4' />
-                            {suggestion}
-                        </Button>
-                    ))}
-                 </div>
-            ) : (
-                <p className='text-sm text-muted-foreground'>No new category suggestions at this time. All detected patterns seem to be covered.</p>
-            )}
-          </div>
-          <DialogFooter>
-            <Button onClick={() => setSuggestionDialogOpen(false)}>Close</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
       <AlertDialog
         open={isDeleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
