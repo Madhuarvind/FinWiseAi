@@ -26,6 +26,7 @@ import {
   Network,
   Cpu,
   Zap,
+  UserX,
 } from 'lucide-react';
 
 export const Logo = () => (

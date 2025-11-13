@@ -1,4 +1,4 @@
-import { ShieldCheck, Scale, FileText, Bot } from "lucide-react";
+import { ShieldCheck, Scale, FileText, Bot, UserX } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { FairnessMetricsTable } from "@/components/analytics/fairness-metrics-table";
 import { Badge } from "@/components/ui/badge";
@@ -76,6 +76,30 @@ export default function ResponsibleAIPage() {
                 </div>
             </CardContent>
          </Card>
+
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2"><UserX />Behavioural Anonymizer (BA)</CardTitle>
+                    <CardDescription>
+                    Transforms user-specific patterns into anonymous behavioral vectors for safe, cross-team analytics.
+                    </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="flex items-center justify-between rounded-lg border bg-background p-4">
+                    <div className="flex items-center gap-3">
+                        <Bot className="h-6 w-6 text-primary"/>
+                        <div>
+                            <p className="font-semibold">BA Status</p>
+                            <p className="text-sm text-muted-foreground">Anonymizing data for analytics.</p>
+                        </div>
+                    </div>
+                    <Badge variant="secondary" className="bg-green-100 text-green-900 dark:bg-green-900/30 dark:text-green-300">Active</Badge>
+                </div>
+                <div className="mt-4 text-sm text-muted-foreground">
+                    <p>Using differential privacy techniques and noise injection, the BA module enables powerful behavioral analytics across the dataset while ensuring that no personally identifiable information can be reverse-engineered.</p>
+                </div>
+            </CardContent>
+        </Card>
     </div>
   );
 }
