@@ -25,7 +25,7 @@ import { generateSemanticFingerprint } from '@/ai/flows/generate-semantic-finger
 import { generateCounterfactualExplanation } from '@/ai/flows/generate-counterfactual-explanation';
 import { getTokenAttributions } from '@/ai/flows/get-token-attributions';
 import { findSimilarMerchants } from '@/ai/flows/find-similar-merchants';
-import { Loader2, Wand2, Lightbulb, Fingerprint, Repeat, CheckCircle, SearchCode, Cpu, ShieldQuestion, AlertTriangle } from 'lucide-react';
+import { Loader2, Wand2, Lightbulb, Fingerprint, Repeat, CheckCircle, SearchCode, Cpu, ShieldCheck, AlertTriangle } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '../ui/badge';
@@ -331,7 +331,7 @@ export function TransactionDetailSheet({
             ) : (
               <div className="space-y-4 text-sm">
                  <div className="rounded-lg border bg-background p-4 space-y-2">
-                  <p className="font-medium text-foreground mb-2 flex items-center gap-2"><ShieldQuestion className="h-4 w-4"/>Prediction Confidence:</p>
+                  <p className="font-medium text-foreground mb-2 flex items-center gap-2"><ShieldCheck className="h-4 w-4"/>Human Trust Score (HTS):</p>
                   <Progress value={aiState.confidence * 100} className="h-2"/>
                   <p className="text-xs text-muted-foreground text-right">{(aiState.confidence * 100).toFixed(0)}% Confidence</p>
                 </div>
@@ -378,3 +378,5 @@ export function TransactionDetailSheet({
     </Sheet>
   );
 }
+
+    
