@@ -236,8 +236,8 @@ export function TransactionDetailSheet({
               <div className="flex items-start gap-3 rounded-md bg-destructive/10 p-3 text-destructive border border-destructive/20">
                 <AlertTriangle className="h-5 w-5 mt-0.5 flex-shrink-0" />
                 <div className='text-sm'>
-                  <p className="font-semibold">This transaction was flagged for review.</p>
-                  <p>The system detected a potential miscategorization or a sensitive transaction type that requires human confirmation.</p>
+                  <p className="font-semibold">Flagged by Semantic Shock Detector (SSD)</p>
+                  <p>The system detected a novel merchant pattern or an out-of-distribution semantic signature, requiring human confirmation.</p>
                 </div>
               </div>
             )}
