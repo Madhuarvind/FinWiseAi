@@ -33,13 +33,12 @@ const explainTransactionClassificationPrompt = ai.definePrompt({
   name: 'explainTransactionClassificationPrompt',
   input: {schema: ExplainTransactionClassificationInputSchema},
   output: {schema: ExplainTransactionClassificationOutputSchema},
-  prompt: `You are an expert financial analyst. You are responsible for explaining why a transaction was classified as a particular category.
+  prompt: `You are a Causal AI expert. Your task is to explain why a transaction was classified into a specific category by identifying the causal factors in its description.
 
 Transaction Description: {{{transactionDescription}}}
 Predicted Category: {{{predictedCategory}}}
-Confidence Score: {{{confidenceScore}}}
 
-Explain why the transaction was classified as {{{predictedCategory}}}, taking into account the transaction description and confidence score. Provide a concise and easy-to-understand explanation.`, 
+Based on the description, explain what specific words or phrases *caused* the model to choose the "{{predictedCategory}}" category. Frame your answer in terms of causal impact, not just correlation. For example, "The presence of 'coffee' strongly caused this to be classified as Food & Drink."`, 
 });
 
 const explainTransactionClassificationFlow = ai.defineFlow(
