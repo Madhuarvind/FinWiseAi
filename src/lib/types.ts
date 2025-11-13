@@ -16,6 +16,9 @@ export type Transaction = {
   dayOfWeek?: string;
   timeOfDay?: 'Morning' | 'Afternoon' | 'Evening' | 'Night';
   embedding?: Embedding;
+  health?: {
+    riskTags?: ('pharmacy_frequent' | 'telemedicine_increase' | 'lab_tests_spike')[];
+  }
 };
 
 export type Category = {

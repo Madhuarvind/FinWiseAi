@@ -93,6 +93,16 @@ export const transactions: Transaction[] = [
     },
     status: 'pending',
   },
+    {
+    id: 'txn_health_1',
+    date: '2024-07-26',
+    description: 'CVS PHARMACY #9876',
+    amount: -35.50,
+    category: 'health',
+    multiCategory: { banking: 'health', behavioral: 'necessity', personalized: 'health', minimalist: 'necessity' },
+    status: 'reviewed',
+    health: { riskTags: ['pharmacy_frequent'] }
+  },
   {
     id: 'txn_5',
     date: '2024-07-26',
@@ -106,6 +116,16 @@ export const transactions: Transaction[] = [
         minimalist: 'wants'
     },
     status: 'reviewed',
+  },
+    {
+    id: 'txn_health_2',
+    date: '2024-07-24',
+    description: 'TELADOC HEALTH INC',
+    amount: -75.00,
+    category: 'health',
+    multiCategory: { banking: 'health', behavioral: 'necessity', personalized: 'health', minimalist: 'necessity' },
+    status: 'reviewed',
+    health: { riskTags: ['telemedicine_increase'] }
   },
    {
     id: 'txn_8',
@@ -134,5 +154,25 @@ export const transactions: Transaction[] = [
         minimalist: 'wants'
     },
     status: 'flagged',
+  },
+  {
+    id: 'txn_health_3',
+    date: '2024-07-20',
+    description: 'QUEST DIAGNOSTICS',
+    amount: -250.00,
+    category: 'health',
+    multiCategory: { banking: 'health', behavioral: 'necessity', personalized: 'health', minimalist: 'necessity' },
+    status: 'reviewed',
+    health: { riskTags: ['lab_tests_spike'] }
+  },
+    {
+    id: 'txn_health_4',
+    date: '2024-07-15',
+    description: 'WALGREENS PHARMACY',
+    amount: -42.10,
+    category: 'health',
+    multiCategory: { banking: 'health', behavioral: 'necessity', personalized: 'health', minimalist: 'necessity' },
+    status: 'reviewed',
+    health: { riskTags: ['pharmacy_frequent'] }
   },
 ];

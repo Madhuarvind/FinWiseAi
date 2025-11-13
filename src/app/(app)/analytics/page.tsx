@@ -1,13 +1,15 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ConfusionMatrix } from '@/components/analytics/confusion-matrix';
-import { Frown, Gauge, Target, Scale, ShieldCheck, TrendingUp, HelpCircle, Bot, Users, Activity, Fingerprint, Repeat } from 'lucide-react';
+import { Frown, Gauge, Target, Scale, ShieldCheck, TrendingUp, HelpCircle, Bot, Users, Activity, Fingerprint, Repeat, HeartPulse } from 'lucide-react';
 import { PerCategoryAccuracyChart } from '@/components/analytics/per-category-accuracy-chart';
 import { FairnessMetricsTable } from '@/components/analytics/fairness-metrics-table';
 import { MerchantDriftChart } from '@/components/analytics/merchant-drift-chart';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { SocialSpendingChart } from '@/components/analytics/social-spending-chart';
 import { Separator } from '@/components/ui/separator';
+import { HealthRiskScore } from '@/components/analytics/health-risk-score';
+import { MedicalExpenseForecast } from '@/components/analytics/medical-expense-forecast';
 
 const performanceData = {
   macroF1: 0.92,
@@ -65,6 +67,29 @@ const predictiveDriftData = {
     predictedSubcategories: 12,
     months: 6,
     confidence: 0.85
+}
+
+const healthData = {
+  hsre: {
+    score: 72,
+    trend: 'increasing' as 'increasing' | 'decreasing' | 'stable',
+    rationale: "3+ pharmacy visits & 2 telemedicine charges in 30 days; rising medication costs.",
+    recommendations: [
+      { text: "Schedule a general physician consult", confidence: 0.9 },
+      { text: "Check insurance copayment options", confidence: 0.85 },
+      { text: "Consider preventive screening", confidence: 0.75 },
+    ]
+  },
+  mef: {
+    totalForecast: 6200,
+    confidenceInterval: 1000,
+    breakdown: [
+      { category: 'Drugs', value: 2400, color: 'hsl(var(--chart-1))' },
+      { category: 'Tests', value: 2800, color: 'hsl(var(--chart-2))' },
+      { category: 'Consults', value: 1000, color: 'hsl(var(--chart-3))' },
+    ],
+    estimatedSavings: 1200,
+  }
 }
 
 export default function AnalyticsPage() {
@@ -149,6 +174,29 @@ export default function AnalyticsPage() {
             </CardContent>
         </Card>
       </div>
+
+      <Separator />
+
+      <div className="space-y-6">
+          <div>
+            <h2 className="font-headline text-2xl font-semibold tracking-tight text-foreground flex items-center gap-2">
+                <HeartPulse className="text-primary"/>
+                Health Analytics
+            </h2>
+            <p className="text-muted-foreground">
+                Monitoring financial signals related to your health and well-being.
+            </p>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <HealthRiskScore
+              score={healthData.hsre.score}
+              trend={healthData.hsre.trend}
+              rationale={healthData.hsre.rationale}
+              recommendations={healthData.hsre.recommendations}
+            />
+            <MedicalExpenseForecast data={healthData.mef} />
+        </div>
+      </div>
       
       <div className="space-y-6">
           <Separator />
@@ -191,7 +239,7 @@ export default function AnalyticsPage() {
             <div>
                 <h2 className="font-headline text-2xl font-semibold tracking-tight text-foreground flex items-center gap-2">
                     <ShieldCheck className="text-primary"/>
-                    Fairness & Bias Report
+                    Fairness &amp; Bias Report
                 </h2>
                 <p className="text-muted-foreground">
                     Auditing model performance across different transaction segments.
