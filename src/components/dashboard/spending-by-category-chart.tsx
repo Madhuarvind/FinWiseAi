@@ -99,7 +99,7 @@ export function SpendingByCategoryChart({
   const [activeIndex, setActiveIndex] = React.useState(0);
 
   const spendingByCategory = React.useMemo(() => {
-    if (!transactions) return [];
+    if (!transactions || !categories) return [];
     const spending: Record<string, number> = {};
     transactions.forEach((t) => {
       if (t.amount < 0) {

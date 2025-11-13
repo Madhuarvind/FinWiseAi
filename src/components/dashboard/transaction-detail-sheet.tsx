@@ -101,7 +101,8 @@ export function TransactionDetailSheet({
   const { toast } = useToast();
 
   React.useEffect(() => {
-    if (isOpen) {
+    if (isOpen && transaction) {
+        setCurrentCategory(transaction.category);
       const runAIAnalysis = async () => {
         setAiState({
           explanation: '',
@@ -121,7 +122,7 @@ export function TransactionDetailSheet({
           // We set it low sometimes to ensure the LLM reranker logic is triggered.
           const confidenceScore = transaction.id === 'txn_8' || transaction.id === 'txn_11' ? 0.65 : 0.95;
 
-          const categoryLabel = categories.find((c) => c.value === transaction.category)?.label || transaction.category;
+          const categoryLabel = categories.find((c) => c.id === transaction.category)?.label || transaction.category;
 
           const [categorizationResult, explanationResult, dnaResult, attributionsResult, similarityResult, intentResult] = await Promise.all([
             categorizeTransactionWithLLM({
@@ -148,9 +149,9 @@ export function TransactionDetailSheet({
             }),
           ]);
           
-          const suggestedCategoryValue = categories.find(c => c.label === categorizationResult.category)?.value || transaction.category;
+          const suggestedCategoryId = categories.find(c => c.label === categorizationResult.category)?.id || transaction.category;
           
-          const plausibleAlternative = categories.find(c => c.value !== suggestedCategoryValue)?.label || 'Shopping';
+          const plausibleAlternative = categories.find(c => c.id !== suggestedCategoryId)?.label || 'Shopping';
 
           const counterfactualResult = await generateCounterfactualExplanation({
             transactionDescription: transaction.description,
@@ -160,7 +161,7 @@ export function TransactionDetailSheet({
 
           setAiState({
             explanation: explanationResult.explanation,
-            suggestedCategory: suggestedCategoryValue,
+            suggestedCategory: suggestedCategoryId,
             llmReRanked: categorizationResult.llmReRanked,
             zile: dnaResult,
             counterfactual: counterfactualResult.counterfactualExplanation,
@@ -172,7 +173,7 @@ export function TransactionDetailSheet({
           });
 
           // Automatically set the category to the one suggested by the AI
-          setCurrentCategory(suggestedCategoryValue);
+          setCurrentCategory(suggestedCategoryId);
 
         } catch (error) {
           console.error('AI analysis failed:', error);
@@ -218,7 +219,7 @@ export function TransactionDetailSheet({
     </div>
   );
 
-  const getSpendingPersona = (categoryValue: string) => {
+  const getSpendingPersona = (categoryId: string) => {
     const personaMap: Record<string, string> = {
         'food-drink': 'Your "Weekend Foodie" persona was active.',
         'shopping': 'This reflects your "Savvy Shopper" persona.',
@@ -232,10 +233,10 @@ export function TransactionDetailSheet({
         'personal-care': 'The "Self-Care Advocate" in you is active.',
         'coffee-runs': 'Your "Caffeine Enthusiast" persona strikes again!',
     };
-    return personaMap[categoryValue] || 'Your General Spending Persona was used.';
+    return personaMap[categoryId] || 'Your General Spending Persona was used.';
   }
   
-   const getPurchasePurpose = (categoryValue: string) => {
+   const getPurchasePurpose = (categoryId: string) => {
     const purposeMap: Record<string, string> = {
         'food-drink': 'Social / Enjoyment',
         'shopping': 'Personal / Gifting',
@@ -249,10 +250,10 @@ export function TransactionDetailSheet({
         'personal-care': 'Self-care / Routine',
         'coffee-runs': 'Routine / Work',
     };
-    return purposeMap[categoryValue] || 'General';
+    return purposeMap[categoryId] || 'General';
   }
 
-  const getTransactionPersonality = (categoryValue: string) => {
+  const getTransactionPersonality = (categoryId: string) => {
     const personalityMap: Record<string, string> = {
         'food-drink': 'Social Energy (The Explorer)',
         'shopping': 'Confidence Boost (The Creator)',
@@ -266,8 +267,10 @@ export function TransactionDetailSheet({
         'personal-care': 'Comfort & Care (The Caregiver)',
         'coffee-runs': 'Routine Boost (The Everyman)',
     };
-    return personalityMap[categoryValue] || 'General';
+    return personalityMap[categoryId] || 'General';
   }
+
+  if (!transaction) return null;
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -345,7 +348,7 @@ export function TransactionDetailSheet({
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((category) => (
-                    <SelectItem key={category.value} value={category.value}>
+                    <SelectItem key={category.id} value={category.id}>
                       {category.label}
                     </SelectItem>
                   ))}
@@ -362,7 +365,7 @@ export function TransactionDetailSheet({
                       <span className="font-semibold">
                         {
                           categories.find(
-                            (c) => c.value === aiState.suggestedCategory
+                            (c) => c.id === aiState.suggestedCategory
                           )?.label
                         }
                       </span>
@@ -430,7 +433,7 @@ export function TransactionDetailSheet({
                       <li>This purchase lowers your 'Shopping' budget health score by <span className='font-semibold'>3%</span> this week.</li>
                       <li>Your next 'Shopping' purchase is predicted in <span className='font-semibold'>~4 days</span> based on your habits.</li>
                       <li><span className='font-semibold'>(POA):</span> AI suggests this purchase was likely influenced by a <span className='font-semibold'>seasonal discount</span>.</li>
-                       <li><span className='font-semibold'>Ripple Effect (PCV):</span> This reduces your available savings this month, potentially delaying your 'New Gadget' goal by <span className='font-semibold'>2 days</span>.</li>
+                       <li><span className='font-semibold'>Ripple Effect (PCV):</span> This reduces your available savings this month, a potential delay to your 'New Gadget' goal by <span className='font-semibold'>2 days</span>.</li>
                   </ul>
                 </div>
                 <div className="rounded-lg border bg-background p-4 space-y-2">

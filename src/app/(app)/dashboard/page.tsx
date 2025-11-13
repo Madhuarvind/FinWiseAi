@@ -43,7 +43,7 @@ export default function DashboardPage() {
   const transactions = React.useMemo(() => {
     return (preprocessedTransactions || []).map(t => ({
       ...t,
-      category: t.multiCategory?.[activeUniverseId] || 'other'
+      category: t.multiCategory?.[activeUniverseId] || t.category || 'other'
     }));
   }, [preprocessedTransactions, activeUniverseId]);
 

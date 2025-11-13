@@ -33,13 +33,12 @@ import { doc, setDoc } from 'firebase/firestore';
 type SortKey = keyof Transaction | '';
 
 export default function TransactionTable({
-  transactions: initialTransactions,
+  transactions,
   categories,
 }: {
   transactions: Transaction[];
   categories: Category[];
 }) {
-  const [transactions, setTransactions] = React.useState(initialTransactions);
   const [selectedTransaction, setSelectedTransaction] =
     React.useState<Transaction | null>(null);
   const [isSheetOpen, setSheetOpen] = React.useState(false);
@@ -47,10 +46,6 @@ export default function TransactionTable({
   const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>('desc');
   const { user } = useUser();
   const firestore = useFirestore();
-
-  React.useEffect(() => {
-    setTransactions(initialTransactions);
-  }, [initialTransactions]);
 
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
@@ -62,7 +57,7 @@ export default function TransactionTable({
   };
 
   const sortedTransactions = React.useMemo(() => {
-    if (!sortKey) return transactions;
+    if (!sortKey || !transactions) return transactions || [];
     
     return [...transactions].sort((a, b) => {
       const aValue = a[sortKey as keyof Transaction];
@@ -81,10 +76,10 @@ export default function TransactionTable({
 
   const handleUpdateTransaction = async (updatedTransaction: Transaction) => {
     if (!user || !firestore) return;
-    const docRef = doc(firestore, 'users', user.uid, 'transactions', updatedTransaction.id);
     const { id, ...dataToSave } = updatedTransaction;
+    const docRef = doc(firestore, 'users', user.uid, 'transactions', id);
     await setDoc(docRef, dataToSave, { merge: true });
-    // Realtime listener will update the state
+    // Realtime listener will update the state, no need to manually set state here.
   };
   
   const getCategoryDetails = (categoryId: string) => {

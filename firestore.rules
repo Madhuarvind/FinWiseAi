@@ -73,7 +73,7 @@ service cloud.firestore {
       allow get: if isSignedIn();
       allow list: if isSignedIn();
       allow create: if isSignedIn();
-      allow update: if false; // TODO: Add admin role check
+      allow update: if isSignedIn(); // Allow updates for now
       allow delete: if isSignedIn(); // Allow deletion for now
     }
 

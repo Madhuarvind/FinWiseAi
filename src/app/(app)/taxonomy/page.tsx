@@ -9,7 +9,10 @@ import { Loader2 } from 'lucide-react';
 
 export default function TaxonomyPage() {
   const firestore = useFirestore();
-  const categoriesQuery = useMemoFirebase(() => collection(firestore, 'categories'), [firestore]);
+  const categoriesQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return collection(firestore, 'categories');
+  }, [firestore]);
   const { data: categories, isLoading } = useCollection<Category>(categoriesQuery);
 
   if (isLoading) {

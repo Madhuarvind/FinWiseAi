@@ -29,7 +29,7 @@ export type Transaction = {
 };
 
 export type Category = {
-  id: string; // Changed from value to id
+  id: string;
   label:string;
   icon: keyof typeof import('@/components/icons').categoryIcons;
   universes?: string[]; 

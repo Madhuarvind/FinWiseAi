@@ -51,11 +51,11 @@ export default function DataIngestionPage() {
   // Synthetic data state
   const [isGenerating, setIsGenerating] = React.useState(false);
   const [numToGenerate, setNumToGenerate] = React.useState("5");
-  const [categoryToGenerate, setCategoryToGenerate] = React.useState<string>(categories?.[0]?.id || '');
+  const [categoryToGenerate, setCategoryToGenerate] = React.useState<string>('');
 
   React.useEffect(() => {
-    if (categories && !categoryToGenerate) {
-      setCategoryToGenerate(categories[0]?.id);
+    if (categories && categories.length > 0 && !categoryToGenerate) {
+      setCategoryToGenerate(categories[0].id);
     }
   }, [categories, categoryToGenerate]);
 
