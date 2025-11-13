@@ -1,5 +1,5 @@
 import type { Transaction } from '@/lib/types';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, setHours, setMinutes, setSeconds } from 'date-fns';
 
 /**
  * Normalizes the transaction description.
@@ -26,15 +26,32 @@ function normalizeDescription(description: string): string {
 
 /**
  * Enriches transaction data with additional context.
- * For now, it adds the day of the week.
+ * Adds day of the week and a simulated time of day.
  * @param transaction The transaction to enrich.
  * @returns The enriched transaction.
  */
 function enrichTransaction(transaction: Transaction): Transaction {
-  const date = parseISO(transaction.date);
+  // Since mock data only has dates, we simulate a time to extract temporal features.
+  const randomHour = Math.floor(Math.random() * 24);
+  const randomMinute = Math.floor(Math.random() * 60);
+  const date = setSeconds(setMinutes(setHours(parseISO(transaction.date), randomHour), randomMinute), 0);
+
+  let timeOfDay: Transaction['timeOfDay'];
+  const hour = date.getHours();
+  if (hour >= 5 && hour < 12) {
+    timeOfDay = 'Morning';
+  } else if (hour >= 12 && hour < 17) {
+    timeOfDay = 'Afternoon';
+  } else if (hour >= 17 && hour < 21) {
+    timeOfDay = 'Evening';
+  } else {
+    timeOfDay = 'Night';
+  }
+
   return {
     ...transaction,
     dayOfWeek: format(date, 'EEEE'), // e.g., "Monday"
+    timeOfDay: timeOfDay,
   };
 }
 

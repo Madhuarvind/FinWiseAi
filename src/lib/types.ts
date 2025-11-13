@@ -7,7 +7,8 @@ export type Transaction = {
   amount: number;
   category: string;
   status: 'pending' | 'reviewed' | 'flagged';
-  dayOfWeek?: string; // New field for context enrichment
+  dayOfWeek?: string;
+  timeOfDay?: 'Morning' | 'Afternoon' | 'Evening' | 'Night';
   embedding?: Embedding;
 };
 
