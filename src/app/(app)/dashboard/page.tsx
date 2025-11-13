@@ -82,6 +82,13 @@ export default function DashboardPage() {
     });
   };
 
+  const handleViewJournal = () => {
+    toast({
+      title: 'Journal Feature',
+      description: 'The full financial journal page is coming soon!',
+    });
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
@@ -182,7 +189,7 @@ export default function DashboardPage() {
                      <CardDescription>Today was a disciplined day—one essential purchase and no impulsive buys. A perfect step towards your goals.</CardDescription>
                 </CardHeader>
                  <CardContent className='pt-0'>
-                    <Button variant="secondary" size="sm">View Full Journal</Button>
+                    <Button variant="secondary" size="sm" onClick={handleViewJournal}>View Full Journal</Button>
                 </CardContent>
             </Card>
             <Card className="border-destructive/50">
