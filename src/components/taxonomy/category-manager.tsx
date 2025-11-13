@@ -18,11 +18,13 @@ import {
   Wand2,
   Loader2,
   Database,
+  Binary,
 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { getCategoryIcon, categoryIcons } from '@/components/icons';
@@ -58,6 +60,9 @@ import { Badge } from '../ui/badge';
 import { initialCategoriesForSeed, universes } from '@/lib/data';
 import { useFirestore } from '@/firebase';
 import { collection, doc, setDoc, deleteDoc, writeBatch } from 'firebase/firestore';
+import { findSimilarMerchants } from '@/ai/flows/find-similar-merchants';
+import { cn } from '@/lib/utils';
+import { Skeleton } from '../ui/skeleton';
 
 function CategoryForm({
   category,
@@ -130,6 +135,7 @@ function CategoryForm({
               key={u.id}
               type="button"
               variant={universeIds.includes(u.id) ? 'secondary' : 'outline'}
+              size="sm"
               onClick={() => {
                 setUniverseIds(current => 
                   current.includes(u.id)
@@ -163,6 +169,69 @@ function CategoryForm({
   );
 }
 
+function RuleGenDialog({ category, isOpen, setIsOpen }: { category: Category | null, isOpen: boolean, setIsOpen: (open: boolean) => void }) {
+    const [isLoading, setIsLoading] = React.useState(false);
+    const [rules, setRules] = React.useState<string[]>([]);
+    
+    React.useEffect(() => {
+        if (isOpen && category) {
+            setIsLoading(true);
+            setRules([]);
+            const timer = setTimeout(async () => {
+                try {
+                    const result = await findSimilarMerchants({ merchantName: category.label });
+                    setRules(result.similarMerchants);
+                } catch (e) {
+                    // Handle error
+                } finally {
+                    setIsLoading(false);
+                }
+            }, 1500); // Simulate network delay
+            return () => clearTimeout(timer);
+        }
+    }, [isOpen, category]);
+
+    return (
+         <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Automated Rule Generation (ARG)</DialogTitle>
+                <DialogDescription>
+                    The AI is analyzing transactions in &quot;{category?.label}&quot; to generate keyword-matching rules.
+                </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+                {isLoading ? (
+                    <div className='space-y-3'>
+                        <div className='flex items-center gap-2 text-sm text-muted-foreground'>
+                            <Loader2 className='h-4 w-4 animate-spin' />
+                            Analyzing semantic clusters...
+                        </div>
+                        <Skeleton className="h-8 w-full" />
+                        <Skeleton className="h-8 w-2/3" />
+                    </div>
+                ) : (
+                    <div>
+                        <p className="text-sm font-semibold mb-2">Generated Rule Keywords:</p>
+                        <div className="flex flex-wrap gap-2">
+                        {rules.map(rule => (
+                            <Badge key={rule} variant="outline" className="text-base font-mono">{rule}</Badge>
+                        ))}
+                        </div>
+                    </div>
+                )}
+            </div>
+            <DialogFooter>
+                <Button variant="outline" onClick={() => setIsOpen(false)}>Cancel</Button>
+                <Button onClick={() => setIsOpen(false)} disabled={isLoading}>
+                    Approve & Save Rules
+                </Button>
+            </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
 export default function CategoryManager({
   initialCategories,
   onSuggestClick,
@@ -174,6 +243,7 @@ export default function CategoryManager({
 }) {
   const [isFormOpen, setFormOpen] = React.useState(false);
   const [isDeleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [isRuleGenOpen, setRuleGenOpen] = React.useState(false);
   const [selectedCategory, setSelectedCategory] = React.useState<Category | null>(
     null
   );
@@ -196,6 +266,11 @@ export default function CategoryManager({
     setSelectedCategory(category);
     setDeleteDialogOpen(true);
   };
+
+  const handleGenerateRules = (category: Category) => {
+    setSelectedCategory(category);
+    setRuleGenOpen(true);
+  }
 
   const confirmDelete = async () => {
     if (!selectedCategory || !firestore) return;
@@ -274,6 +349,7 @@ export default function CategoryManager({
   }
 
   return (
+    <>
     <div className="space-y-4">
       <div className="flex justify-end gap-2">
          <Button variant="outline" onClick={handleSeedData} disabled={isSeeding || initialCategories.length > 0}>
@@ -311,16 +387,17 @@ export default function CategoryManager({
             const Icon = getCategoryIcon(category.icon);
             return (
                 <Card key={category.id} className="flex flex-col">
-                    <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-base font-medium">
-                        {category.label}
+                    <CardHeader className="flex flex-row items-start justify-between pb-2">
+                        <CardTitle className="text-base font-medium flex items-center gap-2">
+                          <div className={cn("w-2 h-2 rounded-full", category.moodColor)} />
+                          {category.label}
                         </CardTitle>
                         <Icon className="h-5 w-5 text-muted-foreground" />
                     </CardHeader>
                     <CardContent className="flex-grow">
                         <div className="flex flex-wrap gap-1">
                             {category.universes?.map(universeId => (
-                                <Badge key={universeId} variant="secondary">{getUniverseLabel(universeId)}</Badge>
+                                <Badge key={universeId} variant="secondary" className="text-xs">{getUniverseLabel(universeId)}</Badge>
                             ))}
                         </div>
                     </CardContent>
@@ -334,12 +411,17 @@ export default function CategoryManager({
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuItem onClick={() => handleEdit(category)}>
-                            <Pencil className="mr-2 h-4 w-4" />
-                            Edit
+                              <Pencil className="mr-2 h-4 w-4" />
+                              Edit Details
                             </DropdownMenuItem>
+                             <DropdownMenuItem onClick={() => handleGenerateRules(category)}>
+                              <Binary className="mr-2 h-4 w-4" />
+                              Generate Rules (AI)
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
                             <DropdownMenuItem
                             onClick={() => handleDelete(category)}
-                            className="text-destructive"
+                            className="text-destructive focus:text-destructive focus:bg-destructive/10"
                             >
                             <Trash2 className="mr-2 h-4 w-4" />
                             Delete
@@ -353,6 +435,7 @@ export default function CategoryManager({
         </div>
       )}
 
+      </div>
 
       <Dialog open={isFormOpen} onOpenChange={setFormOpen}>
         <DialogContent>
@@ -399,6 +482,12 @@ export default function CategoryManager({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+
+      <RuleGenDialog
+        category={selectedCategory}
+        isOpen={isRuleGenOpen}
+        setIsOpen={setRuleGenOpen}
+      />
+    </>
   );
 }

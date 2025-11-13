@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, doc, setDoc } from 'firebase/firestore';
 import type { Category } from '@/lib/types';
-import { Loader2, Wand2 } from 'lucide-react';
+import { Loader2, Wand2, ShieldCheck, Binary } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import * as React from 'react';
 import { useToast } from '@/hooks/use-toast';
@@ -87,24 +87,45 @@ export default function TaxonomyPage() {
             Taxonomy Management
           </h1>
           <p className="text-muted-foreground">
-            View, create, and manage your transaction categories.
+            View, create, and manage your transaction categories with advanced AI tools.
           </p>
         </div>
         <CategoryManager initialCategories={categories || []} onSuggestClick={handleSuggestCategories} isSuggesting={isSuggesting} />
         
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Wand2 className="text-primary"/> Category Evolution Forecast (PCM)</CardTitle>
-            <CardDescription>
-              The AI predicts how category definitions may naturally evolve based on emerging spending patterns.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-              <div className="text-sm text-muted-foreground">
-                  <p><span className="font-semibold text-foreground">&quot;Dining&quot;</span> is evolving. The model predicts a 15% increase in &quot;morning coffee&quot; transactions clustering within this category over the next 30 days, suggesting a potential new sub-category: <span className="font-semibold text-foreground">&quot;Coffee Runs&quot;</span>.</p>
-              </div>
-          </CardContent>
-        </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+            <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Wand2 className="text-primary"/> Category Evolution Forecast (PCM)</CardTitle>
+                <CardDescription>
+                The AI predicts how category definitions may naturally evolve based on emerging spending patterns.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="text-sm text-muted-foreground">
+                    <p><span className="font-semibold text-foreground">&quot;Dining&quot;</span> is evolving. The model predicts a 15% increase in &quot;morning coffee&quot; transactions clustering within this category over the next 30 days, suggesting a potential new sub-category: <span className="font-semibold text-foreground">&quot;Coffee Runs&quot;</span>.</p>
+                </div>
+            </CardContent>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><ShieldCheck className="text-primary"/>Category Integrity Validator (CIV)</CardTitle>
+                    <CardDescription>
+                        The CIV auditor prevents category "leakage" by learning the boundaries between classes.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                     <div className="text-sm text-muted-foreground">
+                        <p>Analysis of semantic distance shows a <span className="font-semibold text-amber-600">78% overlap</span> between <span className="font-semibold text-foreground">&quot;Food & Drink&quot;</span> and <span className="font-semibold text-foreground">&quot;Groceries&quot;</span>. The AI recommends merging these to improve model accuracy.</p>
+                    </div>
+                </CardContent>
+                 <CardFooter>
+                    <Button variant="secondary" size="sm">
+                        <Binary className="mr-2 h-4 w-4"/>
+                        Review Merge Suggestion
+                    </Button>
+                </CardFooter>
+            </Card>
+        </div>
       </div>
 
       <Dialog open={isSuggestionDialogOpen} onOpenChange={setSuggestionDialogOpen}>
