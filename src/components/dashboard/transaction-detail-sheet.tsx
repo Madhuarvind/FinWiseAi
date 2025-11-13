@@ -26,7 +26,7 @@ import { generateCounterfactualExplanation } from '@/ai/flows/generate-counterfa
 import { getTokenAttributions } from '@/ai/flows/get-token-attributions';
 import { findSimilarMerchants } from '@/ai/flows/find-similar-merchants';
 import { decodeSpendingIntent } from '@/ai/flows/decode-spending-intent';
-import { Loader2, Wand2, Lightbulb, Repeat, CheckCircle, SearchCode, Cpu, ShieldCheck, AlertTriangle, Network, Eye, Sparkles, MessageSquareHeart, TrendingUp, UserCheck, Bot, Target, Gem } from 'lucide-react';
+import { Loader2, Wand2, Lightbulb, Repeat, CheckCircle, SearchCode, Cpu, ShieldCheck, AlertTriangle, Network, Eye, Sparkles, MessageSquareHeart, TrendingUp, UserCheck, Bot, Target, Gem, FileCheck, FileWarning, FileSearch } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '../ui/badge';
@@ -263,11 +263,27 @@ export function TransactionDetailSheet({
         'health': 'Self-Care (The Innocent)',
         'utilities': 'Responsibility (The Sage)',
         'travel': 'Exploration (The Explorer)',
-        'personal-care': 'Comfort & Care (The Caregiver)',
+        'personal-care': 'Comfort &amp; Care (The Caregiver)',
         'coffee-runs': 'Routine Boost (The Everyman)',
     };
     return personalityMap[categoryValue] || 'General';
   }
+
+  const ReceiptStatus = () => {
+    if (!transaction.receipt) {
+      return <Badge variant="outline">Not Available</Badge>;
+    }
+    switch (transaction.receipt.status) {
+      case 'matched':
+        return <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"><FileCheck className="mr-1 h-3 w-3" /> Matched ({transaction.receipt.confidence! * 100}%)</Badge>;
+      case 'refunded':
+        return <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"><FileWarning className="mr-1 h-3 w-3" /> Refunded</Badge>;
+      case 'missing':
+        return <Badge variant="destructive"><FileSearch className="mr-1 h-3 w-3" /> Missing</Badge>;
+      default:
+        return <Badge variant="outline">Not Available</Badge>;
+    }
+  };
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -311,19 +327,20 @@ export function TransactionDetailSheet({
                     ? 'secondary'
                     : transaction.status === 'pending'
                     ? 'outline'
-                    : 'destructive'
+                    : transaction.status === 'destructive'
                 }
                 className="capitalize"
                 >
                 {transaction.status}
                 </Badge>} />
+            <InfoBlock label="Receipt Status (RRA)" value={<ReceiptStatus />} />
           </div>
 
           <Separator />
 
           <div className="space-y-4">
             <h3 className="font-semibold text-foreground">
-              Human-in-the-Loop: Review & Correct
+              Human-in-the-Loop: Review &amp; Correct
             </h3>
             <div className="space-y-2">
               <Label htmlFor="category-select">Verify Category</Label>
@@ -411,17 +428,17 @@ export function TransactionDetailSheet({
                   <p className="text-muted-foreground">"I am a transaction that was born at 8:15 AM. My creation seems to align with your 'reward-seeking' neuro-financial state, often seen after a productive start to your day. This aligns with your recent trend towards a more fitness-focused lifestyle (a predicted Life-Moment shift)."</p>
                 </div>
                  <div className="rounded-lg border bg-background p-4 leading-relaxed">
-                  <p className="font-medium text-foreground mb-2 flex items-center gap-2"><Repeat className="h-4 w-4"/>Counterfactual & Ethical Shadow (RCSL):</p>
+                  <p className="font-medium text-foreground mb-2 flex items-center gap-2"><Repeat className="h-4 w-4"/>Counterfactual &amp; Ethical Shadow (RCSL):</p>
                   <p className="text-muted-foreground"><span className='font-semibold'>Counterfactual: </span>{aiState.counterfactual || "Not available."}</p>
                   <p className="text-muted-foreground mt-1"><span className='font-semibold'>Ethical Shadow: </span>Reusing an existing item could have saved this amount for a future goal.</p>
                 </div>
                  <div className="rounded-lg border bg-background p-4 space-y-2">
-                  <p className="font-medium text-foreground mb-2 flex items-center gap-2"><TrendingUp className="h-4 w-4 text-green-500"/>Future Impact & Health (FIP, ABC, PHHS):</p>
+                  <p className="font-medium text-foreground mb-2 flex items-center gap-2"><TrendingUp className="h-4 w-4 text-green-500"/>Future Impact &amp; Health (FIP, ABC, PHHS):</p>
                    <ul className='list-disc list-inside text-muted-foreground space-y-1'>
                       <li>Continuing this spend monthly would total <span className='font-semibold'>₹{(Math.abs(transaction.amount) * 12).toFixed(2)}</span> annually.</li>
                       <li>This purchase lowers your 'Shopping' budget health score by <span className='font-semibold'>3%</span> this week.</li>
                       <li>Your next 'Shopping' purchase is predicted in <span className='font-semibold'>~4 days</span> based on your habits.</li>
-                      <li><span className='font-semibold'>(POA):</span> AI suggests this purchase was likely influenced by a <span className='font-semibold'>seasonal discount</span>.</li>
+                      <li><span className='font-semibold'>(POA/DAL):</span> AI suggests this purchase was likely influenced by a <span className='font-semibold'>seasonal discount</span>.</li>
                        <li><span className='font-semibold'>Ripple Effect (PCV):</span> This reduces your available savings this month, potentially delaying your 'New Gadget' goal by <span className='font-semibold'>2 days</span>.</li>
                   </ul>
                 </div>
@@ -430,7 +447,7 @@ export function TransactionDetailSheet({
                     <p className="text-muted-foreground leading-relaxed">&quot;Your 'Saver-Self' would have skipped this, as it matches past regret patterns. However, your 'Lifestyle-Enhancer' identity approved it. This choice reduces your primary vacation savings goal by 2%.&quot;</p>
                 </div>
                  <div className="rounded-lg border bg-background p-4 space-y-2">
-                   <p className="font-medium text-foreground flex items-center gap-2"><UserCheck className="h-4 w-4"/>Spending Persona & Philosophy (TPG/HPFA/TPFE/TPI/TAM):</p>
+                   <p className="font-medium text-foreground flex items-center gap-2"><UserCheck className="h-4 w-4"/>Spending Persona &amp; Philosophy (TPG/HPFA/TPFE/TPI/TAM):</p>
                    <p className="text-muted-foreground leading-relaxed">{getSpendingPersona(currentCategory)}</p>
                    <p className="text-muted-foreground leading-relaxed">Purpose: <span className="font-semibold">{getPurchasePurpose(currentCategory)}</span> | Personality: <span className='font-semibold'>{getTransactionPersonality(currentCategory)}</span> (Hedonic)</p>
                 </div>
@@ -465,7 +482,7 @@ export function TransactionDetailSheet({
             {aiState.isLoading ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : null}
-            Confirm & Submit Feedback
+            Confirm &amp; Submit Feedback
           </Button>
         </SheetFooter>
       </SheetContent>

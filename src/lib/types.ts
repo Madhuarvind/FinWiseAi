@@ -18,6 +18,10 @@ export type Transaction = {
   embedding?: Embedding;
   health?: {
     riskTags?: ('pharmacy_frequent' | 'telemedicine_increase' | 'lab_tests_spike')[];
+  };
+  receipt?: {
+    status: 'matched' | 'refunded' | 'missing';
+    confidence?: number;
   }
 };
 

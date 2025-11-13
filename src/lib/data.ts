@@ -50,6 +50,10 @@ export const transactions: Transaction[] = [
         minimalist: 'wants'
     },
     status: 'pending',
+    receipt: {
+      status: 'matched',
+      confidence: 0.98
+    }
   },
   {
     id: 'txn_2',
@@ -64,6 +68,9 @@ export const transactions: Transaction[] = [
         minimalist: 'wants'
     },
     status: 'pending',
+     receipt: {
+      status: 'missing',
+    }
   },
   {
     id: 'txn_3',
@@ -92,6 +99,9 @@ export const transactions: Transaction[] = [
         minimalist: 'necessity'
     },
     status: 'pending',
+     receipt: {
+      status: 'refunded',
+    }
   },
     {
     id: 'txn_health_1',

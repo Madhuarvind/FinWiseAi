@@ -43,6 +43,9 @@ import {
   Gem,
   Briefcase,
   Luggage,
+  FileCheck,
+  FileWarning,
+  FileSearch
 } from 'lucide-react';
 
 export const Logo = () => (
