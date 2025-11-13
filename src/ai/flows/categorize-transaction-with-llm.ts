@@ -59,20 +59,21 @@ const categorizeTransactionWithLLMFlow = ai.defineFlow(
     outputSchema: CategorizeTransactionWithLLMOutputSchema,
   },
   async input => {
-    const confidenceThreshold = 0.75; // This simulates the threshold for the rule-based/primary AI model.
+    // This simulates the threshold for the symbolic, rule-based engine.
+    const confidenceThreshold = 0.95; 
 
-    // If confidence is low, use the LLM to re-rank/decide.
-    if (input.confidenceScore < confidenceThreshold) {
+    // If confidence is high, use the "Fast Path": the top candidate from the symbolic engine.
+    if (input.confidenceScore >= confidenceThreshold) {
+      return {
+        category: input.candidateCategories[0] || 'Unknown',
+        llmReRanked: false,
+      };
+    } else {
+      // If confidence is low, use the "Slow Path": fallback to the neural LLM to re-rank/decide.
       const {output} = await categorizeTransactionPrompt(input);
       return {
         category: output!.category,
         llmReRanked: true, // Mark that the LLM was used.
-      };
-    } else {
-      // If confidence is high, use the top candidate (simulating rule-based engine).
-      return {
-        category: input.candidateCategories[0] || 'Unknown',
-        llmReRanked: false,
       };
     }
   }
