@@ -69,18 +69,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }
 
   const activeNavItems = navItems.filter(item => {
+    // Special handling for the combined "Responsible AI" group
     if (pathname.startsWith('/responsible-ai') || pathname.startsWith('/security')) {
-      // If we are on responsible-ai or security, we want to show a combined item
-      // and hide the individual ones. We will inject a new combined item.
-      return item.href !== '/responsible-ai' && item.href !== '/security';
+      // Hide the individual 'Security' link when in this group
+      return item.href !== '/security';
     }
     return true;
   });
-
-  // Inject the combined "Responsible AI & Governance" item
-  if (pathname.startsWith('/responsible-ai') || pathname.startsWith('/security')) {
-      activeNavItems.splice(7, 0, { href: '/responsible-ai', label: 'Responsible AI & Governance', icon: 'Bias' });
-  }
 
 
   return (
@@ -93,9 +88,21 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <SidebarMenu>
             {activeNavItems.map((item) => {
               const Icon = navIcons[item.icon as keyof typeof navIcons];
-              const isActive = item.href === '/responsible-ai' 
-                  ? (pathname.startsWith('/responsible-ai') || pathname.startsWith('/security'))
-                  : pathname.startsWith(item.href);
+               // The combined item is active if we are on any of its child routes
+              const isActive = (pathname.startsWith('/responsible-ai') || pathname.startsWith('/security'))
+                ? item.href === '/responsible-ai'
+                : pathname.startsWith(item.href);
+
+              const label = (item.href === '/responsible-ai' && (pathname.startsWith('/responsible-ai') || pathname.startsWith('/security')))
+                ? 'Responsible AI' 
+                : item.label;
+
+
+              if (item.href === '/responsible-ai' && !(pathname.startsWith('/responsible-ai') || pathname.startsWith('/security'))) {
+                // Don't render the plain 'Responsible AI' link if not in the group
+                return null;
+              }
+
 
               return (
                 <SidebarMenuItem key={item.label}>
@@ -103,11 +110,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     href={item.href}
                     isActive={isActive}
                     asChild
-                    tooltip={item.label}
+                    tooltip={label}
                   >
                     <a href={item.href}>
                       <Icon />
-                      <span>{item.label}</span>
+                      <span>{label}</span>
                     </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

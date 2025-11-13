@@ -49,7 +49,7 @@ export default function SecurityPage() {
        <div>
             <h1 className="font-headline text-3xl font-semibold tracking-tight text-foreground flex items-center gap-2">
                 <ShieldCheck className="text-primary h-8 w-8"/>
-                Security & Governance
+                Security
             </h1>
             <p className="text-muted-foreground">
                 Monitoring for adversarial attacks and ensuring system integrity.

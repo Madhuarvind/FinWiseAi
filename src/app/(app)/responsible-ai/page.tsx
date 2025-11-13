@@ -76,7 +76,7 @@ export default function ResponsibleAIPage() {
        <div>
             <h1 className="font-headline text-3xl font-semibold tracking-tight text-foreground flex items-center gap-2">
                 <ShieldCheck className="text-primary h-8 w-8"/>
-                Responsible AI & Governance
+                Responsible AI
             </h1>
             <p className="text-muted-foreground">
                 Auditing model for fairness, bias, and ethical compliance.
