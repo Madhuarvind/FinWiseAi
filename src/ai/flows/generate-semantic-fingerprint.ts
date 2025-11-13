@@ -1,54 +1,62 @@
 'use server';
 
 /**
- * @fileOverview Generates a semantic fingerprint for a transaction description.
- * This simulates the process of creating a feature vector (embedding) for the transaction.
+ * @fileOverview Generates a Semantic DNA sequence for a transaction description.
+ * This simulates the process of creating a rich, multi-faceted feature vector.
  *
- * - generateSemanticFingerprint - A function that creates the semantic fingerprint.
- * - GenerateSemanticFingerprintInput - The input type (transaction description string).
- * - GenerateSemanticFingerprintOutput - The output type (an object containing the fingerprint).
+ * - generateSemanticDNA - A function that creates the Semantic DNA.
+ * - GenerateSemanticDNAInput - The input type (transaction description string).
+ * - GenerateSemanticDNAOutput - The output type (an object containing the DNA sequence).
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
-const GenerateSemanticFingerprintInputSchema = z.string().describe('The raw transaction description.');
-export type GenerateSemanticFingerprintInput = z.infer<typeof GenerateSemanticFingerprintInputSchema>;
+const GenerateSemanticDNAInputSchema = z.string().describe('The raw transaction description.');
+export type GenerateSemanticDNAInput = z.infer<typeof GenerateSemanticDNAInputSchema>;
 
-const GenerateSemanticFingerprintOutputSchema = z.object({
-  semanticFingerprint: z.string().describe('A descriptive fingerprint representing the semantic essence of the transaction, capturing entities, intent, and context.'),
+const GenerateSemanticDNAOutputSchema = z.object({
+  semanticDNA: z.string().describe('A DNA-like encoded vector sequence representing the transaction\'s multi-faceted features.'),
 });
-export type GenerateSemanticFingerprintOutput = z.infer<typeof GenerateSemanticFingerprintOutputSchema>;
+export type GenerateSemanticDNAOutput = z.infer<typeof GenerateSemanticDNAOutputSchema>;
 
-export async function generateSemanticFingerprint(input: GenerateSemanticFingerprintInput): Promise<GenerateSemanticFingerprintOutput> {
-  return generateSemanticFingerprintFlow(input);
+export async function generateSemanticDNA(input: GenerateSemanticDNAInput): Promise<GenerateSemanticDNAOutput> {
+  return generateSemanticDNAFlow(input);
 }
 
-const generateSemanticFingerprintPrompt = ai.definePrompt({
-  name: 'generateSemanticFingerprintPrompt',
-  input: { schema: GenerateSemanticFingerprintInputSchema },
-  output: { schema: GenerateSemanticFingerprintOutputSchema },
-  prompt: `You are a feature engineering expert. Your task is to analyze the following raw transaction description and generate a "semantic fingerprint". 
+const generateSemanticDNAPrompt = ai.definePrompt({
+  name: 'generateSemanticDNAPrompt',
+  input: { schema: GenerateSemanticDNAInputSchema },
+  output: { schema: GenerateSemanticDNAOutputSchema },
+  prompt: `You are a feature engineering expert creating a "Semantic DNA" for a financial transaction.
+  Encode the transaction description into a DNA-like sequence (using A, T, G, C).
+  The sequence should represent merchant semantics, user behavior, temporal context, and spending signatures.
+  - A-T pairs could represent entity types (e.g., A=Food, T=Restaurant).
+  - G-C pairs could represent spending context (e.g., G=High-Value, C=Recurring).
   
-This fingerprint should be a concise, structured string that distills the key entities, transaction type, and any implied context. Think of it as a human-readable summary of what a 768-dimensional embedding vector would represent.
+  Be creative and consistent. The output should be a single, long string of these "base pairs".
 
-For example:
-- "STARBUCKS COFFEE #12345" -> "Entity:Starbucks; Type:Food/Beverage; Category:Coffee;"
-- "AMAZON MKTPLACE PMTS" -> "Entity:Amazon; Platform:Marketplace; Type:Payment;"
-- "SHELL FUEL 1234" -> "Entity:Shell; Type:Automotive; Category:Fuel;"
+  For example:
+  - "STARBUCKS COFFEE #12345" -> "AT-AT-CG-GC-TA-CG-AT-GC-GC-AT" (Represents: Food, Restaurant, Low-Value, Frequent, etc.)
+  - "AMAZON MKTPLACE PMTS" -> "TA-TA-GC-CG-AT-CG-GC-AT-AT-TA" (Represents: Shopping, Marketplace, High-Value, Infrequent, etc.)
 
-Transaction Description: {{{$input}}}
-`,
+  Transaction Description: {{{$input}}}
+  `,
+  rename: 'generateSemanticDNA'
 });
 
-const generateSemanticFingerprintFlow = ai.defineFlow(
+const generateSemanticDNAFlow = ai.defineFlow(
   {
-    name: 'generateSemanticFingerprintFlow',
-    inputSchema: GenerateSemanticFingerprintInputSchema,
-    outputSchema: GenerateSemanticFingerprintOutputSchema,
+    name: 'generateSemanticDNAFlow',
+    inputSchema: GenerateSemanticDNAInputSchema,
+    outputSchema: GenerateSemanticDNAOutputSchema,
   },
   async (input) => {
-    const { output } = await generateSemanticFingerprintPrompt(input);
-    return output!;
+    const { output } = await generateSemanticDNAPrompt(input);
+    // In a real implementation, we would return a DNA-like encoded vector sequence.
+    // For now, we simulate this with a string.
+    return {
+      semanticDNA: output!.semanticDNA,
+    };
   }
 );

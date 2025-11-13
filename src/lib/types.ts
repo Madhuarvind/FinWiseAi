@@ -19,5 +19,5 @@ export type Category = {
 };
 
 export type Embedding = {
-  semanticFingerprint: string;
+  semanticDNA: string;
 };

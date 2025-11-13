@@ -21,11 +21,11 @@ import { Separator } from '@/components/ui/separator';
 import type { Transaction, Category } from '@/lib/types';
 import { categorizeTransactionWithLLM } from '@/ai/flows/categorize-transaction-with-llm';
 import { explainTransactionClassification } from '@/ai/flows/explain-transaction-classification';
-import { generateSemanticFingerprint } from '@/ai/flows/generate-semantic-fingerprint';
+import { generateSemanticDNA } from '@/ai/flows/generate-semantic-dna';
 import { generateCounterfactualExplanation } from '@/ai/flows/generate-counterfactual-explanation';
 import { getTokenAttributions } from '@/ai/flows/get-token-attributions';
 import { findSimilarMerchants } from '@/ai/flows/find-similar-merchants';
-import { Loader2, Wand2, Lightbulb, Fingerprint, Repeat, CheckCircle, SearchCode, Cpu, ShieldCheck, AlertTriangle } from 'lucide-react';
+import { Loader2, Wand2, Lightbulb, Fingerprint, Repeat, CheckCircle, SearchCode, Cpu, ShieldCheck, AlertTriangle, Network } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '../ui/badge';
@@ -36,7 +36,7 @@ type AIState = {
   explanation: string;
   suggestedCategory: string;
   llmReRanked: boolean;
-  semanticFingerprint: string;
+  semanticDNA: string;
   counterfactual: string;
   attributions: string[];
   similarMerchants: string[];
@@ -87,7 +87,7 @@ export function TransactionDetailSheet({
     explanation: '',
     suggestedCategory: '',
     llmReRanked: false,
-    semanticFingerprint: '',
+    semanticDNA: '',
     counterfactual: '',
     attributions: [],
     similarMerchants: [],
@@ -103,7 +103,7 @@ export function TransactionDetailSheet({
           explanation: '',
           suggestedCategory: '',
           llmReRanked: false,
-          semanticFingerprint: '',
+          semanticDNA: '',
           counterfactual: '',
           attributions: [],
           similarMerchants: [],
@@ -116,7 +116,7 @@ export function TransactionDetailSheet({
           // We set it low sometimes to ensure the LLM reranker logic is triggered.
           const confidenceScore = transaction.id === 'txn_8' || transaction.id === 'txn_11' ? 0.65 : 0.95;
 
-          const [categorizationResult, explanationResult, fingerprintResult, attributionsResult, similarityResult] = await Promise.all([
+          const [categorizationResult, explanationResult, dnaResult, attributionsResult, similarityResult] = await Promise.all([
             categorizeTransactionWithLLM({
               transactionDescription: transaction.description,
               confidenceScore: confidenceScore,
@@ -129,7 +129,7 @@ export function TransactionDetailSheet({
                   ?.label || transaction.category,
               confidenceScore: confidenceScore, 
             }),
-            generateSemanticFingerprint(transaction.description),
+            generateSemanticDNA(transaction.description),
             getTokenAttributions({
                 transactionDescription: transaction.description,
                 category: categories.find((c) => c.value === transaction.category)?.label || transaction.category,
@@ -151,7 +151,7 @@ export function TransactionDetailSheet({
             explanation: explanationResult.explanation,
             suggestedCategory: suggestedCategoryValue,
             llmReRanked: categorizationResult.llmReRanked,
-            semanticFingerprint: fingerprintResult.semanticFingerprint,
+            semanticDNA: dnaResult.semanticDNA,
             counterfactual: counterfactualResult.counterfactualExplanation,
             attributions: attributionsResult.influentialWords,
             similarMerchants: similarityResult.similarMerchants,
@@ -348,8 +348,8 @@ export function TransactionDetailSheet({
                   <p className="text-muted-foreground leading-relaxed">{getExpertModelForCategory(currentCategory)}</p>
                 </div>
                 <div className="rounded-lg border bg-background p-4 space-y-2">
-                  <p className="font-medium text-foreground flex items-center gap-2"><Fingerprint className="h-4 w-4"/>Semantic Fingerprint (GNN+Transformer):</p>
-                  <p className="text-muted-foreground leading-relaxed font-mono text-xs">{aiState.semanticFingerprint || "Not available."}</p>
+                  <p className="font-medium text-foreground flex items-center gap-2"><Network className="h-4 w-4"/>Semantic DNA (S-DNA):</p>
+                  <p className="text-muted-foreground leading-relaxed font-mono text-xs break-all">{aiState.semanticDNA || "Not available."}</p>
                 </div>
                  <div className="rounded-lg border bg-background p-4 space-y-2">
                   <p className="font-medium text-foreground flex items-center gap-2"><SearchCode className="h-4 w-4"/>Semantic Similarity (Dense Retrieval):</p>
