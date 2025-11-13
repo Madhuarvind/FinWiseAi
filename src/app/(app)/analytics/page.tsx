@@ -1,10 +1,11 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ConfusionMatrix } from '@/components/analytics/confusion-matrix';
-import { Frown, Gauge, Target, Scale, ShieldCheck, TrendingUp } from 'lucide-react';
+import { Frown, Gauge, Target, Scale, ShieldCheck, TrendingUp, HelpCircle, Bot } from 'lucide-react';
 import { PerCategoryAccuracyChart } from '@/components/analytics/per-category-accuracy-chart';
 import { FairnessMetricsTable } from '@/components/analytics/fairness-metrics-table';
 import { MerchantDriftChart } from '@/components/analytics/merchant-drift-chart';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const performanceData = {
   macroF1: 0.92,
@@ -52,8 +53,17 @@ const performanceData = {
   ],
 };
 
+const predictiveDriftData = {
+    category: 'Electronics',
+    currentSubcategories: 8,
+    predictedSubcategories: 12,
+    months: 6,
+    confidence: 0.85
+}
+
 export default function AnalyticsPage() {
   return (
+    <TooltipProvider>
     <div className="space-y-6">
       <div>
         <h1 className="font-headline text-3xl font-semibold tracking-tight text-foreground">
@@ -133,30 +143,66 @@ export default function AnalyticsPage() {
             </CardContent>
         </Card>
       </div>
-
-       <div className="space-y-6 pt-4">
-         <div>
-            <h2 className="font-headline text-2xl font-semibold tracking-tight text-foreground flex items-center gap-2">
-                <ShieldCheck className="text-primary"/>
-                Fairness & Bias Report
-            </h2>
-            <p className="text-muted-foreground">
-                Auditing model performance across different transaction segments.
-            </p>
-         </div>
-         <Card>
-            <CardHeader>
-                <CardTitle>Fairness Metrics</CardTitle>
-                 <p className="text-sm text-muted-foreground pt-1">
-                    Ensuring equitable performance across transaction value tiers.
+      
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="space-y-6">
+            <div>
+                <h2 className="font-headline text-2xl font-semibold tracking-tight text-foreground flex items-center gap-2">
+                    <ShieldCheck className="text-primary"/>
+                    Fairness & Bias Report
+                </h2>
+                <p className="text-muted-foreground">
+                    Auditing model performance across different transaction segments.
                 </p>
-            </CardHeader>
-            <CardContent>
-                <FairnessMetricsTable data={performanceData.fairnessMetrics} />
-            </CardContent>
-         </Card>
-       </div>
-       
+            </div>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Fairness Metrics</CardTitle>
+                    <p className="text-sm text-muted-foreground pt-1">
+                        Ensuring equitable performance across transaction value tiers.
+                    </p>
+                </CardHeader>
+                <CardContent>
+                    <FairnessMetricsTable data={performanceData.fairnessMetrics} />
+                </CardContent>
+            </Card>
+        </div>
+
+        <div className="space-y-6">
+            <div>
+                <h2 className="font-headline text-2xl font-semibold tracking-tight text-foreground flex items-center gap-2">
+                    <Bot className="text-primary"/>
+                    Predictive Category Drift Oracle (PCDO)
+                </h2>
+                <p className="text-muted-foreground">
+                    Forecasting future changes in category definitions.
+                </p>
+            </div>
+             <Card>
+                <CardHeader>
+                    <CardTitle>Drift Forecast: &quot;{predictiveDriftData.category}&quot;</CardTitle>
+                     <CardDescription>
+                        The oracle predicts this category is likely to expand and require re-evaluation.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="flex items-center justify-around text-center">
+                    <div>
+                        <p className="text-4xl font-bold">{predictiveDriftData.currentSubcategories}</p>
+                        <p className="text-sm text-muted-foreground">Current Subcategories</p>
+                    </div>
+                     <div className="text-muted-foreground text-2xl font-thin">&rarr;</div>
+                     <div>
+                        <p className="text-4xl font-bold text-primary">{predictiveDriftData.predictedSubcategories}</p>
+                        <p className="text-sm text-muted-foreground">in {predictiveDriftData.months} months</p>
+                    </div>
+                </CardContent>
+                 <CardContent>
+                    <p className="text-xs text-muted-foreground text-center">Confidence: {(predictiveDriftData.confidence * 100).toFixed(0)}%</p>
+                </CardContent>
+            </Card>
+        </div>
+      </div>
+
         <div className="space-y-6 pt-4">
          <div>
             <h2 className="font-headline text-2xl font-semibold tracking-tight text-foreground flex items-center gap-2">
@@ -180,5 +226,6 @@ export default function AnalyticsPage() {
          </Card>
        </div>
     </div>
+    </TooltipProvider>
   );
 }

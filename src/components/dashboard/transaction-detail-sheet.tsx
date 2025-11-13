@@ -25,12 +25,13 @@ import { generateSemanticDNA } from '@/ai/flows/generate-semantic-dna';
 import { generateCounterfactualExplanation } from '@/ai/flows/generate-counterfactual-explanation';
 import { getTokenAttributions } from '@/ai/flows/get-token-attributions';
 import { findSimilarMerchants } from '@/ai/flows/find-similar-merchants';
-import { Loader2, Wand2, Lightbulb, Repeat, CheckCircle, SearchCode, Cpu, ShieldCheck, AlertTriangle, Network } from 'lucide-react';
+import { Loader2, Wand2, Lightbulb, Repeat, CheckCircle, SearchCode, Cpu, ShieldCheck, AlertTriangle, Network, Eye } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '../ui/badge';
 import { cn } from '@/lib/utils';
 import { Progress } from '../ui/progress';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 
 type AIState = {
   explanation: string;
@@ -244,7 +245,7 @@ export function TransactionDetailSheet({
           <div className="grid grid-cols-2 gap-4 rounded-lg border bg-card p-4">
             <InfoBlock 
               label="Description" 
-              value={<HighlightedDescription description={transaction.description} words={aiState.isLoading ? [] : aiState.attributions} />}
+              value={transaction.description}
               className="col-span-2"
             />
             <InfoBlock
@@ -330,6 +331,20 @@ export function TransactionDetailSheet({
               </div>
             ) : (
               <div className="space-y-4 text-sm">
+                 <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-base font-medium flex items-center gap-2">
+                        <Eye className="h-4 w-4" />
+                        Transaction Semantic Radiograph (TSR)
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-lg font-medium text-foreground rounded-lg bg-muted p-4">
+                        <HighlightedDescription description={transaction.description} words={aiState.attributions} />
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-2">The TSR highlights the key terms (tokens) that most influenced the model's classification decision.</p>
+                    </CardContent>
+                  </Card>
                  <div className="rounded-lg border bg-background p-4 space-y-2">
                   <p className="font-medium text-foreground mb-2 flex items-center gap-2"><ShieldCheck className="h-4 w-4"/>Human Trust Score (HTS):</p>
                   <Progress value={aiState.confidence * 100} className="h-2"/>
