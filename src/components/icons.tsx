@@ -10,7 +10,6 @@ import {
   ShoppingBasket,
   Smile,
   Ticket,
-  Utensils,
   BookOpen,
   LayoutDashboard,
   ToyBrick,
@@ -20,6 +19,7 @@ import {
   ShieldCheck,
   Scale,
   ShieldQuestion,
+  Database,
 } from 'lucide-react';
 
 export const Logo = () => (
@@ -44,6 +44,7 @@ export const categoryIcons = {
 
 export const navIcons = {
   Dashboard: LayoutDashboard,
+  DataManager: Database,
   Taxonomy: BookOpen,
   ModelHub: ToyBrick,
   Analytics: AreaChart,
