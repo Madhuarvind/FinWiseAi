@@ -5,11 +5,15 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import TransactionTable from '@/components/dashboard/transaction-table';
-import { transactions, categories } from '@/lib/data';
+import { transactions as rawTransactions, categories } from '@/lib/data';
+import { preprocessTransactions } from '@/lib/preprocessing';
 import { DollarSign, ListChecks, AlertTriangle } from 'lucide-react';
 import { SpendingByCategoryChart } from '@/components/dashboard/spending-by-category-chart';
 
 export default function DashboardPage() {
+  // Preprocess transactions before using them
+  const transactions = preprocessTransactions(rawTransactions);
+
   const totalSpending = transactions.reduce(
     (sum, t) => (t.amount < 0 ? sum + t.amount : sum),
     0
