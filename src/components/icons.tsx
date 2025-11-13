@@ -20,6 +20,7 @@ import {
   Scale,
   ShieldQuestion,
   Database,
+  Utensils,
 } from 'lucide-react';
 
 export const Logo = () => (
