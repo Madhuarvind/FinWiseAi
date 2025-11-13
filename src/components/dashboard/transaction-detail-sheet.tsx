@@ -25,7 +25,8 @@ import { generateSemanticDNA } from '@/ai/flows/generate-semantic-dna';
 import { generateCounterfactualExplanation } from '@/ai/flows/generate-counterfactual-explanation';
 import { getTokenAttributions } from '@/ai/flows/get-token-attributions';
 import { findSimilarMerchants } from '@/ai/flows/find-similar-merchants';
-import { Loader2, Wand2, Lightbulb, Repeat, CheckCircle, SearchCode, Cpu, ShieldCheck, AlertTriangle, Network, Eye } from 'lucide-react';
+import { decodeSpendingIntent } from '@/ai/flows/decode-spending-intent';
+import { Loader2, Wand2, Lightbulb, Repeat, CheckCircle, SearchCode, Cpu, ShieldCheck, AlertTriangle, Network, Eye, Sparkles } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '../ui/badge';
@@ -41,6 +42,7 @@ type AIState = {
   counterfactual: string;
   attributions: string[];
   similarMerchants: string[];
+  spendingIntent: string;
   confidence: number;
   isLoading: boolean;
 };
@@ -92,6 +94,7 @@ export function TransactionDetailSheet({
     counterfactual: '',
     attributions: [],
     similarMerchants: [],
+    spendingIntent: '',
     confidence: 0,
     isLoading: true,
   });
@@ -108,6 +111,7 @@ export function TransactionDetailSheet({
           counterfactual: '',
           attributions: [],
           similarMerchants: [],
+          spendingIntent: '',
           confidence: 0,
           isLoading: true,
         });
@@ -117,7 +121,9 @@ export function TransactionDetailSheet({
           // We set it low sometimes to ensure the LLM reranker logic is triggered.
           const confidenceScore = transaction.id === 'txn_8' || transaction.id === 'txn_11' ? 0.65 : 0.95;
 
-          const [categorizationResult, explanationResult, dnaResult, attributionsResult, similarityResult] = await Promise.all([
+          const categoryLabel = categories.find((c) => c.value === transaction.category)?.label || transaction.category;
+
+          const [categorizationResult, explanationResult, dnaResult, attributionsResult, similarityResult, intentResult] = await Promise.all([
             categorizeTransactionWithLLM({
               transactionDescription: transaction.description,
               confidenceScore: confidenceScore,
@@ -125,17 +131,21 @@ export function TransactionDetailSheet({
             }),
             explainTransactionClassification({
               transactionDescription: transaction.description,
-              predictedCategory:
-                categories.find((c) => c.value === transaction.category)
-                  ?.label || transaction.category,
+              predictedCategory: categoryLabel,
               confidenceScore: confidenceScore, 
             }),
             generateSemanticDNA(transaction.description),
             getTokenAttributions({
                 transactionDescription: transaction.description,
-                category: categories.find((c) => c.value === transaction.category)?.label || transaction.category,
+                category: categoryLabel,
             }),
             findSimilarMerchants({ merchantName: transaction.description }),
+            decodeSpendingIntent({
+              description: transaction.description,
+              timeOfDay: transaction.timeOfDay || 'Afternoon',
+              dayOfWeek: transaction.dayOfWeek || 'Weekday',
+              category: categoryLabel
+            }),
           ]);
           
           const suggestedCategoryValue = categories.find(c => c.label === categorizationResult.category)?.value || transaction.category;
@@ -156,6 +166,7 @@ export function TransactionDetailSheet({
             counterfactual: counterfactualResult.counterfactualExplanation,
             attributions: attributionsResult.influentialWords,
             similarMerchants: similarityResult.similarMerchants,
+            spendingIntent: intentResult.intent,
             confidence: confidenceScore,
             isLoading: false,
           });
@@ -349,6 +360,10 @@ export function TransactionDetailSheet({
                   <p className="font-medium text-foreground mb-2 flex items-center gap-2"><ShieldCheck className="h-4 w-4"/>Human Trust Score (HTS):</p>
                   <Progress value={aiState.confidence * 100} className="h-2"/>
                   <p className="text-xs text-muted-foreground text-right">{(aiState.confidence * 100).toFixed(0)}% Confidence</p>
+                </div>
+                 <div className="rounded-lg border bg-background p-4 leading-relaxed">
+                  <p className="font-medium text-foreground mb-2 flex items-center gap-2"><Sparkles className="h-4 w-4 text-amber-500"/>Predicted Intent:</p>
+                  <p className="text-muted-foreground">{aiState.spendingIntent || "Not available."}</p>
                 </div>
                 <div className="rounded-lg border bg-background p-4 leading-relaxed">
                   <p className="font-medium text-foreground mb-2">Classification Rationale:</p>
