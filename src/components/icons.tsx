@@ -41,6 +41,8 @@ import {
   ShieldAlert,
   Repeat,
   Gem,
+  Briefcase,
+  Luggage,
 } from 'lucide-react';
 
 export const Logo = () => (
@@ -71,10 +73,13 @@ export const categoryIcons = {
   ShieldAlert,
   Repeat,
   Gem,
+  Briefcase,
+  Luggage,
 };
 
 export const navIcons = {
   Dashboard: LayoutDashboard,
+  Trips: Briefcase,
   DataManager: Database,
   Taxonomy: BookOpen,
   ModelHub: ToyBrick,
