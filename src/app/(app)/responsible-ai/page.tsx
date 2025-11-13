@@ -1,7 +1,13 @@
-import { ShieldCheck, Scale, FileText, Bot, UserX } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
+'use client';
+import { ShieldCheck, Scale, FileText, Bot, UserX, Loader2 } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from "@/components/ui/card";
 import { FairnessMetricsTable } from "@/components/analytics/fairness-metrics-table";
 import { Badge } from "@/components/ui/badge";
+import * as React from 'react';
+import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Button } from "@/components/ui/button";
+import { generateSemanticDNA } from "@/ai/flows/generate-semantic-dna";
 
 const fairnessData = {
     groups: ['Low Value (<$20)', 'Med Value ($20-$100)', 'High Value (>$100)'],
@@ -30,7 +36,41 @@ const fairnessData = {
   };
 
 export default function ResponsibleAIPage() {
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [dialogContent, setDialogContent] = React.useState<{ title: string; description: string; content: React.ReactNode } | null>(null);
+
+  const handleRunAnonymizer = async () => {
+    setIsLoading(true);
+    toast({ title: "Behavioural Anonymizer Initialized", description: "Transforming user-specific patterns into an anonymous vector..."});
+    try {
+      const result = await generateSemanticDNA("STARBUCKS #12345 8.75 USD");
+      setDialogContent({
+        title: "Anonymization Complete",
+        description: "The transaction has been transformed into a privacy-preserving 'Semantic DNA' vector.",
+        content: (
+          <div className="mt-4 space-y-4 text-sm">
+            <div>
+              <p className="font-semibold text-foreground">Base Sequence (S-DNA)</p>
+              <p className="text-muted-foreground font-mono text-xs break-all bg-secondary/30 p-2 rounded-md">{result.baseSequence}</p>
+            </div>
+            <div>
+              <p className="font-semibold text-foreground">Interpretation Vector</p>
+              <p className="text-muted-foreground font-mono text-xs break-all bg-secondary/30 p-2 rounded-md">{result.interpretationVector}</p>
+            </div>
+          </div>
+        )
+      });
+    } catch (e) {
+      toast({ variant: 'destructive', title: "Anonymization Failed", description: "Could not generate Semantic DNA."});
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+
   return (
+    <>
     <div className="space-y-6">
        <div>
             <h1 className="font-headline text-3xl font-semibold tracking-tight text-foreground flex items-center gap-2">
@@ -90,7 +130,7 @@ export default function ResponsibleAIPage() {
                         <Bot className="h-6 w-6 text-primary"/>
                         <div>
                             <p className="font-semibold">BA Status</p>
-                            <p className="text-sm text-muted-foreground">Anonymizing data for analytics.</p>
+                            <p className="text-sm text-muted-foreground">Ready to anonymize data streams.</p>
                         </div>
                     </div>
                     <Badge variant="secondary" className="bg-green-100 text-green-900 dark:bg-green-900/30 dark:text-green-300">Active</Badge>
@@ -99,7 +139,30 @@ export default function ResponsibleAIPage() {
                     <p>Using differential privacy techniques and noise injection, the BA module enables powerful behavioral analytics across the dataset while ensuring that no personally identifiable information can be reverse-engineered.</p>
                 </div>
             </CardContent>
+            <CardFooter>
+                <Button onClick={handleRunAnonymizer} disabled={isLoading}>
+                    {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Bot className="mr-2 h-4 w-4"/>}
+                    {isLoading ? "Anonymizing..." : "Anonymize Sample Transaction"}
+                </Button>
+            </CardFooter>
         </Card>
     </div>
+    <Dialog open={!!dialogContent} onOpenChange={() => setDialogContent(null)}>
+        <DialogContent>
+            <DialogHeader>
+            <DialogTitle>{dialogContent?.title}</DialogTitle>
+            <DialogDescription>
+                {dialogContent?.description}
+            </DialogDescription>
+            </DialogHeader>
+            <div>
+                {dialogContent?.content}
+            </div>
+            <DialogFooter>
+                <Button onClick={() => setDialogContent(null)}>Close</Button>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
+    </>
   );
 }

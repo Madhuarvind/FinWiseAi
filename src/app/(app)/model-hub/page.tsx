@@ -1,8 +1,15 @@
+'use client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { BrainCircuit, GitMerge, Layers3, Rocket, Wrench, CircleDashed, Bot, FlaskConical, Network, Zap, Telescope } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import * as React from 'react';
+import { useToast } from '@/hooks/use-toast';
+import { Loader2 } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { synthesizeTransactions } from '@/ai/flows/synthesize-transactions';
+import { getTokenAttributions } from '@/ai/flows/get-token-attributions';
 
 const models = [
     {
@@ -68,7 +75,62 @@ const distilledModels = [
 ];
 
 export default function ModelHubPage() {
+    const { toast } = useToast();
+    const [isLoading, setIsLoading] = React.useState<Record<string, boolean>>({});
+    const [dialogContent, setDialogContent] = React.useState<{ title: string; description: string; content: React.ReactNode } | null>(null);
+
+    const handleRunMAS = async () => {
+        setIsLoading(prev => ({...prev, mas: true}));
+        toast({ title: "MAS Workbench Initialized", description: "Finding informative samples for 'Travel'..."});
+        try {
+            const result = await synthesizeTransactions({ count: 3, category: 'Travel'});
+            setDialogContent({
+                title: "MAS Sampling Complete",
+                description: "The sampler found these highly informative samples to improve the 'Travel' category.",
+                content: (
+                    <ul className="mt-4 space-y-2 text-sm text-muted-foreground bg-secondary/30 p-4 rounded-lg">
+                        {result.transactions.map((tx, i) => (
+                            <li key={i}><strong>Description:</strong> {tx.description}, <strong>Amount:</strong> ₹{tx.amount.toFixed(2)}</li>
+                        ))}
+                    </ul>
+                )
+            });
+        } catch (e) {
+            toast({ variant: 'destructive', title: "MAS Failed", description: "Could not generate samples."});
+        } finally {
+            setIsLoading(prev => ({...prev, mas: false}));
+        }
+    };
+
+    const handleRunSRMA = async () => {
+        setIsLoading(prev => ({...prev, srma: true}));
+        toast({ title: "SRMA Auditor Initialized", description: "Generating self-confidence map for a sample transaction..."});
+        try {
+            const result = await getTokenAttributions({ transactionDescription: "UBER TRIP MUMBAI", category: "Transport"});
+            setDialogContent({
+                title: "SRMA Audit Complete",
+                description: "The auditor identified the most influential tokens for the 'Transport' classification.",
+                content: (
+                    <div className="mt-4 text-sm text-muted-foreground">
+                        <p>For transaction "UBER TRIP MUMBAI", the key attribution tokens are:</p>
+                         <div className="flex flex-wrap gap-2 pt-2">
+                            {result.influentialWords.map((word) => (
+                                <Badge key={word} variant="secondary" className="text-base">{word}</Badge>
+                            ))}
+                        </div>
+                    </div>
+                )
+            });
+        } catch (e) {
+            toast({ variant: 'destructive', title: "SRMA Failed", description: "Could not get token attributions."});
+        } finally {
+            setIsLoading(prev => ({...prev, srma: false}));
+        }
+    }
+
+
   return (
+    <>
     <div className="space-y-8">
       <div>
         <h1 className="font-headline text-3xl font-semibold tracking-tight text-foreground">
@@ -193,9 +255,9 @@ export default function ModelHubPage() {
                         </p>
                     </CardContent>
                     <CardFooter>
-                        <Button disabled>
-                            <FlaskConical className="mr-2 h-4 w-4"/>
-                            Initiate Sampling Policy Update
+                        <Button onClick={handleRunMAS} disabled={isLoading['mas']}>
+                            {isLoading['mas'] ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FlaskConical className="mr-2 h-4 w-4"/>}
+                            {isLoading['mas'] ? "Sampling..." : "Run Active Sampler"}
                         </Button>
                     </CardFooter>
                 </Card>
@@ -212,9 +274,9 @@ export default function ModelHubPage() {
                         </p>
                     </CardContent>
                     <CardFooter>
-                        <Button disabled>
-                            <Telescope className="mr-2 h-4 w-4"/>
-                            View Self-Confidence Map
+                        <Button onClick={handleRunSRMA} disabled={isLoading['srma']}>
+                            {isLoading['srma'] ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Telescope className="mr-2 h-4 w-4"/>}
+                            {isLoading['srma'] ? "Auditing..." : "View Self-Confidence Map"}
                         </Button>
                     </CardFooter>
                 </Card>
@@ -222,5 +284,22 @@ export default function ModelHubPage() {
        </div>
 
     </div>
+    <Dialog open={!!dialogContent} onOpenChange={() => setDialogContent(null)}>
+        <DialogContent>
+            <DialogHeader>
+            <DialogTitle>{dialogContent?.title}</DialogTitle>
+            <DialogDescription>
+                {dialogContent?.description}
+            </DialogDescription>
+            </DialogHeader>
+            <div>
+                {dialogContent?.content}
+            </div>
+            <DialogFooter>
+                <Button onClick={() => setDialogContent(null)}>Close</Button>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
+    </>
   );
 }

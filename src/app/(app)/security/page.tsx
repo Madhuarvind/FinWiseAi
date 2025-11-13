@@ -1,10 +1,50 @@
-import { ShieldCheck, ShieldAlert, Bot, Landmark } from "lucide-react";
+'use client';
+import { ShieldCheck, ShieldAlert, Bot, Landmark, Loader2 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import * as React from 'react';
+import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { decodeSpendingIntent } from "@/ai/flows/decode-spending-intent";
 
 export default function SecurityPage() {
+    const { toast } = useToast();
+    const [isLoading, setIsLoading] = React.useState(false);
+    const [dialogContent, setDialogContent] = React.useState<{ title: string; description: string; content: React.ReactNode } | null>(null);
+
+    const handleRunAIF = async () => {
+        setIsLoading(true);
+        toast({ title: "Adversarial Intent Filter Initialized", description: "Analyzing a potentially malicious transaction string..."});
+        try {
+            const result = await decodeSpendingIntent({
+                description: "gift card and snacks", // Ambiguous string
+                timeOfDay: "Afternoon",
+                dayOfWeek: "Saturday",
+                category: "Shopping"
+            });
+            setDialogContent({
+                title: "AIF Analysis Complete",
+                description: "The filter analyzed the ambiguous string to determine the likely underlying intent.",
+                content: (
+                     <div className="mt-4 text-sm">
+                        <p className="text-muted-foreground">The AIF flagged the transaction as potentially trying to hide a 'gift card' purchase within a routine 'snacks' purchase. The predicted intent is:</p>
+                        <p className="mt-2 font-semibold text-foreground bg-secondary/30 p-3 rounded-lg">
+                           {result.intent}
+                        </p>
+                    </div>
+                )
+            });
+        } catch (e) {
+            toast({ variant: 'destructive', title: "AIF Failed", description: "Could not decode spending intent."});
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+
   return (
+    <>
     <div className="space-y-6">
        <div>
             <h1 className="font-headline text-3xl font-semibold tracking-tight text-foreground flex items-center gap-2">
@@ -39,7 +79,10 @@ export default function SecurityPage() {
                     </div>
                 </CardContent>
                 <CardFooter>
-                    <Button variant="outline" disabled>View Flagged Transactions</Button>
+                    <Button onClick={handleRunAIF} disabled={isLoading}>
+                         {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Bot className="mr-2 h-4 w-4"/>}
+                         {isLoading ? "Analyzing..." : "Analyze Sample Adversarial Txn"}
+                    </Button>
                 </CardFooter>
             </Card>
 
@@ -97,5 +140,22 @@ export default function SecurityPage() {
             </Card>
         </div>
     </div>
+    <Dialog open={!!dialogContent} onOpenChange={() => setDialogContent(null)}>
+        <DialogContent>
+            <DialogHeader>
+            <DialogTitle>{dialogContent?.title}</DialogTitle>
+            <DialogDescription>
+                {dialogContent?.description}
+            </DialogDescription>
+            </DialogHeader>
+            <div>
+                {dialogContent?.content}
+            </div>
+            <DialogFooter>
+                <Button onClick={() => setDialogContent(null)}>Close</Button>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
+    </>
   );
 }

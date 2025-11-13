@@ -1,12 +1,73 @@
 'use client';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Bot, Binary, Telescope } from 'lucide-react';
+import { Bot, Binary, Telescope, Loader2 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import * as React from 'react';
+import { useToast } from '@/hooks/use-toast';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { generateCounterfactualExplanation } from '@/ai/flows/generate-counterfactual-explanation';
 
 
 export default function SimulationLabPage() {
+    const { toast } = useToast();
+    const [isLoading, setIsLoading] = React.useState(false);
+    const [dialogContent, setDialogContent] = React.useState<{ title: string; description: string; content: React.ReactNode } | null>(null);
+
+    const handleRunSimulation = async (scenario: 'delivery' | 'subscription' | 'saving') => {
+        setIsLoading(true);
+        let input;
+        let toastTitle;
+
+        switch(scenario) {
+            case 'delivery':
+                toastTitle = "Simulating 'No Food Delivery' Scenario...";
+                input = {
+                    transactionDescription: "Doordash*Taco Bell",
+                    originalCategory: "Food & Drink",
+                    targetCategory: "Groceries"
+                };
+                break;
+            case 'subscription':
+                toastTitle = "Simulating 'Cut Subscriptions' Scenario...";
+                 input = {
+                    transactionDescription: "Netflix.com",
+                    originalCategory: "Entertainment",
+                    targetCategory: "Savings"
+                };
+                break;
+            default:
+                 toast({ variant: 'destructive', title: "Scenario not implemented" });
+                 setIsLoading(false);
+                 return;
+        }
+
+        toast({ title: toastTitle, description: "The AI is calculating the counterfactual outcome..." });
+
+        try {
+            const result = await generateCounterfactualExplanation(input);
+            setDialogContent({
+                title: "Simulation Complete",
+                description: `What would need to change for a "${input.originalCategory}" transaction to become "${input.targetCategory}"?`,
+                content: (
+                    <div className="mt-4 text-sm">
+                        <p className="font-semibold text-primary bg-primary/10 p-3 rounded-lg">
+                           {result.counterfactualExplanation}
+                        </p>
+                        <p className="text-muted-foreground mt-2">This simulates a behavioral change where spending is re-allocated to a different category, impacting future financial outcomes.</p>
+                    </div>
+                )
+            });
+        } catch (e) {
+            toast({ variant: 'destructive', title: "Simulation Failed", description: "Could not generate counterfactual explanation."});
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+
   return (
+    <>
     <div className="space-y-8">
       <div>
         <h1 className="font-headline text-3xl font-semibold tracking-tight text-foreground">
@@ -55,24 +116,45 @@ export default function SimulationLabPage() {
                 <CardContent>
                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="space-y-2">
-                            <p className="font-medium">Scenario</p>
-                            <Button variant="outline" className="w-full justify-start text-left">If I saved 20% more monthly...</Button>
-                            <Button variant="secondary" className="w-full justify-start text-left">If I stopped all food delivery...</Button>
-                            <Button variant="outline" className="w-full justify-start text-left">If I cut all subscriptions...</Button>
+                            <p className="font-medium">Choose a Scenario</p>
+                            <Button variant="outline" className="w-full justify-start text-left" onClick={() => handleRunSimulation('delivery')} disabled={isLoading}>
+                                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Binary className="mr-2 h-4 w-4" />}
+                                If I stopped all food delivery...
+                            </Button>
+                            <Button variant="secondary" className="w-full justify-start text-left" onClick={() => handleRunSimulation('subscription')} disabled={isLoading}>
+                                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Binary className="mr-2 h-4 w-4" />}
+                                If I cut all subscriptions...
+                            </Button>
+                            <Button variant="outline" className="w-full justify-start text-left" disabled>If I saved 20% more monthly...</Button>
                         </div>
-                        <div className="md:col-span-2 rounded-lg border bg-background p-4">
-                            <p className="font-medium text-foreground">Simulated Outcome:</p>
-                            <div className="mt-4 text-lg">
-                                <p>Your total savings would be <span className="font-bold text-primary">₹24,000 higher</span> annually.</p>
-                                <p>Your emotional spending-related stress score would be <span className="font-bold text-primary">18% lower</span>.</p>
-                                <p>Your "Vacation" goal could be reached <span className="font-bold text-primary">3 months sooner</span>.</p>
+                        <div className="md:col-span-2 rounded-lg border bg-background p-4 flex items-center justify-center">
+                            <div className="text-center">
+                                <Bot className="h-12 w-12 mx-auto text-muted-foreground" />
+                                <p className="mt-4 font-medium text-foreground">AI Simulation Results</p>
+                                <p className="text-muted-foreground text-sm">Select a scenario to see the simulated outcome.</p>
                             </div>
                         </div>
                     </div>
                 </CardContent>
             </Card>
        </div>
-
     </div>
+     <Dialog open={!!dialogContent} onOpenChange={() => setDialogContent(null)}>
+        <DialogContent>
+            <DialogHeader>
+            <DialogTitle>{dialogContent?.title}</DialogTitle>
+            <DialogDescription>
+                {dialogContent?.description}
+            </DialogDescription>
+            </DialogHeader>
+            <div>
+                {dialogContent?.content}
+            </div>
+            <DialogFooter>
+                <Button onClick={() => setDialogContent(null)}>Close</Button>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
+    </>
   );
 }
