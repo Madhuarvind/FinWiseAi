@@ -1,4 +1,4 @@
-import { ShieldCheck, ShieldAlert, Bot } from "lucide-react";
+import { ShieldCheck, ShieldAlert, Bot, Landmark } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -67,6 +67,32 @@ export default function SecurityPage() {
                 </CardContent>
                  <CardFooter>
                     <Button variant="outline" disabled>View Compliance Policies</Button>
+                </CardFooter>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><Landmark />Category Integrity Validator (CIV)</CardTitle>
+                    <CardDescription>
+                        Prevents category "leakage" by learning the boundaries between classes and rejecting predictions that are semantically ambiguous.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex items-center justify-between rounded-lg border bg-background p-4">
+                        <div className="flex items-center gap-3">
+                            <Bot className="h-6 w-6 text-primary"/>
+                            <div>
+                                <p className="font-semibold">CIV Status</p>
+                                <p className="text-sm text-muted-foreground">Validating all category assignments.</p>
+                            </div>
+                        </div>
+                        <Badge variant="secondary" className="bg-green-100 text-green-900 dark:bg-green-900/30 dark:text-green-300">Active</Badge>
+                    </div>
+                    <div className="mt-4 text-sm text-muted-foreground">
+                        <p>Using a boundary model trained with triplet loss, the CIV measures the "distance" of a prediction from nearby category boundaries. If a prediction is too close to a boundary, it's flagged for review or auto-rerouted, preventing subtle misclassifications.</p>
+                    </div>
+                </CardContent>
+                 <CardFooter>
+                    <Button variant="outline" disabled>View Boundary Metrics</Button>
                 </CardFooter>
             </Card>
         </div>

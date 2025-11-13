@@ -27,6 +27,8 @@ import {
   Cpu,
   Zap,
   UserX,
+  Telescope,
+  Landmark,
 } from 'lucide-react';
 
 export const Logo = () => (

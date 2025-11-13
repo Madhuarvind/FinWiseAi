@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { BrainCircuit, GitMerge, Layers3, Rocket, Wrench, CircleDashed, Bot, FlaskConical, Network, Zap } from 'lucide-react';
+import { BrainCircuit, GitMerge, Layers3, Rocket, Wrench, CircleDashed, Bot, FlaskConical, Network, Zap, Telescope } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
 const models = [
@@ -179,25 +179,46 @@ export default function ModelHubPage() {
 
        <div className="space-y-6">
             <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2"><Zap className="text-primary"/>Automated Model Operations</h2>
-             <Card>
-                <CardHeader>
-                    <CardTitle>Meta-Active Sampler (MAS) Workbench</CardTitle>
-                    <CardDescription>
-                        This module uses a Reinforcement Learning agent to automatically find the most informative transaction samples for labeling, maximizing F1 score improvement while minimizing labeling costs.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <p className="text-sm text-muted-foreground">
-                        The MAS intelligently explores the data distribution to find samples that offer the highest potential for model improvement. This ensures your human-in-the-loop efforts are always focused on the most impactful data.
-                    </p>
-                </CardContent>
-                <CardFooter>
-                    <Button disabled>
-                        <FlaskConical className="mr-2 h-4 w-4"/>
-                        Initiate Sampling Policy Update
-                    </Button>
-                </CardFooter>
-            </Card>
+            <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Meta-Active Sampler (MAS) Workbench</CardTitle>
+                        <CardDescription>
+                            This module uses a Reinforcement Learning agent to automatically find the most informative transaction samples for labeling.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-sm text-muted-foreground">
+                            The MAS intelligently explores the data distribution to find samples that offer the highest potential for model improvement, maximizing F1 score while minimizing labeling costs.
+                        </p>
+                    </CardContent>
+                    <CardFooter>
+                        <Button disabled>
+                            <FlaskConical className="mr-2 h-4 w-4"/>
+                            Initiate Sampling Policy Update
+                        </Button>
+                    </CardFooter>
+                </Card>
+                 <Card>
+                    <CardHeader>
+                        <CardTitle>Self-Reflective Model Auditor (SRMA)</CardTitle>
+                        <CardDescription>
+                           An automated auditor that tracks the model's own weaknesses and creates a "self-confidence map" of its abilities.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-sm text-muted-foreground">
+                            By tracking gradient norms, uncertainty clusters, and error patterns, the SRMA identifies areas where the model is least confident and suggests what it needs to learn next.
+                        </p>
+                    </CardContent>
+                    <CardFooter>
+                        <Button disabled>
+                            <Telescope className="mr-2 h-4 w-4"/>
+                            View Self-Confidence Map
+                        </Button>
+                    </CardFooter>
+                </Card>
+            </div>
        </div>
 
     </div>
