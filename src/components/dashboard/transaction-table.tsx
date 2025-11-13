@@ -39,7 +39,7 @@ export default function TransactionTable({
 }: {
   transactions: Transaction[];
   categories: Category[];
-  activeUniverse: Universe['id'];
+  activeUniverse?: Universe['id'];
 }) {
   const [selectedTransaction, setSelectedTransaction] =
     React.useState<Transaction | null>(null);
@@ -170,7 +170,7 @@ export default function TransactionTable({
           </TableBody>
         </Table>
       </div>
-      {selectedTransaction && (
+      {selectedTransaction && activeUniverse && (
         <TransactionDetailSheet
           isOpen={isSheetOpen}
           setIsOpen={setSheetOpen}
@@ -183,3 +183,5 @@ export default function TransactionTable({
     </>
   );
 }
+
+    
