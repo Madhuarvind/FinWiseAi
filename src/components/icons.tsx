@@ -35,12 +35,14 @@ import {
   MessageSquareHeart,
   TrendingUp,
   UserCheck,
-  Users,
   Fingerprint,
   Binary,
   ShieldAlert,
   Repeat,
   Gem,
+  Briefcase,
+  Users,
+  Receipt,
 } from 'lucide-react';
 
 export const Logo = () => (
@@ -71,6 +73,9 @@ export const categoryIcons = {
   ShieldAlert,
   Repeat,
   Gem,
+  Briefcase,
+  Users,
+  Receipt,
 };
 
 export const navIcons = {
@@ -84,6 +89,7 @@ export const navIcons = {
   Support: LifeBuoy,
   Bias: Scale,
   Security: ShieldCheck,
+  Trips: Briefcase,
 };
 
 export const getCategoryIcon = (

@@ -18,7 +18,12 @@ export type Transaction = {
   embedding?: Embedding;
   health?: {
     riskTags?: ('pharmacy_frequent' | 'telemedicine_increase' | 'lab_tests_spike')[];
-  }
+  };
+  receipt?: {
+    status: 'matched' | 'refund_detected';
+    receipt_id: string;
+  };
+  tripId?: string;
 };
 
 export type Category = {
@@ -40,3 +45,19 @@ export type Universe = {
   label: string;
   description: string;
 };
+
+export type Trip = {
+    id: string;
+    title: string;
+    startDate: string;
+    endDate: string;
+    estimatedCost: number;
+    status: 'Draft' | 'Confirmed';
+    intent: 'Business' | 'Leisure' | 'Family' | 'Relocation';
+    intentConfidence: number;
+    savings: {
+        goal: number;
+        achieved: number;
+    };
+    transactions: Transaction[];
+}

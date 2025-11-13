@@ -26,7 +26,7 @@ import { generateCounterfactualExplanation } from '@/ai/flows/generate-counterfa
 import { getTokenAttributions } from '@/ai/flows/get-token-attributions';
 import { findSimilarMerchants } from '@/ai/flows/find-similar-merchants';
 import { decodeSpendingIntent } from '@/ai/flows/decode-spending-intent';
-import { Loader2, Wand2, Lightbulb, Repeat, CheckCircle, SearchCode, Cpu, ShieldCheck, AlertTriangle, Network, Eye, Sparkles, MessageSquareHeart, TrendingUp, UserCheck, Bot, Target, Gem } from 'lucide-react';
+import { Loader2, Wand2, Lightbulb, Repeat, CheckCircle, SearchCode, Cpu, ShieldCheck, AlertTriangle, Network, Eye, Sparkles, MessageSquareHeart, TrendingUp, UserCheck, Bot, Target, Gem, Receipt } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '../ui/badge';
@@ -317,6 +317,14 @@ export function TransactionDetailSheet({
                 >
                 {transaction.status}
                 </Badge>} />
+            {transaction.receipt && (
+               <InfoBlock label="Receipt Status" value={
+                <Badge variant={transaction.receipt.status === 'matched' ? 'default' : 'secondary' } className={cn(transaction.receipt.status === 'matched' && "bg-green-100 text-green-900")}>
+                    <Receipt className="mr-1 h-3 w-3" />
+                    {transaction.receipt.status === 'matched' ? 'Receipt Matched' : 'Refund Detected'}
+                </Badge>
+               } />
+            )}
           </div>
 
           <Separator />
