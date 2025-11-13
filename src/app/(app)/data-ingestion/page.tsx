@@ -63,7 +63,7 @@ export default function DataIngestionPage() {
 
     toast({
       title: 'Transaction Added',
-      description: `${description} for $${amount} has been added.`,
+      description: `${description} for ₹${amount} has been added.`,
     });
 
     // Reset form

@@ -168,9 +168,9 @@ export function SpendingByCategoryChart({
                     dominantBaseline="central"
                     className="text-2xl font-bold fill-foreground"
                   >
-                    {activeSegment.value.toLocaleString('en-US', {
+                    {activeSegment.value.toLocaleString('en-IN', {
                       style: 'currency',
-                      currency: 'USD',
+                      currency: 'INR',
                        maximumFractionDigits: 0,
                     })}
                   </text>

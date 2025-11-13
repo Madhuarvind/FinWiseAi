@@ -68,11 +68,11 @@ export function ConfusionMatrix({ data }: ConfusionMatrixProps) {
                     className="text-center"
                     style={{
                       backgroundColor: getCellColor(value, isDiagonal),
-                      color: isDiagonal || value === 0 ? 'hsl(var(--foreground))' : 'hsl(var(--destructive-foreground))',
+                      color: isDiagonal || value > 0 ? 'hsl(var(--foreground))' : 'hsl(var(--muted-foreground))',
                     }}
                   >
                     <div className="text-lg font-bold">{value}</div>
-                    <div className={cn("text-xs", isDiagonal ? 'text-muted-foreground' : 'text-destructive-foreground/80')}>{percentage}%</div>
+                    <div className={cn("text-xs", isDiagonal || value === 0 ? 'text-muted-foreground' : 'text-foreground/80')}>{percentage}%</div>
                   </TableCell>
                 );
               })}

@@ -249,9 +249,9 @@ export function TransactionDetailSheet({
             />
             <InfoBlock
               label="Amount"
-              value={transaction.amount.toLocaleString('en-US', {
+              value={transaction.amount.toLocaleString('en-IN', {
                 style: 'currency',
-                currency: 'USD',
+                currency: 'INR',
               })}
             />
             <InfoBlock

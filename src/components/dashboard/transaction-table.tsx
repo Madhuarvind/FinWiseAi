@@ -125,9 +125,9 @@ export default function TransactionTable({
                   <TableCell
                     className={cn(transaction.amount > 0 ? 'text-green-600' : 'text-foreground')}
                   >
-                    {transaction.amount.toLocaleString('en-US', {
+                    {transaction.amount.toLocaleString('en-IN', {
                       style: 'currency',
-                      currency: 'USD',
+                      currency: 'INR',
                     })}
                   </TableCell>
                   <TableCell>

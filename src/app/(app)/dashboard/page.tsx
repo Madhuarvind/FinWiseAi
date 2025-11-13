@@ -45,9 +45,9 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {Math.abs(totalSpending).toLocaleString('en-US', {
+              {Math.abs(totalSpending).toLocaleString('en-IN', {
                 style: 'currency',
-                currency: 'USD',
+                currency: 'INR',
               })}
             </div>
             <p className="text-xs text-muted-foreground">in the last 30 days</p>
