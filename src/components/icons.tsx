@@ -18,7 +18,8 @@ import {
   Settings,
   LifeBuoy,
   ShieldCheck,
-  Scale
+  Scale,
+  ShieldQuestion,
 } from 'lucide-react';
 
 export const Logo = () => (
