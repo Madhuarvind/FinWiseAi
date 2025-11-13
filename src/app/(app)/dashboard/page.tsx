@@ -11,9 +11,10 @@ import TransactionTable from '@/components/dashboard/transaction-table';
 import { transactions as rawTransactions, categories as allCategories, universes } from '@/lib/data';
 import type { Category, Transaction, Universe } from '@/lib/types';
 import { preprocessTransactions } from '@/lib/preprocessing';
-import { DollarSign, ListChecks, AlertTriangle, Activity } from 'lucide-react';
+import { DollarSign, ListChecks, AlertTriangle, Activity, MessageSquareHeart } from 'lucide-react';
 import { SpendingByCategoryChart } from '@/components/dashboard/spending-by-category-chart';
 import { UniverseSelector } from '@/components/dashboard/universe-selector';
+import { Button } from '@/components/ui/button';
 
 export default function DashboardPage() {
   const [activeUniverseId, setActiveUniverseId] = React.useState<Universe['id']>('banking');
@@ -136,6 +137,19 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+       <Card className="bg-accent/30 border-accent/50">
+          <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
+            <div>
+                <CardTitle className="text-base font-semibold flex items-center gap-2">
+                    <MessageSquareHeart className="h-5 w-5 text-accent-foreground"/>
+                    Emotion-Aware Spending Coach (EASC)
+                </CardTitle>
+                <p className="text-sm text-muted-foreground mt-1">This looks like impulsive nighttime shopping. Would you like me to help track such patterns?</p>
+            </div>
+            <Button variant="ghost" size="sm" className=" -mt-1 -mr-2">Review Patterns</Button>
+          </CardHeader>
+        </Card>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <Card className="col-span-4">

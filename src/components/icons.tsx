@@ -57,6 +57,7 @@ export const categoryIcons = {
   Sparkles,
   Cpu,
   CircleDashed,
+  MessageSquareHeart,
 };
 
 export const navIcons = {
