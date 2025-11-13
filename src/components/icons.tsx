@@ -45,6 +45,8 @@ import {
   Receipt,
   Activity,
   BookText,
+  Eye,
+  SearchCode,
 } from 'lucide-react';
 
 export const Logo = () => (
