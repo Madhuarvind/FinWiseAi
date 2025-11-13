@@ -1,9 +1,9 @@
 'use server';
 
 /**
- * @fileOverview Explains transaction classifications using LLMs, highlighting the key factors and reasoning behind each decision.
+ * @fileOverview Generates a human-like story for a transaction, explaining the context and user's likely behavior.
  *
- * - explainTransactionClassification - A function that handles the transaction classification explanation process.
+ * - explainTransactionClassification - A function that handles the transaction story generation process.
  * - ExplainTransactionClassificationInput - The input type for the explainTransactionClassification function.
  * - ExplainTransactionClassificationOutput - The return type for the explainTransactionClassification function.
  */
@@ -20,7 +20,7 @@ const ExplainTransactionClassificationInputSchema = z.object({
 export type ExplainTransactionClassificationInput = z.infer<typeof ExplainTransactionClassificationInputSchema>;
 
 const ExplainTransactionClassificationOutputSchema = z.object({
-  explanation: z.string().describe('The explanation of why the transaction was classified as it was.'),
+  explanation: z.string().describe('A short, 2-3 line story explaining the transaction in a human-like way.'),
 });
 
 export type ExplainTransactionClassificationOutput = z.infer<typeof ExplainTransactionClassificationOutputSchema>;
@@ -33,12 +33,20 @@ const explainTransactionClassificationPrompt = ai.definePrompt({
   name: 'explainTransactionClassificationPrompt',
   input: {schema: ExplainTransactionClassificationInputSchema},
   output: {schema: ExplainTransactionClassificationOutputSchema},
-  prompt: `You are a Causal AI expert. Your task is to explain why a transaction was classified into a specific category by identifying the causal factors in its description.
+  prompt: `You are an empathetic financial AI companion. Your goal is to explain a transaction to a user in the form of a short, 2-3 line story. Be personal and insightful, as if you understand their habits.
 
-Transaction Description: {{{transactionDescription}}}
-Predicted Category: {{{predictedCategory}}}
+Transaction Description: "{{{transactionDescription}}}"
+Category: "{{{predictedCategory}}}"
 
-Based on the description, explain what specific words or phrases *caused* the model to choose the "{{predictedCategory}}" category. Frame your answer in terms of causal impact, not just correlation. For example, "The presence of 'coffee' strongly caused this to be classified as Food & Drink."`, 
+Use contextual clues. Is it a weekday morning? A weekend? Does the merchant suggest a routine (like coffee) or a one-off purchase?
+
+Example Story 1:
+"This looks like your usual morning coffee run. You seem to make this purchase on most weekday mornings, and the price is consistent with your typical order."
+
+Example Story 2:
+"This appears to be an online retail order. It's similar to your other festive-season purchases, and it looks like you bought it during a major sale event."
+
+Your turn. Generate the transaction story.`, 
 });
 
 const explainTransactionClassificationFlow = ai.defineFlow(

@@ -32,6 +32,7 @@ import {
   Wand2,
   Sparkles,
   CircleDashed,
+  MessageSquareHeart,
 } from 'lucide-react';
 
 export const Logo = () => (
