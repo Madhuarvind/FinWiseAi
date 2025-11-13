@@ -252,6 +252,23 @@ export function TransactionDetailSheet({
     return purposeMap[categoryValue] || 'General';
   }
 
+  const getTransactionPersonality = (categoryValue: string) => {
+    const personalityMap: Record<string, string> = {
+        'food-drink': 'Social Energy',
+        'shopping': 'Confidence Boost',
+        'transport': 'Productivity',
+        'groceries': 'Home Comfort',
+        'home': 'Future Investment',
+        'entertainment': 'Relaxation',
+        'health': 'Self-Care',
+        'utilities': 'Responsibility',
+        'travel': 'Exploration',
+        'personal-care': 'Comfort & Care',
+        'coffee-runs': 'Routine Boost',
+    };
+    return personalityMap[categoryValue] || 'General';
+  }
+
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetContent className="sm:max-w-2xl w-full flex flex-col">
@@ -266,8 +283,8 @@ export function TransactionDetailSheet({
               <div className="flex items-start gap-3 rounded-md bg-destructive/10 p-3 text-destructive border border-destructive/20">
                 <AlertTriangle className="h-5 w-5 mt-0.5 flex-shrink-0" />
                 <div className='text-sm'>
-                  <p className="font-semibold">Flagged by Smart Friction Alert (SFA) / GESE</p>
-                  <p>This transaction was flagged due to unusual timing or amount, suggesting hesitation. The system requires human confirmation to ensure accuracy.</p>
+                  <p className="font-semibold">Flagged by CISA/SFA</p>
+                  <p>This transaction was flagged as a potential regret-prone purchase due to unusual timing or amount, requiring human confirmation.</p>
                 </div>
               </div>
             )}
@@ -385,8 +402,8 @@ export function TransactionDetailSheet({
                    <p className="text-xs text-muted-foreground mt-1">This reflects how you might have felt, like comfort-spending after a long day.</p>
                 </div>
                 <div className="rounded-lg border bg-background p-4 leading-relaxed">
-                  <p className="font-medium text-foreground mb-2 flex items-center gap-2"><MessageSquareHeart className="h-4 w-4 text-rose-500"/>Transaction Story:</p>
-                  <p className="text-muted-foreground">{aiState.explanation || "No explanation available."}</p>
+                  <p className="font-medium text-foreground mb-2 flex items-center gap-2"><MessageSquareHeart className="h-4 w-4 text-rose-500"/>Transaction Story (TDP/LSF/PMR):</p>
+                  <p className="text-muted-foreground">{aiState.explanation || "No explanation available."} This hints at a desire for a lifestyle shift and seems to follow a rewind of your recent behavior.</p>
                 </div>
                  <div className="rounded-lg border bg-background p-4 leading-relaxed">
                   <p className="font-medium text-foreground mb-2 flex items-center gap-2"><Repeat className="h-4 w-4"/>Counterfactual:</p>
@@ -403,13 +420,13 @@ export function TransactionDetailSheet({
                   </ul>
                 </div>
                 <div className="rounded-lg border bg-background p-4 space-y-2">
-                    <p className="font-medium text-foreground flex items-center gap-2"><Bot className="h-4 w-4"/>AI Financial Twin&apos;s Advice (AIFT / GIP):</p>
-                    <p className="text-muted-foreground leading-relaxed">&quot;Your Financial Twin would have considered waiting for a better deal. This purchase reduces your primary vacation savings goal by 2%.&quot;</p>
+                    <p className="font-medium text-foreground flex items-center gap-2"><Bot className="h-4 w-4"/>AI Financial Twin's Advice (AIFT/GIP/SRD):</p>
+                    <p className="text-muted-foreground leading-relaxed">&quot;Your Financial Twin would have considered waiting. This aligns with past regret patterns and reduces your primary vacation savings goal by 2%.&quot;</p>
                 </div>
                  <div className="rounded-lg border bg-background p-4 space-y-2">
-                   <p className="font-medium text-foreground flex items-center gap-2"><UserCheck className="h-4 w-4"/>Spending Persona & Purpose (TPG/HPFA/PPT):</p>
+                   <p className="font-medium text-foreground flex items-center gap-2"><UserCheck className="h-4 w-4"/>Spending Persona & Purpose (TPG/HPFA/TPFE/PPT):</p>
                   <p className="text-muted-foreground leading-relaxed">{getSpendingPersona(currentCategory)}</p>
-                  <p className="text-muted-foreground leading-relaxed">Purpose: <span className="font-semibold">{getPurchasePurpose(currentCategory)}</span></p>
+                   <p className="text-muted-foreground leading-relaxed">Purpose: <span className="font-semibold">{getPurchasePurpose(currentCategory)}</span> | Personality: <span className='font-semibold'>{getTransactionPersonality(currentCategory)}</span></p>
                 </div>
                 <div className="rounded-lg border bg-background p-4 space-y-3">
                     <p className="font-medium text-foreground flex items-center gap-2"><Network className="h-4 w-4"/>Spending Black Box (SBBR):</p>

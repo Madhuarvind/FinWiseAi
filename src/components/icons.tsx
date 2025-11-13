@@ -36,6 +36,8 @@ import {
   TrendingUp,
   UserCheck,
   Users,
+  Fingerprint,
+  Binary,
 } from 'lucide-react';
 
 export const Logo = () => (
@@ -62,6 +64,7 @@ export const categoryIcons = {
   CircleDashed,
   MessageSquareHeart,
   UserCheck,
+  Fingerprint,
 };
 
 export const navIcons = {
@@ -70,6 +73,7 @@ export const navIcons = {
   Taxonomy: BookOpen,
   ModelHub: ToyBrick,
   Analytics: AreaChart,
+  SimulationLab: FlaskConical,
   Settings: Settings,
   Support: LifeBuoy,
   Bias: Scale,

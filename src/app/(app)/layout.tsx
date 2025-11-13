@@ -24,6 +24,7 @@ const navItems = [
   { href: '/taxonomy', label: 'Taxonomy', icon: 'Taxonomy' },
   { href: '/model-hub', label: 'Model Hub', icon: 'ModelHub' },
   { href: '/analytics', label: 'Analytics', icon: 'Analytics' },
+  { href: '/simulation-lab', label: 'Simulation Lab', icon: 'SimulationLab' },
   { href: '/responsible-ai', label: 'Responsible AI', icon: 'Bias' },
   { href: '/security', label: 'Security', icon: 'Security' },
 ];

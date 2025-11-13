@@ -11,7 +11,7 @@ import TransactionTable from '@/components/dashboard/transaction-table';
 import { transactions as rawTransactions, categories as allCategories, universes } from '@/lib/data';
 import type { Category, Transaction, Universe } from '@/lib/types';
 import { preprocessTransactions } from '@/lib/preprocessing';
-import { DollarSign, ListChecks, AlertTriangle, Activity, MessageSquareHeart, BookText } from 'lucide-react';
+import { DollarSign, ListChecks, AlertTriangle, Activity, MessageSquareHeart, BookText, Fingerprint } from 'lucide-react';
 import { SpendingByCategoryChart } from '@/components/dashboard/spending-by-category-chart';
 import { UniverseSelector } from '@/components/dashboard/universe-selector';
 import { Button } from '@/components/ui/button';
@@ -48,9 +48,7 @@ export default function DashboardPage() {
     (sum, t) => (t.amount < 0 ? sum + t.amount : sum),
     0
   );
-  const reviewedTransactions = transactions.filter(
-    (t) => t.status === 'reviewed'
-  ).length;
+  
   const flaggedTransactions = transactions.filter(
     (t) => t.status === 'flagged'
   ).length;
@@ -111,14 +109,14 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Human-in-the-Loop Reviews
+              Financial Mood DNA (FM-DNA)
             </CardTitle>
-            <ListChecks className="h-4 w-4 text-muted-foreground" />
+            <Fingerprint className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{reviewedTransactions}</div>
+            <div className="text-xl font-bold font-mono tracking-widest">C-R-L-S-I</div>
             <p className="text-xs text-muted-foreground">
-              transactions manually verified
+              (Calm, Routine, Low-Risk, Stable, Intentional)
             </p>
           </CardContent>
         </Card>
@@ -156,7 +154,7 @@ export default function DashboardPage() {
                     <div>
                         <CardTitle className="text-base font-semibold flex items-center gap-2">
                             <BookText className="h-5 w-5 text-secondary-foreground"/>
-                            Financial Story of the Day (FSOD)
+                            Financial Journal (AFJW/FSOD)
                         </CardTitle>
                         <p className="text-sm text-muted-foreground mt-1">Today was a disciplined day—one essential purchase and no impulsive buys. A perfect step towards your goals.</p>
                     </div>
