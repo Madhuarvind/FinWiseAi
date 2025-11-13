@@ -71,10 +71,13 @@ export function TransactionDetailSheet({
         });
 
         try {
+          // Simulate a low confidence score to trigger the LLM reranker
+          const confidenceScore = 0.5;
+
           const [categorizationResult, explanationResult, fingerprintResult] = await Promise.all([
             categorizeTransactionWithLLM({
               transactionDescription: transaction.description,
-              confidenceScore: 0.5, // Mock confidence score to trigger LLM
+              confidenceScore: confidenceScore, 
               candidateCategories: categories.map((c) => c.label),
             }),
             explainTransactionClassification({
@@ -82,25 +85,24 @@ export function TransactionDetailSheet({
               predictedCategory:
                 categories.find((c) => c.value === transaction.category)
                   ?.label || transaction.category,
-              confidenceScore: 0.85, // Mock confidence
+              confidenceScore: 0.85, // Mock confidence for explanation
             }),
             generateSemanticFingerprint(transaction.description)
           ]);
+          
+          const suggestedCategoryValue = categories.find(c => c.label === categorizationResult.category)?.value || transaction.category;
 
           setAiState({
             explanation: explanationResult.explanation,
-            suggestedCategory:
-              categories.find(
-                (c) => c.label === categorizationResult.category
-              )?.value || transaction.category,
+            suggestedCategory: suggestedCategoryValue,
             llmReranked: categorizationResult.llmReRanked,
             semanticFingerprint: fingerprintResult.semanticFingerprint,
             isLoading: false,
           });
-          setCurrentCategory(
-            categories.find((c) => c.label === categorizationResult.category)
-              ?.value || transaction.category
-          );
+
+          // Automatically set the category to the one suggested by the AI
+          setCurrentCategory(suggestedCategoryValue);
+
         } catch (error) {
           console.error('AI analysis failed:', error);
           setAiState((s) => ({ ...s, isLoading: false }));

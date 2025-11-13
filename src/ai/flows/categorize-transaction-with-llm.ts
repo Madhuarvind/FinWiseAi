@@ -37,16 +37,18 @@ export async function categorizeTransactionWithLLM(
 const categorizeTransactionPrompt = ai.definePrompt({
   name: 'categorizeTransactionPrompt',
   input: {schema: CategorizeTransactionWithLLMInputSchema},
-  output: {schema: CategorizeTransactionWithLLMOutputSchema},
-  prompt: `You are a financial expert tasked with categorizing transactions.
+  output: {schema: z.object({ category: z.string() })},
+  prompt: `You are a financial expert tasked with categorizing a transaction.
+  Based on the transaction description, choose the most appropriate category from the provided list.
 
-  The following is the transaction description: {{{transactionDescription}}}
-  The following are candidate categories and whether they are likely (the higher the number, the more likely):
+  Transaction Description: {{{transactionDescription}}}
+  
+  Available Categories:
   {{#each candidateCategories}}
   - {{{this}}}
   {{/each}}
 
-  Based on the transaction description and the candidate categories, choose the most appropriate category. Justify your choice briefly. Return the category in the format specified in the output schema.
+  Return only the single best category name.
   `,
 });
 
@@ -57,15 +59,17 @@ const categorizeTransactionWithLLMFlow = ai.defineFlow(
     outputSchema: CategorizeTransactionWithLLMOutputSchema,
   },
   async input => {
-    const confidenceThreshold = 0.75; // Example threshold, can be adjusted
+    const confidenceThreshold = 0.75; // This simulates the threshold for the rule-based/primary AI model.
 
+    // If confidence is low, use the LLM to re-rank/decide.
     if (input.confidenceScore < confidenceThreshold) {
       const {output} = await categorizeTransactionPrompt(input);
       return {
         category: output!.category,
-        llmReRanked: true,
+        llmReRanked: true, // Mark that the LLM was used.
       };
     } else {
+      // If confidence is high, use the top candidate (simulating rule-based engine).
       return {
         category: input.candidateCategories[0] || 'Unknown',
         llmReRanked: false,
