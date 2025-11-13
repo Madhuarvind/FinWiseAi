@@ -63,7 +63,7 @@ export function AuthForm({ mode }: AuthFormProps) {
         title: mode === 'register' ? 'Registration successful!' : 'Login successful!',
         description: 'Redirecting you to the dashboard...',
       });
-      // The redirect will be handled by the layout component
+      // The redirect will be handled by the layout component. Do not push here.
     } catch (error: any) {
       toast({
         variant: 'destructive',

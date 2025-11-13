@@ -48,7 +48,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     if (!isUserLoading && !user) {
       router.push('/login');
     }
-  }, [isUserLoading, user, router]);
+    if (!isUserLoading && user) {
+        if(pathname === '/login' || pathname === '/register') {
+             router.push('/dashboard');
+        }
+    }
+  }, [isUserLoading, user, router, pathname]);
 
   const handleSignOut = async () => {
     await auth.signOut();
