@@ -20,9 +20,11 @@ import { Button } from '@/components/ui/button';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 
 export default function DashboardPage() {
   const [activeUniverseId, setActiveUniverseId] = React.useState<Universe['id']>('banking');
+  const [isJournalOpen, setIsJournalOpen] = React.useState(false);
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -85,10 +87,11 @@ export default function DashboardPage() {
   };
 
   const handleViewJournal = () => {
-    router.push('/journal');
+    setIsJournalOpen(true);
   };
 
   return (
+    <>
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
         <div>
@@ -233,5 +236,24 @@ export default function DashboardPage() {
         </Card>
       </div>
     </div>
+    <Dialog open={isJournalOpen} onOpenChange={setIsJournalOpen}>
+        <DialogContent className="sm:max-w-2xl">
+            <DialogHeader>
+                <DialogTitle>Financial Journal</DialogTitle>
+                <DialogDescription>
+                    An AI-generated narrative of your financial story and habits.
+                </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+                <div className="flex h-96 w-full items-center justify-center rounded-lg border-2 border-dashed">
+                    <p className="text-muted-foreground">Journal entries and visualizations will be displayed here.</p>
+                </div>
+            </div>
+            <DialogFooter>
+                <Button onClick={() => setIsJournalOpen(false)}>Close</Button>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
+    </>
   );
 }
