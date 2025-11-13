@@ -99,13 +99,13 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Transactions Processed
+              Spending Stability (SSM)
             </CardTitle>
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{transactions.length}</div>
-             <p className="text-xs text-muted-foreground">in the last 30 days</p>
+            <div className="text-2xl font-bold text-green-600">Healthy</div>
+             <p className="text-xs text-muted-foreground">Your weekly spending is consistent.</p>
           </CardContent>
         </Card>
         <Card>
@@ -144,11 +144,11 @@ export default function DashboardPage() {
                     <div>
                         <CardTitle className="text-base font-semibold flex items-center gap-2">
                             <MessageSquareHeart className="h-5 w-5 text-accent-foreground"/>
-                            Emotion-Aware Spending Coach (EASC)
+                            Emotional Saving Advisor (ESA)
                         </CardTitle>
-                        <p className="text-sm text-muted-foreground mt-1">This looks like impulsive nighttime shopping. Would you like me to help track such patterns?</p>
+                        <p className="text-sm text-muted-foreground mt-1">This looks like impulsive nighttime shopping. Shall I set a spending lock for this category after 10 PM?</p>
                     </div>
-                    <Button variant="ghost" size="sm" className=" -mt-1 -mr-2">Review Patterns</Button>
+                    <Button variant="ghost" size="sm" className=" -mt-1 -mr-2">Set Lock</Button>
                 </CardHeader>
             </Card>
             <Card className="bg-secondary/30 border-secondary/50">
@@ -156,9 +156,9 @@ export default function DashboardPage() {
                     <div>
                         <CardTitle className="text-base font-semibold flex items-center gap-2">
                             <BookText className="h-5 w-5 text-secondary-foreground"/>
-                            Weekly Expense Story (SWES)
+                            Purchase Reflection AI (PRA)
                         </CardTitle>
-                        <p className="text-sm text-muted-foreground mt-1">This week tells a story of routine coffee runs, disciplined bill payments, and a surprise shopping spree.</p>
+                        <p className="text-sm text-muted-foreground mt-1">This week's story includes routine coffees, a surprise shopping spree, and one purchase that didn't align with your goals.</p>
                     </div>
                     <Button variant="ghost" size="sm" className=" -mt-1 -mr-2">View Full Report</Button>
                 </CardHeader>

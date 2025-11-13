@@ -197,7 +197,7 @@ export function TransactionDetailSheet({
       description: (
         <div className="flex items-center gap-2">
             <CheckCircle className="text-accent"/>
-            <span>Your preference has been recorded. The model will learn from this correction.</span>
+            <span>Your preference has been recorded. The model will learn from this correction via Federated Preference Distillation.</span>
         </div>
       ),
     });
@@ -380,6 +380,7 @@ export function TransactionDetailSheet({
                       <li>Continuing this spend monthly would total <span className='font-semibold'>₹{(Math.abs(transaction.amount) * 12).toFixed(2)}</span> annually.</li>
                       <li>This purchase lowers your 'Shopping' budget health score by <span className='font-semibold'>3%</span> this week.</li>
                       <li>Your next 'Shopping' purchase is predicted in <span className='font-semibold'>~4 days</span> based on your habits.</li>
+                      <li><span className='font-semibold'>(POA):</span> AI suggests this purchase was likely influenced by a <span className='font-semibold'>seasonal discount</span>.</li>
                   </ul>
                 </div>
                  <div className="rounded-lg border bg-background p-4 space-y-2">
