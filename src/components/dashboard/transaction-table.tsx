@@ -49,6 +49,25 @@ export default function TransactionTable({
   const { user } = useUser();
   const firestore = useFirestore();
 
+  // Used to highlight newly added rows
+  const [highlightedRows, setHighlightedRows] = React.useState<Set<string>>(new Set());
+
+  React.useEffect(() => {
+    // When new transactions appear, highlight them and then fade the highlight.
+    const newTransactionIds = new Set(transactions.map(t => t.id));
+    const previousTransactionIds = new Set(transactions.slice(highlightedRows.size).map(t => t.id));
+    const newlyAdded = new Set([...newTransactionIds].filter(id => !previousTransactionIds.has(id)));
+
+    if (newlyAdded.size > 0) {
+      setHighlightedRows(current => new Set([...current, ...newlyAdded]));
+      const timer = setTimeout(() => {
+        setHighlightedRows(new Set());
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [transactions]);
+
+
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
@@ -62,8 +81,15 @@ export default function TransactionTable({
     if (!sortKey || !transactions) return transactions || [];
     
     return [...transactions].sort((a, b) => {
-      const aValue = a[sortKey as keyof Transaction];
-      const bValue = b[sortKey as keyof Transaction];
+      const aValue = a.createdAt || a[sortKey as keyof Transaction];
+      const bValue = b.createdAt || b[sortKey as keyof Transaction];
+
+      if (a.createdAt && b.createdAt) { // Sort by server timestamp if available
+         if (sortDirection === 'asc') {
+           return a.createdAt.seconds - b.createdAt.seconds;
+         }
+         return b.createdAt.seconds - a.createdAt.seconds;
+      }
       
       if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
       if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
@@ -116,14 +142,16 @@ export default function TransactionTable({
               const CategoryIcon = categoryDetails ? getCategoryIcon(categoryDetails.icon) : MoreHorizontal;
 
               const moodColor = categoryDetails?.moodColor || 'bg-muted';
+              const isHighlighted = highlightedRows.has(transaction.id);
 
               return (
                 <TableRow 
                   key={transaction.id} 
                   onClick={() => handleOpenSheet(transaction)} 
                   className={cn(
-                    "cursor-pointer",
-                    transaction.status === 'flagged' && 'bg-destructive/10 hover:bg-destructive/20'
+                    "cursor-pointer transition-colors duration-1000",
+                    transaction.status === 'flagged' && 'bg-destructive/10 hover:bg-destructive/20',
+                    isHighlighted && 'bg-primary/10'
                   )}
                 >
                   <TableCell>{new Date(transaction.date).toLocaleDateString()}</TableCell>
@@ -183,5 +211,3 @@ export default function TransactionTable({
     </>
   );
 }
-
-    

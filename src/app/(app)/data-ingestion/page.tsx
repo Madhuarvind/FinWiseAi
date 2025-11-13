@@ -98,7 +98,7 @@ export default function DataIngestionPage() {
 
     try {
       const collectionRef = collection(firestore, 'users', user.uid, 'transactions');
-      await addDoc(collectionRef, newTransactionData);
+      const docRef = await addDoc(collectionRef, newTransactionData);
 
       toast({
         title: 'Transaction Added',
@@ -425,5 +425,3 @@ export default function DataIngestionPage() {
     </div>
   );
 }
-
-    
