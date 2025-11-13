@@ -37,7 +37,7 @@ const adapters = [
     {
         name: "Q2-Retail-Boost",
         basedOn: "FAI-BERT v1.2.0",
-        description: "LoRA fine-tuning adapter focused on new retail and e-commerce merchants from Q2 2024 feedback.",
+        description: "LoRA adapter for new retail merchants. Dataset curated by the SDMRB using uncertainty and diversity sampling.",
         status: "Active",
         samples: 2350
     },
