@@ -19,5 +19,6 @@ export type Category = {
 };
 
 export type Embedding = {
-  semanticDNA: string;
+  baseSequence: string;
+  interpretationVector: string;
 };

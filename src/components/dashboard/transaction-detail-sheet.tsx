@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import type { Transaction, Category } from '@/lib/types';
+import type { Transaction, Category, Embedding } from '@/lib/types';
 import { categorizeTransactionWithLLM } from '@/ai/flows/categorize-transaction-with-llm';
 import { explainTransactionClassification } from '@/ai/flows/explain-transaction-classification';
 import { generateSemanticDNA } from '@/ai/flows/generate-semantic-dna';
@@ -36,7 +36,7 @@ type AIState = {
   explanation: string;
   suggestedCategory: string;
   llmReRanked: boolean;
-  semanticDNA: string;
+  zile: Embedding | null;
   counterfactual: string;
   attributions: string[];
   similarMerchants: string[];
@@ -87,7 +87,7 @@ export function TransactionDetailSheet({
     explanation: '',
     suggestedCategory: '',
     llmReRanked: false,
-    semanticDNA: '',
+    zile: null,
     counterfactual: '',
     attributions: [],
     similarMerchants: [],
@@ -103,7 +103,7 @@ export function TransactionDetailSheet({
           explanation: '',
           suggestedCategory: '',
           llmReRanked: false,
-          semanticDNA: '',
+          zile: null,
           counterfactual: '',
           attributions: [],
           similarMerchants: [],
@@ -151,7 +151,7 @@ export function TransactionDetailSheet({
             explanation: explanationResult.explanation,
             suggestedCategory: suggestedCategoryValue,
             llmReRanked: categorizationResult.llmReRanked,
-            semanticDNA: dnaResult.semanticDNA,
+            zile: dnaResult,
             counterfactual: counterfactualResult.counterfactualExplanation,
             attributions: attributionsResult.influentialWords,
             similarMerchants: similarityResult.similarMerchants,
@@ -347,9 +347,16 @@ export function TransactionDetailSheet({
                    <p className="font-medium text-foreground flex items-center gap-2"><Cpu className="h-4 w-4"/>Expert Consulted (MoE):</p>
                   <p className="text-muted-foreground leading-relaxed">{getExpertModelForCategory(currentCategory)}</p>
                 </div>
-                <div className="rounded-lg border bg-background p-4 space-y-2">
-                  <p className="font-medium text-foreground flex items-center gap-2"><Network className="h-4 w-4"/>Semantic DNA (S-DNA):</p>
-                  <p className="text-muted-foreground leading-relaxed font-mono text-xs break-all">{aiState.semanticDNA || "Not available."}</p>
+                <div className="rounded-lg border bg-background p-4 space-y-3">
+                    <p className="font-medium text-foreground flex items-center gap-2"><Network className="h-4 w-4"/>Zero Interpretation Loss Embedding (ZILE):</p>
+                    <div>
+                        <p className="text-xs font-semibold text-muted-foreground">Base Sequence (S-DNA)</p>
+                        <p className="text-muted-foreground leading-relaxed font-mono text-xs break-all">{aiState.zile?.baseSequence || "Not available."}</p>
+                    </div>
+                    <div>
+                        <p className="text-xs font-semibold text-muted-foreground">Interpretation Vector</p>
+                        <p className="text-muted-foreground leading-relaxed font-mono text-xs break-all">{aiState.zile?.interpretationVector || "Not available."}</p>
+                    </div>
                 </div>
                  <div className="rounded-lg border bg-background p-4 space-y-2">
                   <p className="font-medium text-foreground flex items-center gap-2"><SearchCode className="h-4 w-4"/>Semantic Similarity (Dense Retrieval):</p>

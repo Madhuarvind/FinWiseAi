@@ -1,12 +1,12 @@
 'use server';
 
 /**
- * @fileOverview Generates a Semantic DNA sequence for a transaction description.
- * This simulates the process of creating a rich, multi-faceted feature vector.
+ * @fileOverview Generates a Zero Interpretation Loss Embedding (ZILE) for a transaction.
+ * This simulates creating a rich feature vector with semantic and interpretive dimensions.
  *
- * - generateSemanticDNA - A function that creates the Semantic DNA.
+ * - generateSemanticDNA - A function that creates the ZILE.
  * - GenerateSemanticDNAInput - The input type (transaction description string).
- * - GenerateSemanticDNAOutput - The output type (an object containing the DNA sequence).
+ * - GenerateSemanticDNAOutput - The output type (an object containing the ZILE components).
  */
 
 import { ai } from '@/ai/genkit';
@@ -16,7 +16,8 @@ const GenerateSemanticDNAInputSchema = z.string().describe('The raw transaction 
 export type GenerateSemanticDNAInput = z.infer<typeof GenerateSemanticDNAInputSchema>;
 
 const GenerateSemanticDNAOutputSchema = z.object({
-  semanticDNA: z.string().describe('A DNA-like encoded vector sequence representing the transaction\'s multi-faceted features.'),
+  baseSequence: z.string().describe('A DNA-like encoded vector sequence representing the transaction\'s core semantic features.'),
+  interpretationVector: z.string().describe('An encoded vector representing explainability signals like SHAP values and category context.'),
 });
 export type GenerateSemanticDNAOutput = z.infer<typeof GenerateSemanticDNAOutputSchema>;
 
@@ -28,17 +29,10 @@ const generateSemanticDNAPrompt = ai.definePrompt({
   name: 'generateSemanticDNAPrompt',
   input: { schema: GenerateSemanticDNAInputSchema },
   output: { schema: GenerateSemanticDNAOutputSchema },
-  prompt: `You are a feature engineering expert creating a "Semantic DNA" for a financial transaction.
-  Encode the transaction description into a DNA-like sequence (using A, T, G, C).
-  The sequence should represent merchant semantics, user behavior, temporal context, and spending signatures.
-  - A-T pairs could represent entity types (e.g., A=Food, T=Restaurant).
-  - G-C pairs could represent spending context (e.g., G=High-Value, C=Recurring).
+  prompt: `You are a feature engineering expert creating a "Zero Interpretation Loss Embedding" (ZILE) for a financial transaction.
   
-  Be creative and consistent. The output should be a single, long string of these "base pairs".
-
-  For example:
-  - "STARBUCKS COFFEE #12345" -> "AT-AT-CG-GC-TA-CG-AT-GC-GC-AT" (Represents: Food, Restaurant, Low-Value, Frequent, etc.)
-  - "AMAZON MKTPLACE PMTS" -> "TA-TA-GC-CG-AT-CG-GC-AT-AT-TA" (Represents: Shopping, Marketplace, High-Value, Infrequent, etc.)
+  1.  **Base Sequence**: Encode the transaction description into a DNA-like sequence (using A, T, G, C) representing core semantics (merchant, temporal context, etc.).
+  2.  **Interpretation Vector**: Create a shorter, encoded vector (using 0s and 1s) representing interpretability signals (e.g., simulated SHAP values, category clusters).
 
   Transaction Description: {{{$input}}}
   `,
@@ -52,10 +46,6 @@ const generateSemanticDNAFlow = ai.defineFlow(
   },
   async (input) => {
     const { output } = await generateSemanticDNAPrompt(input);
-    // In a real implementation, we would return a DNA-like encoded vector sequence.
-    // For now, we simulate this with a string.
-    return {
-      semanticDNA: output!.semanticDNA,
-    };
+    return output!;
   }
 );
