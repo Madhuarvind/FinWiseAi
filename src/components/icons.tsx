@@ -43,6 +43,7 @@ import {
   Briefcase,
   Users,
   Receipt,
+  Activity,
 } from 'lucide-react';
 
 export const Logo = () => (

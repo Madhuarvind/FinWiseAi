@@ -239,7 +239,7 @@ export default function AnalyticsPage() {
             <div>
                 <h2 className="font-headline text-2xl font-semibold tracking-tight text-foreground flex items-center gap-2">
                     <ShieldCheck className="text-primary"/>
-                    Fairness &amp; Bias Report
+                    Fairness & Bias Report
                 </h2>
                 <p className="text-muted-foreground">
                     Auditing model performance across different transaction segments.
