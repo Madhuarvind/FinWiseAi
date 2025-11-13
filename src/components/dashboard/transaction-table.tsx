@@ -15,6 +15,7 @@ import {
   ChevronDown,
   ChevronUp,
   MoreHorizontal,
+  PenSquare,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -144,20 +145,10 @@ export default function TransactionTable({
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" onClick={(e) => e.stopPropagation()}>
-                          <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">More actions</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleOpenSheet(transaction)}>
-                          Explain & Re-categorize
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>Flag as incorrect</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                     <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); handleOpenSheet(transaction); }}>
+                        <PenSquare className="h-4 w-4 mr-2" />
+                        Review
+                      </Button>
                   </TableCell>
                 </TableRow>
               );

@@ -168,11 +168,11 @@ export function TransactionDetailSheet({
     onUpdate({ ...transaction, category: currentCategory, status: 'reviewed' });
     setIsOpen(false);
     toast({
-      title: 'Transaction Updated',
+      title: 'Feedback Submitted',
       description: (
         <div className="flex items-center gap-2">
             <CheckCircle className="text-accent"/>
-            <span>Categorized as <strong>{categories.find((c) => c.value === currentCategory)?.label}</strong>.</span>
+            <span>Transaction marked as <strong>{categories.find((c) => c.value === currentCategory)?.label}</strong>.</span>
         </div>
       ),
     });
@@ -238,10 +238,10 @@ export function TransactionDetailSheet({
 
           <div className="space-y-4">
             <h3 className="font-semibold text-foreground">
-              Categorization
+              Human-in-the-Loop: Review & Correct
             </h3>
             <div className="space-y-2">
-              <Label htmlFor="category-select">Select Category</Label>
+              <Label htmlFor="category-select">Verify Category</Label>
               <Select
                 value={currentCategory}
                 onValueChange={setCurrentCategory}
@@ -315,7 +315,7 @@ export function TransactionDetailSheet({
             {aiState.isLoading ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : null}
-            Confirm Category
+            Confirm & Submit Feedback
           </Button>
         </SheetFooter>
       </SheetContent>
