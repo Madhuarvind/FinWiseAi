@@ -1,8 +1,9 @@
 
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { BrainCircuit, GitMerge, Layers3, Rocket, Wrench, CircleDashed, Bot, FlaskConical } from 'lucide-react';
+import { BrainCircuit, GitMerge, Layers3, Rocket, Wrench, CircleDashed, Bot, FlaskConical, Network } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
 const models = [
@@ -56,6 +57,18 @@ const adapters = [
     }
 ]
 
+const distilledModels = [
+    {
+        name: "FAI-Nano-BERT (Student)",
+        version: "v2.0.1-distilled",
+        description: "A compact student model created via Counterfactual Knowledge Distillation. It captures the causal reasoning of the larger teacher ensemble at a fraction of the size, making it ideal for edge deployment.",
+        type: "Distilled Model (CKD)",
+        status: "Active",
+        icon: Network,
+        teacher: "Full Ensemble v2.0"
+    }
+];
+
 export default function ModelHubPage() {
   return (
     <div className="space-y-8">
@@ -69,7 +82,7 @@ export default function ModelHubPage() {
       </div>
 
        <div className="space-y-6">
-            <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2"><BrainCircuit className="text-primary"/>Core Models</h2>
+            <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2"><BrainCircuit className="text-primary"/>Core Models (Teacher Ensemble)</h2>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {models.map(model => {
                     const Icon = model.icon;
@@ -123,13 +136,44 @@ export default function ModelHubPage() {
                                 <Wrench className="mr-2 h-4 w-4"/>
                                 Fine-Tune Model
                             </Button>
-                            <Button variant="ghost" size="sm" className="ml-auto" disabled={adapter.status === 'Archived'}>
+                            <Button variant="ghost" size="sm" className="ml-auto" disabled={adapter.status !== 'Active'}>
                                 <Rocket className="mr-2 h-4 w-4"/>
                                 Deploy
                             </Button>
                         </CardFooter>
                     </Card>
                  ))}
+            </div>
+       </div>
+       
+        <Separator />
+
+       <div className="space-y-6">
+            <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2"><Network className="text-primary"/>Distilled Models (CKD)</h2>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {distilledModels.map(model => {
+                    const Icon = model.icon;
+                    return (
+                        <Card key={model.name} className="flex flex-col">
+                            <CardHeader>
+                                <CardTitle className="flex items-center justify-between">
+                                    <span className="flex items-center gap-3"><Icon className="h-6 w-6"/> {model.name}</span>
+                                    <Badge variant={model.status === 'Active' ? 'secondary' : 'default'} className="bg-green-100 text-green-900 dark:bg-green-900/30 dark:text-green-300">{model.status}</Badge>
+                                </CardTitle>
+                                <CardDescription>{model.type} - {model.version}</CardDescription>
+                            </CardHeader>
+                            <CardContent className="flex-grow">
+                                <p className="text-sm text-muted-foreground">{model.description}</p>
+                            </CardContent>
+                             <CardFooter>
+                                <Button variant="outline" size="sm">
+                                    <Rocket className="mr-2 h-4 w-4"/>
+                                    Deploy to Edge
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    )
+                })}
             </div>
        </div>
 
