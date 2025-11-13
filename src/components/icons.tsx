@@ -24,6 +24,7 @@ import {
   Bot,
   FlaskConical,
   Network,
+  Cpu,
 } from 'lucide-react';
 
 export const Logo = () => (
