@@ -378,5 +378,3 @@ export function TransactionDetailSheet({
     </Sheet>
   );
 }
-
-    
