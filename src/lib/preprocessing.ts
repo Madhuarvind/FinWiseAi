@@ -10,7 +10,7 @@ import { format, parseISO } from 'date-fns';
  * @returns A cleaned description.
  */
 function normalizeDescription(description: string): string {
-  const stopwords = ['corp', 'inc', 'llc', 'ltd', 'co', 'mktplace', 'pmts'];
+  const stopwords = ['corp', 'inc', 'llc', 'ltd', 'co'];
   const stopwordRegex = new RegExp(`\\b(${stopwords.join('|')})\\b`, 'gi');
 
   return description
