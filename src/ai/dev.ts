@@ -7,3 +7,4 @@ import '@/ai/flows/suggest-transaction-categories.ts';
 import '@/ai/flows/generate-semantic-fingerprint.ts';
 import '@/ai/flows/generate-counterfactual-explanation.ts';
 import '@/ai/flows/get-token-attributions.ts';
+import '@/ai/flows/find-similar-merchants.ts';

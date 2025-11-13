@@ -24,7 +24,8 @@ import { explainTransactionClassification } from '@/ai/flows/explain-transaction
 import { generateSemanticFingerprint } from '@/ai/flows/generate-semantic-fingerprint';
 import { generateCounterfactualExplanation } from '@/ai/flows/generate-counterfactual-explanation';
 import { getTokenAttributions } from '@/ai/flows/get-token-attributions';
-import { Loader2, Wand2, Lightbulb, Fingerprint, Repeat, CheckCircle } from 'lucide-react';
+import { findSimilarMerchants } from '@/ai/flows/find-similar-merchants';
+import { Loader2, Wand2, Lightbulb, Fingerprint, Repeat, CheckCircle, SearchCode } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '../ui/badge';
@@ -37,6 +38,7 @@ type AIState = {
   semanticFingerprint: string;
   counterfactual: string;
   attributions: string[];
+  similarMerchants: string[];
   isLoading: boolean;
 };
 
@@ -86,6 +88,7 @@ export function TransactionDetailSheet({
     semanticFingerprint: '',
     counterfactual: '',
     attributions: [],
+    similarMerchants: [],
     isLoading: true,
   });
   const { toast } = useToast();
@@ -100,13 +103,14 @@ export function TransactionDetailSheet({
           semanticFingerprint: '',
           counterfactual: '',
           attributions: [],
+          similarMerchants: [],
           isLoading: true,
         });
 
         try {
           const confidenceScore = 0.5; // Simulate a low confidence score to trigger the LLM reranker
 
-          const [categorizationResult, explanationResult, fingerprintResult, attributionsResult] = await Promise.all([
+          const [categorizationResult, explanationResult, fingerprintResult, attributionsResult, similarityResult] = await Promise.all([
             categorizeTransactionWithLLM({
               transactionDescription: transaction.description,
               confidenceScore: confidenceScore,
@@ -123,7 +127,8 @@ export function TransactionDetailSheet({
             getTokenAttributions({
                 transactionDescription: transaction.description,
                 category: categories.find((c) => c.value === transaction.category)?.label || transaction.category,
-            })
+            }),
+            findSimilarMerchants({ merchantName: transaction.description }),
           ]);
           
           const suggestedCategoryValue = categories.find(c => c.label === categorizationResult.category)?.value || transaction.category;
@@ -143,6 +148,7 @@ export function TransactionDetailSheet({
             semanticFingerprint: fingerprintResult.semanticFingerprint,
             counterfactual: counterfactualResult.counterfactualExplanation,
             attributions: attributionsResult.influentialWords,
+            similarMerchants: similarityResult.similarMerchants,
             isLoading: false,
           });
 
@@ -302,6 +308,14 @@ export function TransactionDetailSheet({
                 <div className="rounded-lg border bg-background p-4 space-y-2">
                   <p className="font-medium text-foreground flex items-center gap-2"><Fingerprint className="h-4 w-4"/>Semantic Fingerprint:</p>
                   <p className="text-muted-foreground leading-relaxed font-mono text-xs">{aiState.semanticFingerprint || "Not available."}</p>
+                </div>
+                 <div className="rounded-lg border bg-background p-4 space-y-2">
+                  <p className="font-medium text-foreground flex items-center gap-2"><SearchCode className="h-4 w-4"/>Semantic Similarity (Dense Retrieval):</p>
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    {aiState.similarMerchants.map((merchant) => (
+                        <Badge key={merchant} variant="outline" className="font-mono text-xs">{merchant}</Badge>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
