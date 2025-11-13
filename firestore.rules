@@ -1,0 +1,100 @@
+/**
+ * @file Firestore Security Rules
+ * @description This ruleset enforces a strict user-ownership model for user profiles and transactions.
+ *  It also provides basic read access to categories, with write access potentially controlled via an admin role.
+ * @dataStructure
+ *  - /users/{userId}: Stores user profile information, accessible only to the owning user.
+ *  - /categories/{categoryId}: Stores transaction categories, publicly readable, with writes potentially restricted to admins.
+ *  - /users/{userId}/transactions/{transactionId}: Stores transactions for a user, accessible only to the owning user.
+ * @keySecurityDecisions
+ *  - User listing is disallowed.
+ *  - User profiles and transactions are strictly owned by the user ID in the path.
+ *  - Categories are publicly readable, but write access requires further implementation using an admin role.
+ *  - The ruleset prioritizes authorization and does not enforce strict data validation in this prototyping phase.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Checks if the request is made by a signed-in user.
+     * @returns {boolean} True if the user is signed in, false otherwise.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * @description Checks if the authenticated user ID matches the provided user ID.
+     * @param {string} userId The user ID to compare against the authenticated user's ID.
+     * @returns {boolean} True if the user is the owner, false otherwise.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * @description Checks if the authenticated user is the owner of an existing document.
+     * @param {string} userId The user ID to compare against the authenticated user's ID.
+     * @returns {boolean} True if the user is the owner and the resource exists, false otherwise.
+     */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+
+    /**
+     * @description Rules for user profiles.
+     * @path /users/{userId}
+     * @allow (create) - Authenticated user with UID 'user123' can create their profile at /users/user123.
+     * @allow (get) - Authenticated user with UID 'user123' can get their profile at /users/user123.
+     * @allow (update) - Authenticated user with UID 'user123' can update their profile at /users/user123.
+     * @allow (delete) - Authenticated user with UID 'user123' can delete their profile at /users/user123.
+     * @deny (create) - Authenticated user with UID 'user456' cannot create a profile at /users/user123.
+     * @deny (get) - Unauthenticated user cannot get any user profile.
+     * @principle Enforces document ownership for writes and restricts read access to the owner.
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Rules for transaction categories.
+     * @path /categories/{categoryId}
+     * @allow (get) - Any user can read category data.
+     * @deny (create) -  No user can create a category without admin rights.
+     * @deny (update) -  No user can update a category without admin rights.
+     * @deny (delete) -  No user can delete a category without admin rights.
+     * @principle Public read, owner-only writes (currently disabled, requires admin role implementation).
+     */
+    match /categories/{categoryId} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if false; // TODO: Add admin role check
+      allow update: if false; // TODO: Add admin role check
+      allow delete: if false; // TODO: Add admin role check
+    }
+
+    /**
+     * @description Rules for user transactions.
+     * @path /users/{userId}/transactions/{transactionId}
+     * @allow (create) - Authenticated user with UID 'user123' can create a transaction at /users/user123/transactions/tx1.
+     * @allow (get) - Authenticated user with UID 'user123' can get their transaction at /users/user123/transactions/tx1.
+     * @allow (update) - Authenticated user with UID 'user123' can update their transaction at /users/user123/transactions/tx1.
+     * @allow (delete) - Authenticated user with UID 'user123' can delete their transaction at /users/user123/transactions/tx1.
+     * @deny (create) - Authenticated user with UID 'user456' cannot create a transaction at /users/user123/transactions/tx1.
+     * @deny (get) - Unauthenticated user cannot get any transaction.
+     * @principle Enforces document ownership for writes and restricts read access to the owner.
+     */
+    match /users/{userId}/transactions/{transactionId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.userProfileId == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.userProfileId == resource.data.userProfileId;
+      allow delete: if isExistingOwner(userId);
+    }
+  }
+}
