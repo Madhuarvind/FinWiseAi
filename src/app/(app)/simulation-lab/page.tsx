@@ -1,21 +1,22 @@
 'use client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Bot, Binary, Telescope, Loader2 } from 'lucide-react';
+import { Bot, Binary, Telescope, Loader2, Fingerprint, Network } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import * as React from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { generateCounterfactualExplanation } from '@/ai/flows/generate-counterfactual-explanation';
+import { generateSemanticDNA } from '@/ai/flows/generate-semantic-dna';
 
 
 export default function SimulationLabPage() {
     const { toast } = useToast();
-    const [isLoading, setIsLoading] = React.useState(false);
+    const [isLoading, setIsLoading] = React.useState<Record<string, boolean>>({});
     const [dialogContent, setDialogContent] = React.useState<{ title: string; description: string; content: React.ReactNode } | null>(null);
 
-    const handleRunSimulation = async (scenario: 'delivery' | 'subscription' | 'saving') => {
-        setIsLoading(true);
+    const handleRunCounterfactual = async (scenario: 'delivery' | 'subscription') => {
+        setIsLoading(prev => ({ ...prev, counterfactual: true }));
         let input;
         let toastTitle;
 
@@ -36,10 +37,6 @@ export default function SimulationLabPage() {
                     targetCategory: "Savings"
                 };
                 break;
-            default:
-                 toast({ variant: 'destructive', title: "Scenario not implemented" });
-                 setIsLoading(false);
-                 return;
         }
 
         toast({ title: toastTitle, description: "The AI is calculating the counterfactual outcome..." });
@@ -47,21 +44,51 @@ export default function SimulationLabPage() {
         try {
             const result = await generateCounterfactualExplanation(input);
             setDialogContent({
-                title: "Simulation Complete",
+                title: "Counterfactual Simulation Complete",
                 description: `What would need to change for a "${input.originalCategory}" transaction to become "${input.targetCategory}"?`,
                 content: (
                     <div className="mt-4 text-sm">
                         <p className="font-semibold text-primary bg-primary/10 p-3 rounded-lg">
                            {result.counterfactualExplanation}
                         </p>
-                        <p className="text-muted-foreground mt-2">This simulates a behavioral change where spending is re-allocated to a different category, impacting future financial outcomes.</p>
+                        <p className="text-muted-foreground mt-2">This simulates a behavioral change where spending is re-allocated, impacting future financial outcomes.</p>
                     </div>
                 )
             });
         } catch (e) {
             toast({ variant: 'destructive', title: "Simulation Failed", description: "Could not generate counterfactual explanation."});
         } finally {
-            setIsLoading(false);
+            setIsLoading(prev => ({ ...prev, counterfactual: false }));
+        }
+    };
+    
+    const handleRunSBBR = async () => {
+        setIsLoading(prev => ({ ...prev, sbbr: true }));
+        toast({ title: "Spending Black Box Recorder Initialized", description: "Generating a Zero Interpretation Loss Embedding (ZILE)..."});
+        try {
+            const result = await generateSemanticDNA("AMAZON MKTPLACE PMTS");
+            setDialogContent({
+                title: "Semantic DNA Generated",
+                description: "The AI has transformed the transaction into a privacy-preserving 'Semantic DNA' vector, representing its core features for advanced analysis.",
+                content: (
+                    <div className="mt-4 space-y-4 text-sm">
+                        <div>
+                            <p className="font-semibold text-foreground">Base Sequence (S-DNA)</p>
+                            <p className="text-muted-foreground font-mono text-xs break-all bg-secondary/30 p-2 rounded-md">{result.baseSequence}</p>
+                            <p className="text-xs text-muted-foreground mt-1">Represents core semantics like merchant type, temporal context, and user behavior.</p>
+                        </div>
+                        <div>
+                            <p className="font-semibold text-foreground">Interpretation Vector</p>
+                            <p className="text-muted-foreground font-mono text-xs break-all bg-secondary/30 p-2 rounded-md">{result.interpretationVector}</p>
+                            <p className="text-xs text-muted-foreground mt-1">Represents explainability signals like SHAP values and category cluster data.</p>
+                        </div>
+                    </div>
+                )
+            });
+        } catch (e) {
+            toast({ variant: 'destructive', title: "Simulation Failed", description: "Could not generate Semantic DNA."});
+        } finally {
+            setIsLoading(prev => ({ ...prev, sbbr: false }));
         }
     };
 
@@ -110,19 +137,19 @@ export default function SimulationLabPage() {
                 <CardHeader>
                     <CardTitle>Simulate Your Alternate Financial Future</CardTitle>
                     <CardDescription>
-                      Ever wonder "what if?" This tool lets you explore parallel financial worlds by changing key variables in your spending habits.
+                      Ever wonder "what if?" This tool lets you explore parallel financial worlds by changing key variables in your spending habits using counterfactual reasoning.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="space-y-2">
                             <p className="font-medium">Choose a Scenario</p>
-                            <Button variant="outline" className="w-full justify-start text-left" onClick={() => handleRunSimulation('delivery')} disabled={isLoading}>
-                                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Binary className="mr-2 h-4 w-4" />}
+                            <Button variant="outline" className="w-full justify-start text-left" onClick={() => handleRunCounterfactual('delivery')} disabled={isLoading['counterfactual']}>
+                                {isLoading['counterfactual'] ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Binary className="mr-2 h-4 w-4" />}
                                 If I stopped all food delivery...
                             </Button>
-                            <Button variant="secondary" className="w-full justify-start text-left" onClick={() => handleRunSimulation('subscription')} disabled={isLoading}>
-                                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Binary className="mr-2 h-4 w-4" />}
+                            <Button variant="secondary" className="w-full justify-start text-left" onClick={() => handleRunCounterfactual('subscription')} disabled={isLoading['counterfactual']}>
+                                {isLoading['counterfactual'] ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Binary className="mr-2 h-4 w-4" />}
                                 If I cut all subscriptions...
                             </Button>
                             <Button variant="outline" className="w-full justify-start text-left" disabled>If I saved 20% more monthly...</Button>
@@ -138,9 +165,32 @@ export default function SimulationLabPage() {
                 </CardContent>
             </Card>
        </div>
+       
+       <Separator/>
+
+       <div className="space-y-6">
+            <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2"><Network className="text-primary"/>Spending Black Box Recorder (SBBR)</h2>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Generate a Semantic DNA Fingerprint</CardTitle>
+                    <CardDescription>
+                       Simulate the creation of a "Zero Interpretation Loss Embedding" (ZILE) — the rich feature vector the AI uses for complex analysis.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-sm text-muted-foreground">This tool makes the abstract concept of embeddings tangible by visualizing a transaction's "Semantic DNA." This fingerprint is crucial for tasks like similarity search, anomaly detection, and fine-grained classification, representing the core of the AI's understanding.</p>
+                </CardContent>
+                <CardFooter>
+                    <Button onClick={handleRunSBBR} disabled={isLoading['sbbr']}>
+                         {isLoading['sbbr'] ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Fingerprint className="mr-2 h-4 w-4"/>}
+                         {isLoading['sbbr'] ? "Generating..." : "Generate Semantic Fingerprint"}
+                    </Button>
+                </CardFooter>
+            </Card>
+       </div>
     </div>
      <Dialog open={!!dialogContent} onOpenChange={() => setDialogContent(null)}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
             <DialogHeader>
             <DialogTitle>{dialogContent?.title}</DialogTitle>
             <DialogDescription>
