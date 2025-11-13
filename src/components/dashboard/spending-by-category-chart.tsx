@@ -83,6 +83,10 @@ const chartConfig = {
         dark: 'hsl(340 75% 75%)',
     }
   },
+  other: {
+    label: 'Other',
+    color: 'hsl(var(--muted))'
+  }
 };
 
 export function SpendingByCategoryChart({
@@ -95,21 +99,25 @@ export function SpendingByCategoryChart({
   const [activeIndex, setActiveIndex] = React.useState(0);
 
   const spendingByCategory = React.useMemo(() => {
+    if (!transactions) return [];
     const spending: Record<string, number> = {};
     transactions.forEach((t) => {
       if (t.amount < 0) {
-        spending[t.category] = (spending[t.category] || 0) + Math.abs(t.amount);
+        const categoryId = t.category || 'other';
+        spending[categoryId] = (spending[categoryId] || 0) + Math.abs(t.amount);
       }
     });
 
     return Object.entries(spending)
-      .map(([category, value]) => {
-        const categoryInfo = categories.find((c) => c.value === category);
-        const chartInfo = chartConfig[category as keyof typeof chartConfig];
+      .map(([categoryId, value]) => {
+        const categoryInfo = categories.find((c) => c.id === categoryId);
+        const chartInfoKey = categoryId as keyof typeof chartConfig;
+        const chartInfo = chartConfig[chartInfoKey];
+
         return {
-          category,
+          category: categoryId,
           value,
-          label: categoryInfo?.label || 'Unknown',
+          label: categoryInfo?.label || 'Other',
           fill: chartInfo?.color || 'hsl(var(--muted))',
           icon: getCategoryIcon(categoryInfo?.icon || 'ShoppingCart'),
         };

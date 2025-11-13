@@ -27,14 +27,16 @@ import type { Transaction, Category } from '@/lib/types';
 import { TransactionDetailSheet } from './transaction-detail-sheet';
 import { cn } from '@/lib/utils';
 import { getCategoryIcon } from '@/components/icons';
+import { useUser, useFirestore } from '@/firebase';
+import { doc, setDoc } from 'firebase/firestore';
 
 type SortKey = keyof Transaction | '';
 
 export default function TransactionTable({
-  initialTransactions,
+  transactions: initialTransactions,
   categories,
 }: {
-  initialTransactions: Transaction[];
+  transactions: Transaction[];
   categories: Category[];
 }) {
   const [transactions, setTransactions] = React.useState(initialTransactions);
@@ -43,6 +45,12 @@ export default function TransactionTable({
   const [isSheetOpen, setSheetOpen] = React.useState(false);
   const [sortKey, setSortKey] = React.useState<SortKey>('date');
   const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>('desc');
+  const { user } = useUser();
+  const firestore = useFirestore();
+
+  React.useEffect(() => {
+    setTransactions(initialTransactions);
+  }, [initialTransactions]);
 
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
@@ -71,16 +79,16 @@ export default function TransactionTable({
     setSheetOpen(true);
   };
 
-  const handleUpdateTransaction = (updatedTransaction: Transaction) => {
-    setTransactions((prev) =>
-      prev.map((t) =>
-        t.id === updatedTransaction.id ? updatedTransaction : t
-      )
-    );
+  const handleUpdateTransaction = async (updatedTransaction: Transaction) => {
+    if (!user || !firestore) return;
+    const docRef = doc(firestore, 'users', user.uid, 'transactions', updatedTransaction.id);
+    const { id, ...dataToSave } = updatedTransaction;
+    await setDoc(docRef, dataToSave, { merge: true });
+    // Realtime listener will update the state
   };
   
   const getCategoryDetails = (categoryId: string) => {
-    return categories.find((c) => c.value === categoryId);
+    return categories.find((c) => c.id === categoryId);
   }
 
   const SortableHeader = ({ tKey, label }: { tKey: SortKey; label: string }) => (

@@ -16,7 +16,8 @@ import {
   Pencil,
   Trash2,
   Wand2,
-  Loader2
+  Loader2,
+  Database,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -55,7 +56,9 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { suggestTransactionCategories } from '@/ai/flows/suggest-transaction-categories';
 import { Badge } from '../ui/badge';
-import { universes } from '@/lib/data';
+import { initialCategories, universes } from '@/lib/data';
+import { useFirestore } from '@/firebase';
+import { collection, doc, setDoc, deleteDoc, writeBatch } from 'firebase/firestore';
 
 function CategoryForm({
   category,
@@ -63,25 +66,24 @@ function CategoryForm({
   onCancel,
 }: {
   category: Partial<Category> | null;
-  onSave: (category: Category) => void;
+  onSave: (category: Omit<Category, 'id'>) => void;
   onCancel: () => void;
 }) {
   const [label, setLabel] = React.useState(category?.label || '');
   const [icon, setIcon] = React.useState(
     category?.icon || 'ShoppingCart'
   );
+  const [universeIds, setUniverseIds] = React.useState<string[]>(category?.universes || ['banking']);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!label || !icon) return;
 
-    const newCategory: Category = {
-      value:
-        category?.value ||
-        label.toLowerCase().replace(/\s+/g, '-'),
+    const newCategory: Omit<Category, 'id'> = {
       label,
       icon: icon as keyof typeof categoryIcons,
-      universes: category?.universes || ['banking'],
+      universes: universeIds,
+      moodColor: category?.moodColor || 'bg-gray-500'
     };
     onSave(newCategory);
   };
@@ -120,6 +122,27 @@ function CategoryForm({
           </SelectContent>
         </Select>
       </div>
+       <div className="space-y-2">
+        <Label>Universes</Label>
+         <div className='flex flex-wrap gap-2'>
+           {universes.map(u => (
+            <Button
+              key={u.id}
+              type="button"
+              variant={universeIds.includes(u.id) ? 'secondary' : 'outline'}
+              onClick={() => {
+                setUniverseIds(current => 
+                  current.includes(u.id)
+                    ? current.filter(id => id !== u.id)
+                    : [...current, u.id]
+                );
+              }}
+            >
+              {u.label}
+            </Button>
+           ))}
+        </div>
+      </div>
       <DialogFooter>
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancel
@@ -142,10 +165,16 @@ export default function CategoryManager({
     null
   );
   const { toast } = useToast();
+  const firestore = useFirestore();
 
   const [isSuggesting, setIsSuggesting] = React.useState(false);
   const [suggestedCategories, setSuggestedCategories] = React.useState<string[]>([]);
   const [isSuggestionDialogOpen, setSuggestionDialogOpen] = React.useState(false);
+  const [isSeeding, setIsSeeding] = React.useState(false);
+
+  React.useEffect(() => {
+    setCategories(initialCategories);
+  }, [initialCategories]);
 
   const handleAddNew = () => {
     setSelectedCategory(null);
@@ -162,11 +191,10 @@ export default function CategoryManager({
     setDeleteDialogOpen(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (!selectedCategory) return;
-    setCategories(
-      categories.filter((c) => c.value !== selectedCategory.value)
-    );
+    const docRef = doc(firestore, 'categories', selectedCategory.id);
+    await deleteDoc(docRef);
     setDeleteDialogOpen(false);
     setSelectedCategory(null);
     toast({
@@ -175,40 +203,39 @@ export default function CategoryManager({
     });
   };
 
-  const handleSave = (savedCategory: Category) => {
+  const handleSave = async (savedCategoryData: Omit<Category, 'id'>) => {
+    let categoryId: string;
+    let toastTitle: string;
+    let toastDescription: string;
+
     if (selectedCategory) {
       // Update existing category
-      setCategories(
-        categories.map((c) =>
-          c.value === savedCategory.value ? savedCategory : c
-        )
-      );
-      toast({
-        title: 'Category Updated',
-        description: `"${savedCategory.label}" was successfully updated.`,
-      });
+      categoryId = selectedCategory.id;
+      const docRef = doc(firestore, 'categories', categoryId);
+      await setDoc(docRef, savedCategoryData, { merge: true });
+      toastTitle = 'Category Updated';
+      toastDescription = `"${savedCategoryData.label}" was successfully updated.`;
     } else {
       // Add new category
-      setCategories([...categories, savedCategory]);
-      toast({
-        title: 'Category Added',
-        description: `"${savedCategory.label}" was successfully added.`,
-      });
+      categoryId = savedCategoryData.label.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+      const docRef = doc(firestore, 'categories', categoryId);
+      await setDoc(docRef, savedCategoryData);
+      toastTitle = 'Category Added';
+      toastDescription = `"${savedCategoryData.label}" was successfully added.`;
     }
+    
     setFormOpen(false);
     setSelectedCategory(null);
+    toast({ title: toastTitle, description: toastDescription });
   };
   
   const handleSuggestCategories = async () => {
     setIsSuggesting(true);
     setSuggestedCategories([]);
     try {
-        // In a real app, you'd pass descriptions of uncategorized transactions.
-        // For this demo, we'll use a hardcoded prompt.
         const exampleDescriptions = "Based on transactions like 'NETFLIX.COM', 'SPOTIFY AB', and 'DISNEY PLUS', suggest some new categories.";
         const suggestions = await suggestTransactionCategories(exampleDescriptions);
         
-        // Filter out suggestions that already exist
         const existingCategoryLabels = new Set(categories.map(c => c.label.toLowerCase()));
         const newSuggestions = suggestions.filter(s => !existingCategoryLabels.has(s.toLowerCase()));
 
@@ -228,17 +255,41 @@ export default function CategoryManager({
   };
 
   const addSuggestedCategory = (label: string) => {
-    const newCategory: Category = {
+    const newCategoryData: Omit<Category, 'id'> = {
         label,
-        value: label.toLowerCase().replace(/\s+/g, '-'),
-        icon: 'ShoppingCart', // Default icon
+        icon: 'ShoppingCart',
+        universes: ['banking'],
+        moodColor: 'bg-gray-500'
     };
-    setCategories(prev => [...prev, newCategory]);
+    handleSave(newCategoryData);
     setSuggestedCategories(prev => prev.filter(s => s !== label));
-     toast({
-        title: 'Category Added',
-        description: `"${label}" was successfully added.`,
+  }
+
+  const handleSeedData = async () => {
+    setIsSeeding(true);
+    toast({ title: "Seeding Categories...", description: "Populating the database with initial categories." });
+    try {
+      const batch = writeBatch(firestore);
+      const collectionRef = collection(firestore, 'categories');
+      
+      initialCategories.forEach(category => {
+        const docRef = doc(collectionRef, category.value);
+        batch.set(docRef, {
+          label: category.label,
+          icon: category.icon,
+          universes: category.universes,
+          moodColor: category.moodColor
+        });
       });
+
+      await batch.commit();
+      toast({ title: "Seeding Complete!", description: `${initialCategories.length} categories have been added.` });
+    } catch (error) {
+      console.error("Error seeding categories: ", error);
+      toast({ variant: "destructive", title: "Seeding Failed", description: "Could not add initial categories to the database." });
+    } finally {
+      setIsSeeding(false);
+    }
   }
 
   const getUniverseLabel = (universeId: string) => {
@@ -248,6 +299,14 @@ export default function CategoryManager({
   return (
     <div className="space-y-4">
       <div className="flex justify-end gap-2">
+         <Button variant="outline" onClick={handleSeedData} disabled={isSeeding}>
+          {isSeeding ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Database className="mr-2 h-4 w-4" />
+          )}
+          Seed Categories
+        </Button>
         <Button variant="outline" onClick={handleSuggestCategories} disabled={isSuggesting}>
           {isSuggesting ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -266,7 +325,7 @@ export default function CategoryManager({
         <Card className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-muted h-60">
             <CardTitle>No Categories Found</CardTitle>
             <CardDescription className="mt-2">
-                Get started by adding a new category or using the AI suggestion feature.
+                Use the &quot;Seed Categories&quot; button to add the default set, or add them manually.
             </CardDescription>
         </Card>
       ) : (
@@ -274,7 +333,7 @@ export default function CategoryManager({
             {categories.map((category) => {
             const Icon = getCategoryIcon(category.icon);
             return (
-                <Card key={category.value} className="flex flex-col">
+                <Card key={category.id} className="flex flex-col">
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
                         <CardTitle className="text-base font-medium">
                         {category.label}

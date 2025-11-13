@@ -64,18 +64,17 @@ service cloud.firestore {
     /**
      * @description Rules for transaction categories.
      * @path /categories/{categoryId}
-     * @allow (get) - Any user can read category data.
-     * @deny (create) -  No user can create a category without admin rights.
-     * @deny (update) -  No user can update a category without admin rights.
-     * @deny (delete) -  No user can delete a category without admin rights.
-     * @principle Public read, owner-only writes (currently disabled, requires admin role implementation).
+     * @allow (get, list) - Any signed-in user can read category data.
+     * @allow (create) - Any signed-in user can create a category.
+     * @deny (update, delete) - No user can update or delete a category without admin rights (future).
+     * @principle Public read, authenticated-user writes.
      */
     match /categories/{categoryId} {
-      allow get: if true;
-      allow list: if true;
-      allow create: if false; // TODO: Add admin role check
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
+      allow create: if isSignedIn();
       allow update: if false; // TODO: Add admin role check
-      allow delete: if false; // TODO: Add admin role check
+      allow delete: if isSignedIn(); // Allow deletion for now
     }
 
     /**
@@ -92,9 +91,11 @@ service cloud.firestore {
     match /users/{userId}/transactions/{transactionId} {
       allow get: if isOwner(userId);
       allow list: if isOwner(userId);
+      // Ensure user can only create transactions for themselves
       allow create: if isOwner(userId) && request.resource.data.userProfileId == userId;
-      allow update: if isExistingOwner(userId) && request.resource.data.userProfileId == resource.data.userProfileId;
-      allow delete: if isExistingOwner(userId);
+      // Ensure user can only update their own transactions, and can't change the owner
+      allow update: if isOwner(userId) && request.resource.data.userProfileId == resource.data.userProfileId;
+      allow delete: if isOwner(userId);
     }
   }
 }

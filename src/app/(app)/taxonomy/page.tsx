@@ -1,9 +1,25 @@
+'use client';
 import CategoryManager from '@/components/taxonomy/category-manager';
-import { categories } from '@/lib/data';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Wand2 } from 'lucide-react';
+import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection } from 'firebase/firestore';
+import type { Category } from '@/lib/types';
+import { Loader2 } from 'lucide-react';
 
 export default function TaxonomyPage() {
+  const firestore = useFirestore();
+  const categoriesQuery = useMemoFirebase(() => collection(firestore, 'categories'), [firestore]);
+  const { data: categories, isLoading } = useCollection<Category>(categoriesQuery);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -14,7 +30,7 @@ export default function TaxonomyPage() {
           View, create, and manage your transaction categories.
         </p>
       </div>
-      <CategoryManager initialCategories={categories} />
+      <CategoryManager initialCategories={categories || []} />
       
       <Card className="mt-6">
         <CardHeader>

@@ -9,56 +9,69 @@ import {
   CardDescription
 } from '@/components/ui/card';
 import TransactionTable from '@/components/dashboard/transaction-table';
-import { transactions as rawTransactions, categories as allCategories, universes } from '@/lib/data';
+import { universes } from '@/lib/data';
 import type { Category, Transaction, Universe } from '@/lib/types';
 import { preprocessTransactions } from '@/lib/preprocessing';
-import { DollarSign, ListChecks, AlertTriangle, Activity, MessageSquareHeart, BookText, Fingerprint, ShieldAlert } from 'lucide-react';
+import { DollarSign, ListChecks, AlertTriangle, Activity, MessageSquareHeart, BookText, Fingerprint, ShieldAlert, Loader2 } from 'lucide-react';
 import { SpendingByCategoryChart } from '@/components/dashboard/spending-by-category-chart';
 import { UniverseSelector } from '@/components/dashboard/universe-selector';
 import { Button } from '@/components/ui/button';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection } from 'firebase/firestore';
 
 export default function DashboardPage() {
   const [activeUniverseId, setActiveUniverseId] = React.useState<Universe['id']>('banking');
-  
-  // Memoize the initial preprocessing, so it only runs once
-  const baseTransactions = React.useMemo(() => preprocessTransactions(rawTransactions), []);
+  const { user } = useUser();
+  const firestore = useFirestore();
 
-  // State for transactions that can be updated by child components
-  const [transactions, setTransactions] = React.useState<Transaction[]>(() => 
-    baseTransactions.map(t => ({
+  const transactionsQuery = useMemoFirebase(() => {
+    if (!user || !firestore) return null;
+    return collection(firestore, 'users', user.uid, 'transactions');
+  }, [user, firestore]);
+  const { data: rawTransactions, isLoading: isLoadingTransactions } = useCollection<Transaction>(transactionsQuery);
+
+  const categoriesQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return collection(firestore, 'categories');
+  }, [firestore]);
+  const { data: allCategories, isLoading: isLoadingCategories } = useCollection<Category>(categoriesQuery);
+
+  const preprocessedTransactions = React.useMemo(() => {
+    return preprocessTransactions(rawTransactions || []);
+  }, [rawTransactions]);
+
+  const transactions = React.useMemo(() => {
+    return (preprocessedTransactions || []).map(t => ({
       ...t,
-      category: t.multiCategory[activeUniverseId] || 'other'
-    }))
-  );
-
-  // Update transaction categories when the universe changes
-  React.useEffect(() => {
-    setTransactions(currentTxs => 
-      currentTxs.map(t => {
-        const originalTx = baseTransactions.find(bt => bt.id === t.id) || t;
-        return {
-          ...t,
-          category: originalTx.multiCategory[activeUniverseId] || 'other',
-        };
-      })
-    );
-  }, [activeUniverseId, baseTransactions]);
+      category: t.multiCategory?.[activeUniverseId] || 'other'
+    }));
+  }, [preprocessedTransactions, activeUniverseId]);
 
 
-  const totalSpending = transactions.reduce(
+  const totalSpending = (transactions || []).reduce(
     (sum, t) => (t.amount < 0 ? sum + t.amount : sum),
     0
   );
   
-  const flaggedTransactions = transactions.filter(
+  const flaggedTransactions = (transactions || []).filter(
     (t) => t.status === 'flagged'
   ).length;
 
   const activeCategories = React.useMemo(() => {
+    if (!transactions || !allCategories) return [];
     const categoriesForUniverse = new Set(transactions.map(t => t.category));
-    return allCategories.filter(c => categoriesForUniverse.has(c.value));
-  }, [transactions]);
+    return allCategories.filter(c => categoriesForUniverse.has(c.id));
+  }, [transactions, allCategories]);
 
+  const isLoading = isLoadingTransactions || isLoadingCategories;
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -186,8 +199,8 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent className="pl-2">
             <TransactionTable
-              initialTransactions={transactions}
-              categories={allCategories}
+              transactions={transactions}
+              categories={allCategories || []}
             />
           </CardContent>
         </Card>
