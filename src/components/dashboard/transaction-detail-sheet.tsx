@@ -21,7 +21,8 @@ import { Separator } from '@/components/ui/separator';
 import type { Transaction, Category } from '@/lib/types';
 import { categorizeTransactionWithLLM } from '@/ai/flows/categorize-transaction-with-llm';
 import { explainTransactionClassification } from '@/ai/flows/explain-transaction-classification';
-import { Loader2, Wand2, Lightbulb } from 'lucide-react';
+import { generateSemanticFingerprint } from '@/ai/flows/generate-semantic-fingerprint';
+import { Loader2, Wand2, Lightbulb, Fingerprint } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 
@@ -29,6 +30,7 @@ type AIState = {
   explanation: string;
   suggestedCategory: string;
   llmReranked: boolean;
+  semanticFingerprint: string;
   isLoading: boolean;
 };
 
@@ -52,6 +54,7 @@ export function TransactionDetailSheet({
     explanation: '',
     suggestedCategory: '',
     llmReranked: false,
+    semanticFingerprint: '',
     isLoading: true,
   });
   const { toast } = useToast();
@@ -63,11 +66,12 @@ export function TransactionDetailSheet({
           explanation: '',
           suggestedCategory: '',
           llmReranked: false,
+          semanticFingerprint: '',
           isLoading: true,
         });
 
         try {
-          const [categorizationResult, explanationResult] = await Promise.all([
+          const [categorizationResult, explanationResult, fingerprintResult] = await Promise.all([
             categorizeTransactionWithLLM({
               transactionDescription: transaction.description,
               confidenceScore: 0.5, // Mock confidence score to trigger LLM
@@ -80,6 +84,7 @@ export function TransactionDetailSheet({
                   ?.label || transaction.category,
               confidenceScore: 0.85, // Mock confidence
             }),
+            generateSemanticFingerprint(transaction.description)
           ]);
 
           setAiState({
@@ -89,6 +94,7 @@ export function TransactionDetailSheet({
                 (c) => c.label === categorizationResult.category
               )?.value || transaction.category,
             llmReranked: categorizationResult.llmReRanked,
+            semanticFingerprint: fingerprintResult.semanticFingerprint,
             isLoading: false,
           });
           setCurrentCategory(
@@ -196,6 +202,7 @@ export function TransactionDetailSheet({
                 <Skeleton className="h-4 w-1/4" />
                 <Skeleton className="h-16 w-full" />
                 <Skeleton className="h-4 w-1/2" />
+                <Skeleton className="h-10 w-full" />
               </div>
             ) : (
               <div className="space-y-4 text-sm">
@@ -218,6 +225,10 @@ export function TransactionDetailSheet({
                 <div className="rounded-lg border bg-background p-4 leading-relaxed text-muted-foreground">
                   <p className="font-medium text-foreground mb-2">Explanation:</p>
                   {aiState.explanation || "No explanation available."}
+                </div>
+                <div className="rounded-lg border bg-background p-4 space-y-2">
+                  <p className="font-medium text-foreground flex items-center gap-2"><Fingerprint className="h-4 w-4"/>Semantic Fingerprint:</p>
+                  <p className="text-muted-foreground leading-relaxed font-mono text-xs">{aiState.semanticFingerprint || "Not available."}</p>
                 </div>
               </div>
             )}

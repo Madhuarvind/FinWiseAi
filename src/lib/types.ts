@@ -8,10 +8,15 @@ export type Transaction = {
   category: string;
   status: 'pending' | 'reviewed' | 'flagged';
   dayOfWeek?: string; // New field for context enrichment
+  embedding?: Embedding;
 };
 
 export type Category = {
   value: string;
-  label: string;
+  label:string;
   icon: keyof typeof import('@/components/icons').categoryIcons;
+};
+
+export type Embedding = {
+  semanticFingerprint: string;
 };
