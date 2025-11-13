@@ -4,7 +4,7 @@ import { format, parseISO } from 'date-fns';
 /**
  * Normalizes the transaction description.
  * - Converts to lowercase
- * - Removes common stopwords and symbols
+ * - Removes common stopwords, symbols, and numbers
  * - Trims extra whitespace
  * @param description The raw transaction description.
  * @returns A cleaned description.
@@ -16,10 +16,12 @@ function normalizeDescription(description: string): string {
   return description
     .toLowerCase()
     .replace(stopwordRegex, '') // Remove stopwords
-    .replace(/[^a-z0-9\s]/g, '') // Remove non-alphanumeric characters (except spaces)
+    .replace(/[0-9#*]/g, '') // Remove numbers and common symbols
+    .replace(/[^a-z\s]/g, '') // Remove remaining non-alphabetic characters (except spaces)
     .replace(/\s+/g, ' ') // Collapse whitespace
     .trim();
 }
+
 
 /**
  * Enriches transaction data with additional context.

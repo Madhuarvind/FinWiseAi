@@ -17,7 +17,7 @@ export const transactions: Transaction[] = [
   {
     id: 'txn_1',
     date: '2024-07-15',
-    description: 'STARBUCKS COFFEE',
+    description: 'STRBCKS #54321',
     amount: -12.5,
     category: 'food-drink',
     status: 'reviewed',
