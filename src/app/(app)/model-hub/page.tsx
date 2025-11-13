@@ -2,7 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { BrainCircuit, GitMerge, Layers3, Rocket, Wrench, CircleDashed, Bot } from 'lucide-react';
+import { BrainCircuit, GitMerge, Layers3, Rocket, Wrench, CircleDashed, Bot, FlaskConical } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
 const models = [
@@ -123,7 +123,7 @@ export default function ModelHubPage() {
                                 <Wrench className="mr-2 h-4 w-4"/>
                                 Fine-Tune Model
                             </Button>
-                            <Button variant="ghost" size="sm" className="ml-auto" disabled={adapter.status === 'Needs Training'}>
+                            <Button variant="ghost" size="sm" className="ml-auto" disabled={adapter.status === 'Archived'}>
                                 <Rocket className="mr-2 h-4 w-4"/>
                                 Deploy
                             </Button>
@@ -131,6 +131,31 @@ export default function ModelHubPage() {
                     </Card>
                  ))}
             </div>
+       </div>
+
+       <Separator />
+
+       <div className="space-y-6">
+            <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2"><FlaskConical className="text-primary"/>Automated Model Discovery (AutoML / NAS)</h2>
+             <Card>
+                <CardHeader>
+                    <CardTitle>AutoML Workbench</CardTitle>
+                    <CardDescription>
+                        Automatically search for optimal model architectures and hyperparameters using Bayesian optimization, ENAS, and hyperband tuning.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-sm text-muted-foreground">
+                        The system continuously explores the search space to find more accurate and efficient models. Results from successful trials will appear as new candidate adapters.
+                    </p>
+                </CardContent>
+                <CardFooter>
+                    <Button disabled>
+                        <FlaskConical className="mr-2 h-4 w-4"/>
+                        Discover New Architectures
+                    </Button>
+                </CardFooter>
+            </Card>
        </div>
 
     </div>

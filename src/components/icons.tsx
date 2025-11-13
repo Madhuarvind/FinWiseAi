@@ -22,6 +22,7 @@ import {
   Database,
   Utensils,
   Bot,
+  FlaskConical,
 } from 'lucide-react';
 
 export const Logo = () => (
