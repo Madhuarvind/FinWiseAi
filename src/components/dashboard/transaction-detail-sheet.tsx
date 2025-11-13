@@ -26,7 +26,7 @@ import { generateCounterfactualExplanation } from '@/ai/flows/generate-counterfa
 import { getTokenAttributions } from '@/ai/flows/get-token-attributions';
 import { findSimilarMerchants } from '@/ai/flows/find-similar-merchants';
 import { decodeSpendingIntent } from '@/ai/flows/decode-spending-intent';
-import { Loader2, Wand2, Lightbulb, Repeat, CheckCircle, SearchCode, Cpu, ShieldCheck, AlertTriangle, Network, Eye, Sparkles, MessageSquareHeart, TrendingUp } from 'lucide-react';
+import { Loader2, Wand2, Lightbulb, Repeat, CheckCircle, SearchCode, Cpu, ShieldCheck, AlertTriangle, Network, Eye, Sparkles, MessageSquareHeart, TrendingUp, UserCheck } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '../ui/badge';
@@ -193,11 +193,11 @@ export function TransactionDetailSheet({
     onUpdate({ ...transaction, category: currentCategory, status: 'reviewed' });
     setIsOpen(false);
     toast({
-      title: 'Feedback Received (SCOA)',
+      title: 'Feedback Received (SCOA/CTR)',
       description: (
         <div className="flex items-center gap-2">
             <CheckCircle className="text-accent"/>
-            <span>Your preference has been recorded. The model will learn from this correction over time.</span>
+            <span>Your preference has been recorded. The model will learn from this correction.</span>
         </div>
       ),
     });
@@ -218,20 +218,21 @@ export function TransactionDetailSheet({
     </div>
   );
 
-  const getExpertModelForCategory = (categoryValue: string) => {
-    const categoryMap: Record<string, string> = {
-        'food-drink': 'Food & Dining Expert',
-        'shopping': 'Retail & E-commerce Expert',
-        'transport': 'Transportation & Fuel Expert',
-        'groceries': 'Groceries & CPG Expert',
-        'home': 'Home & Utilities Expert',
-        'entertainment': 'Media & Entertainment Expert',
-        'health': 'Health & Wellness Expert',
-        'utilities': 'Home & Utilities Expert',
-        'travel': 'Travel & Lodging Expert',
-        'personal-care': 'Health & Wellness Expert',
+  const getSpendingPersona = (categoryValue: string) => {
+    const personaMap: Record<string, string> = {
+        'food-drink': 'Your "Weekend Foodie" persona was active.',
+        'shopping': 'This reflects your "Savvy Shopper" persona.',
+        'transport': 'Your "Daily Commuter" persona made this trip.',
+        'groceries': 'The "Home Chef" persona is stocking up.',
+        'home': 'Your "Homebody" persona is active here.',
+        'entertainment': 'The "Culture Vulture" persona is enjoying this.',
+        'health': 'This aligns with your "Wellness Seeker" persona.',
+        'utilities': 'A classic "Responsible Adult" moment.',
+        'travel': 'Your "World Explorer" persona is on the move.',
+        'personal-care': 'The "Self-Care Advocate" in you is active.',
+        'coffee-runs': 'Your "Caffeine Enthusiast" persona strikes again!',
     };
-    return categoryMap[categoryValue] || 'General Purpose Expert';
+    return personaMap[categoryValue] || 'Your General Spending Persona was used.';
   }
 
   return (
@@ -373,13 +374,17 @@ export function TransactionDetailSheet({
                   <p className="font-medium text-foreground mb-2 flex items-center gap-2"><Repeat className="h-4 w-4"/>Counterfactual:</p>
                   <p className="text-muted-foreground">{aiState.counterfactual || "Not available."}</p>
                 </div>
-                 <div className="rounded-lg border bg-background p-4 leading-relaxed">
-                  <p className="font-medium text-foreground mb-2 flex items-center gap-2"><TrendingUp className="h-4 w-4 text-green-500"/>Future Impact (FIP):</p>
-                  <p className="text-muted-foreground">Continuing this monthly spend would total ₹{(Math.abs(transaction.amount) * 12).toFixed(2)} annually. This is trending 15% higher than your last 3-month average for this category.</p>
+                 <div className="rounded-lg border bg-background p-4 space-y-2">
+                  <p className="font-medium text-foreground mb-2 flex items-center gap-2"><TrendingUp className="h-4 w-4 text-green-500"/>Future Impact & Health (FIP, ABC, PHHS):</p>
+                   <ul className='list-disc list-inside text-muted-foreground space-y-1'>
+                      <li>Continuing this spend monthly would total <span className='font-semibold'>₹{(Math.abs(transaction.amount) * 12).toFixed(2)}</span> annually.</li>
+                      <li>This purchase lowers your 'Shopping' budget health score by <span className='font-semibold'>3%</span> this week.</li>
+                      <li>Your next 'Shopping' purchase is predicted in <span className='font-semibold'>~4 days</span> based on your habits.</li>
+                  </ul>
                 </div>
                  <div className="rounded-lg border bg-background p-4 space-y-2">
-                   <p className="font-medium text-foreground flex items-center gap-2"><Cpu className="h-4 w-4"/>Expert Consulted (MoE):</p>
-                  <p className="text-muted-foreground leading-relaxed">{getExpertModelForCategory(currentCategory)}</p>
+                   <p className="font-medium text-foreground flex items-center gap-2"><UserCheck className="h-4 w-4"/>Spending Persona (TPG):</p>
+                  <p className="text-muted-foreground leading-relaxed">{getSpendingPersona(currentCategory)}</p>
                 </div>
                 <div className="rounded-lg border bg-background p-4 space-y-3">
                     <p className="font-medium text-foreground flex items-center gap-2"><Network className="h-4 w-4"/>Zero Interpretation Loss Embedding (ZILE):</p>

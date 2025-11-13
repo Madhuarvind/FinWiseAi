@@ -9,31 +9,31 @@ export const universes: Universe[] = [
 
 export const categories: Category[] = [
   // Universe A: Banking
-  { value: 'food-drink', label: 'Food & Drink', icon: 'Utensils', universes: ['banking'] },
-  { value: 'shopping', label: 'Shopping', icon: 'ShoppingCart', universes: ['banking'] },
-  { value: 'transport', label: 'Transport', icon: 'Car', universes: ['banking'] },
-  { value: 'groceries', label: 'Groceries', icon: 'ShoppingBasket', universes: ['banking'] },
-  { value: 'home', label: 'Home', icon: 'Home', universes: ['banking'] },
-  { value: 'entertainment', label: 'Entertainment', icon: 'Ticket', universes: ['banking'] },
-  { value: 'health', label: 'Health', icon: 'HeartPulse', universes: ['banking'] },
-  { value: 'utilities', label: 'Utilities', icon: 'Lightbulb', universes: ['banking'] },
-  { value: 'travel', label: 'Travel', icon: 'Plane', universes: ['banking'] },
-  { value: 'personal-care', label: 'Personal Care', icon: 'Smile', universes: ['banking'] },
+  { value: 'food-drink', label: 'Food & Drink', icon: 'Utensils', universes: ['banking'], moodColor: 'bg-blue-500' },
+  { value: 'shopping', label: 'Shopping', icon: 'ShoppingCart', universes: ['banking'], moodColor: 'bg-red-500' },
+  { value: 'transport', label: 'Transport', icon: 'Car', universes: ['banking'], moodColor: 'bg-green-500' },
+  { value: 'groceries', label: 'Groceries', icon: 'ShoppingBasket', universes: ['banking'], moodColor: 'bg-green-500' },
+  { value: 'home', label: 'Home', icon: 'Home', universes: ['banking'], moodColor: 'bg-green-500' },
+  { value: 'entertainment', label: 'Entertainment', icon: 'Ticket', universes: ['banking'], moodColor: 'bg-purple-500' },
+  { value: 'health', label: 'Health', icon: 'HeartPulse', universes: ['banking'], moodColor: 'bg-green-500' },
+  { value: 'utilities', label: 'Utilities', icon: 'Lightbulb', universes: ['banking'], moodColor: 'bg-green-500' },
+  { value: 'travel', label: 'Travel', icon: 'Plane', universes: ['banking'], moodColor: 'bg-purple-500' },
+  { value: 'personal-care', label: 'Personal Care', icon: 'Smile', universes: ['banking'], moodColor: 'bg-blue-500' },
   
   // Universe B: Behavioral
-  { value: 'routine', label: 'Routine', icon: 'Car', universes: ['behavioral'] },
-  { value: 'impulse', label: 'Impulse', icon: 'Wand2', universes: ['behavioral'] },
-  { value: 'necessity', label: 'Necessity', icon: 'Home', universes: ['behavioral', 'minimalist'] },
-  { value: 'luxury', label: 'Luxury', icon: 'Sparkles', universes: ['behavioral'] },
+  { value: 'routine', label: 'Routine', icon: 'Car', universes: ['behavioral'], moodColor: 'bg-blue-500' },
+  { value: 'impulse', label: 'Impulse', icon: 'Wand2', universes: ['behavioral'], moodColor: 'bg-red-500' },
+  { value: 'necessity', label: 'Necessity', icon: 'Home', universes: ['behavioral', 'minimalist'], moodColor: 'bg-green-500' },
+  { value: 'luxury', label: 'Luxury', icon: 'Sparkles', universes: ['behavioral'], moodColor: 'bg-purple-500' },
 
   // Universe C: Personalized
-  { value: 'tech-gadgets', label: 'Tech Gadgets', icon: 'Cpu', universes: ['personalized'] },
-  { value: 'coffee-runs', label: 'Coffee Runs', icon: 'Utensils', universes: ['personalized'] },
-  { value: 'weekend-dining', label: 'Weekend Dining', icon: 'Utensils', universes: ['personalized'] },
+  { value: 'tech-gadgets', label: 'Tech Gadgets', icon: 'Cpu', universes: ['personalized'], moodColor: 'bg-red-500' },
+  { value: 'coffee-runs', label: 'Coffee Runs', icon: 'Utensils', universes: ['personalized'], moodColor: 'bg-blue-500' },
+  { value: 'weekend-dining', label: 'Weekend Dining', icon: 'Utensils', universes: ['personalized'], moodColor: 'bg-purple-500' },
 
   // Universe D: Minimalist
-  { value: 'wants', label: 'Wants', icon: 'ShoppingCart', universes: ['minimalist'] },
-  { value: 'other', label: 'Other', icon: 'CircleDashed', universes: ['minimalist'] },
+  { value: 'wants', label: 'Wants', icon: 'ShoppingCart', universes: ['minimalist'], moodColor: 'bg-red-500' },
+  { value: 'other', label: 'Other', icon: 'CircleDashed', universes: ['minimalist'], moodColor: 'bg-gray-500' },
 ];
 
 export const transactions: Transaction[] = [

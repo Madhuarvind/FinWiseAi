@@ -34,6 +34,7 @@ import {
   CircleDashed,
   MessageSquareHeart,
   TrendingUp,
+  UserCheck,
 } from 'lucide-react';
 
 export const Logo = () => (
@@ -59,6 +60,7 @@ export const categoryIcons = {
   Cpu,
   CircleDashed,
   MessageSquareHeart,
+  UserCheck,
 };
 
 export const navIcons = {

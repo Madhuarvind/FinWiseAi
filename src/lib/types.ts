@@ -24,6 +24,7 @@ export type Category = {
   icon: keyof typeof import('@/components/icons').categoryIcons;
   // Optional: specify which universes this category belongs to
   universes?: string[]; 
+  moodColor?: string;
 };
 
 export type Embedding = {

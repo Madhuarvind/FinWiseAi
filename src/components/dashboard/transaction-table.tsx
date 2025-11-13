@@ -111,6 +111,8 @@ export default function TransactionTable({
               const categoryDetails = getCategoryDetails(transaction.category);
               const CategoryIcon = categoryDetails ? getCategoryIcon(categoryDetails.icon) : MoreHorizontal;
 
+              const moodColor = categoryDetails?.moodColor || 'bg-muted';
+
               return (
                 <TableRow 
                   key={transaction.id} 
@@ -132,7 +134,9 @@ export default function TransactionTable({
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                        <CategoryIcon className="h-4 w-4 text-muted-foreground" />
+                        <div className={cn("h-4 w-4 rounded-full flex items-center justify-center", moodColor)}>
+                           <CategoryIcon className="h-2.5 w-2.5 text-white" />
+                        </div>
                         {categoryDetails?.label || 'Uncategorized'}
                     </div>
                   </TableCell>
