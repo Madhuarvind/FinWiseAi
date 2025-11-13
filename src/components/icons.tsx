@@ -25,6 +25,7 @@ import {
   FlaskConical,
   Network,
   Cpu,
+  Zap,
 } from 'lucide-react';
 
 export const Logo = () => (

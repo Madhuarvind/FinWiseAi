@@ -3,7 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { BrainCircuit, GitMerge, Layers3, Rocket, Wrench, CircleDashed, Bot, FlaskConical, Network } from 'lucide-react';
+import { BrainCircuit, GitMerge, Layers3, Rocket, Wrench, CircleDashed, Bot, FlaskConical, Network, Zap } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
 const models = [
@@ -113,7 +113,7 @@ export default function ModelHubPage() {
         <Separator />
 
        <div className="space-y-6">
-            <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2"><GitMerge className="text-primary"/>Fine-Tuning Adapters (LoRA)</h2>
+            <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2"><GitMerge className="text-primary"/>Fine-Tuning Adapters (PEFT)</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                  {adapters.map(adapter => (
                     <Card key={adapter.name} className="flex flex-col">
@@ -180,23 +180,23 @@ export default function ModelHubPage() {
        <Separator />
 
        <div className="space-y-6">
-            <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2"><FlaskConical className="text-primary"/>Automated Model Discovery (AutoML / NAS)</h2>
+            <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2"><Zap className="text-primary"/>Automated Model Operations</h2>
              <Card>
                 <CardHeader>
-                    <CardTitle>AutoML Workbench</CardTitle>
+                    <CardTitle>Meta-Active Sampler (MAS) Workbench</CardTitle>
                     <CardDescription>
-                        Automatically search for optimal model architectures and hyperparameters using Bayesian optimization, ENAS, and hyperband tuning.
+                        This module uses a Reinforcement Learning agent to automatically find the most informative transaction samples for labeling, maximizing F1 score improvement while minimizing labeling costs.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <p className="text-sm text-muted-foreground">
-                        The system continuously explores the search space to find more accurate and efficient models. Results from successful trials will appear as new candidate adapters.
+                        The MAS intelligently explores the data distribution to find samples that offer the highest potential for model improvement. This ensures your human-in-the-loop efforts are always focused on the most impactful data.
                     </p>
                 </CardContent>
                 <CardFooter>
                     <Button disabled>
                         <FlaskConical className="mr-2 h-4 w-4"/>
-                        Discover New Architectures
+                        Initiate Sampling Policy Update
                     </Button>
                 </CardFooter>
             </Card>
