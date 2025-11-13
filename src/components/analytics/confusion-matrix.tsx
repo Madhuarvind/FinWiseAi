@@ -72,7 +72,7 @@ export function ConfusionMatrix({ data }: ConfusionMatrixProps) {
                     }}
                   >
                     <div className="text-lg font-bold">{value}</div>
-                    <div className={cn("text-xs", isDiagonal || value === 0 ? 'text-muted-foreground' : 'text-foreground/80')}>{percentage}%</div>
+                    <div className={cn("text-xs", isDiagonal ? 'text-primary-foreground/80' : 'text-foreground/80')}>{percentage}%</div>
                   </TableCell>
                 );
               })}
