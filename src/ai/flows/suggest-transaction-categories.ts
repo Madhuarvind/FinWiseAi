@@ -13,10 +13,10 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-const SuggestTransactionCategoriesInputSchema = z.string().describe('The transaction description to suggest categories for.');
+const SuggestTransactionCategoriesInputSchema = z.string().describe('A prompt containing examples of uncategorized transaction descriptions.');
 export type SuggestTransactionCategoriesInput = z.infer<typeof SuggestTransactionCategoriesInputSchema>;
 
-const SuggestTransactionCategoriesOutputSchema = z.array(z.string()).describe('An array of suggested transaction categories.');
+const SuggestTransactionCategoriesOutputSchema = z.array(z.string()).describe('An array of 2-4 suggested transaction category names based on the examples.');
 export type SuggestTransactionCategoriesOutput = z.infer<typeof SuggestTransactionCategoriesOutputSchema>;
 
 export async function suggestTransactionCategories(input: SuggestTransactionCategoriesInput): Promise<SuggestTransactionCategoriesOutput> {
@@ -27,9 +27,15 @@ const suggestTransactionCategoriesPrompt = ai.definePrompt({
   name: 'suggestTransactionCategoriesPrompt',
   input: {schema: SuggestTransactionCategoriesInputSchema},
   output: {schema: SuggestTransactionCategoriesOutputSchema},
-  prompt: `Suggest transaction categories for the following transaction description. Return a JSON array of strings.
+  prompt: `You are an expert at financial taxonomy creation. Based on the following examples of transactions, suggest 2-4 new, concise category names.
+  
+Do not suggest categories that are too broad (like "Entertainment") if a more specific one (like "Streaming Services") is better.
+Do not suggest categories that are too specific if a broader one is more applicable.
 
-Transaction Description: {{{$input}}}`, // Use {{$input}} to reference the entire input string
+Return a JSON array of strings.
+
+Transaction Examples:
+"{{{$input}}}"`,
 });
 
 const suggestTransactionCategoriesFlow = ai.defineFlow(
