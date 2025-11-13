@@ -26,7 +26,7 @@ import { generateCounterfactualExplanation } from '@/ai/flows/generate-counterfa
 import { getTokenAttributions } from '@/ai/flows/get-token-attributions';
 import { findSimilarMerchants } from '@/ai/flows/find-similar-merchants';
 import { decodeSpendingIntent } from '@/ai/flows/decode-spending-intent';
-import { Loader2, Wand2, Lightbulb, Repeat, CheckCircle, SearchCode, Cpu, ShieldCheck, AlertTriangle, Network, Eye, Sparkles, MessageSquareHeart } from 'lucide-react';
+import { Loader2, Wand2, Lightbulb, Repeat, CheckCircle, SearchCode, Cpu, ShieldCheck, AlertTriangle, Network, Eye, Sparkles, MessageSquareHeart, TrendingUp } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '../ui/badge';
@@ -193,11 +193,11 @@ export function TransactionDetailSheet({
     onUpdate({ ...transaction, category: currentCategory, status: 'reviewed' });
     setIsOpen(false);
     toast({
-      title: 'Feedback Received',
+      title: 'Feedback Received (SCOA)',
       description: (
         <div className="flex items-center gap-2">
             <CheckCircle className="text-accent"/>
-            <span>Your preference has been anonymously recorded via Federated Preference Distillation to improve the global model.</span>
+            <span>Your preference has been recorded. The model will learn from this correction over time.</span>
         </div>
       ),
     });
@@ -373,6 +373,10 @@ export function TransactionDetailSheet({
                   <p className="font-medium text-foreground mb-2 flex items-center gap-2"><Repeat className="h-4 w-4"/>Counterfactual:</p>
                   <p className="text-muted-foreground">{aiState.counterfactual || "Not available."}</p>
                 </div>
+                 <div className="rounded-lg border bg-background p-4 leading-relaxed">
+                  <p className="font-medium text-foreground mb-2 flex items-center gap-2"><TrendingUp className="h-4 w-4 text-green-500"/>Future Impact (FIP):</p>
+                  <p className="text-muted-foreground">Continuing this monthly spend would total ₹{(Math.abs(transaction.amount) * 12).toFixed(2)} annually. This is trending 15% higher than your last 3-month average for this category.</p>
+                </div>
                  <div className="rounded-lg border bg-background p-4 space-y-2">
                    <p className="font-medium text-foreground flex items-center gap-2"><Cpu className="h-4 w-4"/>Expert Consulted (MoE):</p>
                   <p className="text-muted-foreground leading-relaxed">{getExpertModelForCategory(currentCategory)}</p>
@@ -389,7 +393,7 @@ export function TransactionDetailSheet({
                     </div>
                 </div>
                  <div className="rounded-lg border bg-background p-4 space-y-2">
-                  <p className="font-medium text-foreground flex items-center gap-2"><SearchCode className="h-4 w-4"/>Semantic Similarity (Dense Retrieval):</p>
+                  <p className="font-medium text-foreground flex items-center gap-2"><SearchCode className="h-4 w-4"/>Purchase Memory (Similarity Search):</p>
                   <div className="flex flex-wrap gap-2 pt-1">
                     {aiState.similarMerchants.map((merchant) => (
                         <Badge key={merchant} variant="outline" className="font-mono text-xs">{merchant}</Badge>

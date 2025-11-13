@@ -33,6 +33,7 @@ import {
   Sparkles,
   CircleDashed,
   MessageSquareHeart,
+  TrendingUp,
 } from 'lucide-react';
 
 export const Logo = () => (
