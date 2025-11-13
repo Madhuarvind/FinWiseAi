@@ -6,12 +6,13 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
+  CardDescription
 } from '@/components/ui/card';
 import TransactionTable from '@/components/dashboard/transaction-table';
 import { transactions as rawTransactions, categories as allCategories, universes } from '@/lib/data';
 import type { Category, Transaction, Universe } from '@/lib/types';
 import { preprocessTransactions } from '@/lib/preprocessing';
-import { DollarSign, ListChecks, AlertTriangle, Activity, MessageSquareHeart, BookText, Fingerprint } from 'lucide-react';
+import { DollarSign, ListChecks, AlertTriangle, Activity, MessageSquareHeart, BookText, Fingerprint, ShieldAlert } from 'lucide-react';
 import { SpendingByCategoryChart } from '@/components/dashboard/spending-by-category-chart';
 import { UniverseSelector } from '@/components/dashboard/universe-selector';
 import { Button } from '@/components/ui/button';
@@ -118,6 +119,7 @@ export default function DashboardPage() {
             <p className="text-xs text-muted-foreground">
               (Calm, Routine, Low-Risk, Stable, Intentional)
             </p>
+             <p className="text-xs text-muted-foreground mt-1">Lore: Evolving from 'Saver' to 'Smart Investor'.</p>
           </CardContent>
         </Card>
         <Card>
@@ -136,30 +138,43 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-       <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
+       <div className='grid grid-cols-1 lg:grid-cols-3 gap-4'>
             <Card className="bg-accent/30 border-accent/50">
-                <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
-                    <div>
-                        <CardTitle className="text-base font-semibold flex items-center gap-2">
-                            <MessageSquareHeart className="h-5 w-5 text-accent-foreground"/>
-                            Emotional Saving Advisor (ESA)
-                        </CardTitle>
-                        <p className="text-sm text-muted-foreground mt-1">This looks like impulsive nighttime shopping. Shall I set a spending lock for this category after 10 PM?</p>
-                    </div>
-                    <Button variant="ghost" size="sm" className=" -mt-1 -mr-2">Pause Category</Button>
+                <CardHeader>
+                    <CardTitle className="text-base font-semibold flex items-center gap-2">
+                        <MessageSquareHeart className="h-5 w-5 text-accent-foreground"/>
+                        Emotional Saving Advisor (ESA)
+                    </CardTitle>
+                    <CardDescription>This looks like impulsive nighttime shopping. Shall I set a spending lock for this category after 10 PM?</CardDescription>
                 </CardHeader>
+                <CardContent className='pt-0'>
+                     <Button variant="secondary" size="sm">Activate Emotion-Safe Mode</Button>
+                </CardContent>
             </Card>
             <Card className="bg-secondary/30 border-secondary/50">
-                <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
-                    <div>
-                        <CardTitle className="text-base font-semibold flex items-center gap-2">
-                            <BookText className="h-5 w-5 text-secondary-foreground"/>
-                            Financial Journal (AFJW/FSOD)
-                        </CardTitle>
-                        <p className="text-sm text-muted-foreground mt-1">Today was a disciplined day—one essential purchase and no impulsive buys. A perfect step towards your goals.</p>
-                    </div>
-                    <Button variant="ghost" size="sm" className=" -mt-1 -mr-2">View Full Report</Button>
+                <CardHeader>
+                    <CardTitle className="text-base font-semibold flex items-center gap-2">
+                        <BookText className="h-5 w-5 text-secondary-foreground"/>
+                        Financial Journal (AFJW/FSOD)
+                    </CardTitle>
+                     <CardDescription>Today was a disciplined day—one essential purchase and no impulsive buys. A perfect step towards your goals.</CardDescription>
                 </CardHeader>
+                 <CardContent className='pt-0'>
+                    <Button variant="secondary" size="sm">View Full Journal</Button>
+                </CardContent>
+            </Card>
+            <Card className="border-destructive/50">
+                 <CardHeader>
+                    <CardTitle className="text-base font-semibold flex items-center gap-2">
+                        <ShieldAlert className="h-5 w-5 text-destructive"/>
+                        Habit Vulnerability Radar (HVR)
+                    </CardTitle>
+                    <CardDescription>AI has identified your spending weak points to help you stay on track.</CardDescription>
+                 </CardHeader>
+                  <CardContent className="text-sm pt-0">
+                    <p><span className='font-semibold'>Vulnerable Hours:</span> 10 PM - 2 AM</p>
+                    <p><span className='font-semibold'>Vulnerable Category:</span> Online Shopping</p>
+                 </CardContent>
             </Card>
         </div>
 

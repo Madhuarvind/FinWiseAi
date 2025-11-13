@@ -1,12 +1,13 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ConfusionMatrix } from '@/components/analytics/confusion-matrix';
-import { Frown, Gauge, Target, Scale, ShieldCheck, TrendingUp, HelpCircle, Bot, Users } from 'lucide-react';
+import { Frown, Gauge, Target, Scale, ShieldCheck, TrendingUp, HelpCircle, Bot, Users, Activity, Fingerprint, Repeat } from 'lucide-react';
 import { PerCategoryAccuracyChart } from '@/components/analytics/per-category-accuracy-chart';
 import { FairnessMetricsTable } from '@/components/analytics/fairness-metrics-table';
 import { MerchantDriftChart } from '@/components/analytics/merchant-drift-chart';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { SocialSpendingChart } from '@/components/analytics/social-spending-chart';
+import { Separator } from '@/components/ui/separator';
 
 const performanceData = {
   macroF1: 0.92,
@@ -147,6 +148,42 @@ export default function AnalyticsPage() {
                 <PerCategoryAccuracyChart data={performanceData.perCategoryAccuracy} />
             </CardContent>
         </Card>
+      </div>
+      
+      <div className="space-y-6">
+          <Separator />
+           <div>
+            <h2 className="font-headline text-2xl font-semibold tracking-tight text-foreground">
+                Behavioral Dynamics
+            </h2>
+            <p className="text-muted-foreground">
+                Analyzing the underlying patterns and adaptability of your financial habits.
+            </p>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+             <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><Repeat />Fractal Pattern Analysis (BFA)</CardTitle>
+                     <CardDescription>
+                        Identifies repeating micro-patterns and recursive loops in your spending behavior.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="text-sm text-muted-foreground">
+                    <p>A recurring fractal pattern detected in "Online Shopping" suggests a loop of browse-purchase-return that repeats every 4-6 days. This indicates a potential for habit optimization.</p>
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><Activity />Spending Neuroplasticity (SNT)</CardTitle>
+                     <CardDescription>
+                        Tracks how flexible and adaptive your spending habits are over time.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="text-sm text-muted-foreground">
+                    <p>Your current neuroplasticity score is <span className="font-semibold text-foreground">Moderately High</span>, indicating good adaptability. Your habits are flexible enough to respond to budget changes without significant friction.</p>
+                </CardContent>
+            </Card>
+        </div>
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

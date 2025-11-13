@@ -26,7 +26,7 @@ import { generateCounterfactualExplanation } from '@/ai/flows/generate-counterfa
 import { getTokenAttributions } from '@/ai/flows/get-token-attributions';
 import { findSimilarMerchants } from '@/ai/flows/find-similar-merchants';
 import { decodeSpendingIntent } from '@/ai/flows/decode-spending-intent';
-import { Loader2, Wand2, Lightbulb, Repeat, CheckCircle, SearchCode, Cpu, ShieldCheck, AlertTriangle, Network, Eye, Sparkles, MessageSquareHeart, TrendingUp, UserCheck, Bot, Target } from 'lucide-react';
+import { Loader2, Wand2, Lightbulb, Repeat, CheckCircle, SearchCode, Cpu, ShieldCheck, AlertTriangle, Network, Eye, Sparkles, MessageSquareHeart, TrendingUp, UserCheck, Bot, Target, Gem } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '../ui/badge';
@@ -254,17 +254,17 @@ export function TransactionDetailSheet({
 
   const getTransactionPersonality = (categoryValue: string) => {
     const personalityMap: Record<string, string> = {
-        'food-drink': 'Social Energy',
-        'shopping': 'Confidence Boost',
-        'transport': 'Productivity',
-        'groceries': 'Home Comfort',
-        'home': 'Future Investment',
-        'entertainment': 'Relaxation',
-        'health': 'Self-Care',
-        'utilities': 'Responsibility',
-        'travel': 'Exploration',
-        'personal-care': 'Comfort & Care',
-        'coffee-runs': 'Routine Boost',
+        'food-drink': 'Social Energy (The Explorer)',
+        'shopping': 'Confidence Boost (The Creator)',
+        'transport': 'Productivity (The Sage)',
+        'groceries': 'Home Comfort (The Caregiver)',
+        'home': 'Future Investment (The Ruler)',
+        'entertainment': 'Relaxation (The Jester)',
+        'health': 'Self-Care (The Innocent)',
+        'utilities': 'Responsibility (The Sage)',
+        'travel': 'Exploration (The Explorer)',
+        'personal-care': 'Comfort & Care (The Caregiver)',
+        'coffee-runs': 'Routine Boost (The Everyman)',
     };
     return personalityMap[categoryValue] || 'General';
   }
@@ -278,7 +278,7 @@ export function TransactionDetailSheet({
             Review, re-categorize, and understand the AI's reasoning.
           </SheetDescription>
         </SheetHeader>
-        <div className="flex-1 space-y-6 overflow-y-auto pr-2">
+        <div className="flex-1 space-y-6 overflow-y-auto pr-6 pl-2 -ml-2">
            {transaction.status === 'flagged' && (
               <div className="flex items-start gap-3 rounded-md bg-destructive/10 p-3 text-destructive border border-destructive/20">
                 <AlertTriangle className="h-5 w-5 mt-0.5 flex-shrink-0" />
@@ -365,9 +365,14 @@ export function TransactionDetailSheet({
           </div>
 
           <div className="space-y-4">
-            <h3 className="font-semibold text-foreground flex items-center gap-2">
-              <Lightbulb className="text-primary" /> Explainable AI (XAI) Analysis
-            </h3>
+            <div className='flex justify-between items-center'>
+              <h3 className="font-semibold text-foreground flex items-center gap-2">
+                <Lightbulb className="text-primary" /> Explainable AI (XAI) Analysis
+              </h3>
+              <div className='flex items-center gap-1.5 text-sm font-semibold'>
+                <Gem className="h-4 w-4 text-primary"/> Karma: <span className='text-primary'>+3</span>
+              </div>
+            </div>
             {aiState.isLoading ? (
               <div className="space-y-4 pt-2">
                 <Skeleton className="h-4 w-1/4" />
@@ -402,12 +407,13 @@ export function TransactionDetailSheet({
                    <p className="text-xs text-muted-foreground mt-1">This reflects how you might have felt, like comfort-spending after a long day.</p>
                 </div>
                 <div className="rounded-lg border bg-background p-4 leading-relaxed">
-                  <p className="font-medium text-foreground mb-2 flex items-center gap-2"><MessageSquareHeart className="h-4 w-4 text-rose-500"/>Transaction Story (TDP/LSF/PMR):</p>
-                  <p className="text-muted-foreground">{aiState.explanation || "No explanation available."} This hints at a desire for a lifestyle shift and seems to follow a rewind of your recent behavior.</p>
+                  <p className="font-medium text-foreground mb-2 flex items-center gap-2"><MessageSquareHeart className="h-4 w-4 text-rose-500"/>Transaction Story (TCL, LSF, PMR, NFRE):</p>
+                  <p className="text-muted-foreground">"I am a transaction that was born at 8:15 AM. My creation seems to align with your 'reward-seeking' neuro-financial state, often seen after a productive start to your day. This aligns with your recent trend towards a more fitness-focused lifestyle (a predicted Life-Moment shift)."</p>
                 </div>
                  <div className="rounded-lg border bg-background p-4 leading-relaxed">
-                  <p className="font-medium text-foreground mb-2 flex items-center gap-2"><Repeat className="h-4 w-4"/>Counterfactual:</p>
-                  <p className="text-muted-foreground">{aiState.counterfactual || "Not available."}</p>
+                  <p className="font-medium text-foreground mb-2 flex items-center gap-2"><Repeat className="h-4 w-4"/>Counterfactual & Ethical Shadow (RCSL):</p>
+                  <p className="text-muted-foreground"><span className='font-semibold'>Counterfactual: </span>{aiState.counterfactual || "Not available."}</p>
+                  <p className="text-muted-foreground mt-1"><span className='font-semibold'>Ethical Shadow: </span>Reusing an existing item could have saved this amount for a future goal.</p>
                 </div>
                  <div className="rounded-lg border bg-background p-4 space-y-2">
                   <p className="font-medium text-foreground mb-2 flex items-center gap-2"><TrendingUp className="h-4 w-4 text-green-500"/>Future Impact & Health (FIP, ABC, PHHS):</p>
@@ -420,13 +426,13 @@ export function TransactionDetailSheet({
                   </ul>
                 </div>
                 <div className="rounded-lg border bg-background p-4 space-y-2">
-                    <p className="font-medium text-foreground flex items-center gap-2"><Bot className="h-4 w-4"/>AI Financial Twin's Advice (AIFT/GIP/SRD):</p>
-                    <p className="text-muted-foreground leading-relaxed">&quot;Your Financial Twin would have considered waiting. This aligns with past regret patterns and reduces your primary vacation savings goal by 2%.&quot;</p>
+                    <p className="font-medium text-foreground flex items-center gap-2"><Bot className="h-4 w-4"/>AI Financial Twin's Advice (AIFT/GIP/SRD/FMIS):</p>
+                    <p className="text-muted-foreground leading-relaxed">&quot;Your 'Saver-Self' would have skipped this, as it matches past regret patterns. However, your 'Lifestyle-Enhancer' identity approved it. This choice reduces your primary vacation savings goal by 2%.&quot;</p>
                 </div>
                  <div className="rounded-lg border bg-background p-4 space-y-2">
-                   <p className="font-medium text-foreground flex items-center gap-2"><UserCheck className="h-4 w-4"/>Spending Persona & Purpose (TPG/HPFA/TPFE/PPT):</p>
-                  <p className="text-muted-foreground leading-relaxed">{getSpendingPersona(currentCategory)}</p>
-                   <p className="text-muted-foreground leading-relaxed">Purpose: <span className="font-semibold">{getPurchasePurpose(currentCategory)}</span> | Personality: <span className='font-semibold'>{getTransactionPersonality(currentCategory)}</span></p>
+                   <p className="font-medium text-foreground flex items-center gap-2"><UserCheck className="h-4 w-4"/>Spending Persona & Philosophy (TPG/HPFA/TPFE/TPI/TAM):</p>
+                   <p className="text-muted-foreground leading-relaxed">{getSpendingPersona(currentCategory)}</p>
+                   <p className="text-muted-foreground leading-relaxed">Purpose: <span className="font-semibold">{getPurchasePurpose(currentCategory)}</span> | Personality: <span className='font-semibold'>{getTransactionPersonality(currentCategory)}</span> (Hedonic)</p>
                 </div>
                 <div className="rounded-lg border bg-background p-4 space-y-3">
                     <p className="font-medium text-foreground flex items-center gap-2"><Network className="h-4 w-4"/>Spending Black Box (SBBR):</p>

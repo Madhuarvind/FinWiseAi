@@ -38,6 +38,9 @@ import {
   Users,
   Fingerprint,
   Binary,
+  ShieldAlert,
+  Repeat,
+  Gem,
 } from 'lucide-react';
 
 export const Logo = () => (
@@ -65,6 +68,9 @@ export const categoryIcons = {
   MessageSquareHeart,
   UserCheck,
   Fingerprint,
+  ShieldAlert,
+  Repeat,
+  Gem,
 };
 
 export const navIcons = {
