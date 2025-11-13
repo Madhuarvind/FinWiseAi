@@ -21,6 +21,7 @@ import {
   ShieldQuestion,
   Database,
   Utensils,
+  Bot,
 } from 'lucide-react';
 
 export const Logo = () => (

@@ -2,7 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { BrainCircuit, GitMerge, Layers3, Rocket, Wrench, CircleDashed } from 'lucide-react';
+import { BrainCircuit, GitMerge, Layers3, Rocket, Wrench, CircleDashed, Bot } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
 const models = [
@@ -18,9 +18,17 @@ const models = [
         name: "FT-Transformer",
         version: "v0.9.5",
         description: "Custom transformer architecture for merchant patterns, metadata, and embeddings.",
-        type: "Classifier",
+        type: "Classifier Head",
         status: "Active",
         icon: Layers3,
+    },
+    {
+        name: "LightGBM",
+        version: "v2.1.0",
+        description: "Gradient-boosted model that classifies transactions using engineered features like amount, time-of-day, and location.",
+        type: "Classifier Head",
+        status: "Active",
+        icon: Bot,
     }
 ];
 
@@ -62,7 +70,7 @@ export default function ModelHubPage() {
 
        <div className="space-y-6">
             <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2"><BrainCircuit className="text-primary"/>Core Models</h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {models.map(model => {
                     const Icon = model.icon;
                     return (
