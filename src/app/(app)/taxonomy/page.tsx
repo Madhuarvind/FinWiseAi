@@ -2,7 +2,7 @@
 import CategoryManager from '@/components/taxonomy/category-manager';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection } from 'firebase/firestore';
+import { collection, doc, setDoc } from 'firebase/firestore';
 import type { Category } from '@/lib/types';
 import { Loader2, Wand2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -53,9 +53,6 @@ export default function TaxonomyPage() {
   };
 
   const addSuggestedCategory = (label: string) => {
-    // This logic would ideally be shared with CategoryManager, but for simplicity
-    // we are just creating a minimal new category to be saved.
-    // In a real app, you'd likely open the full category form with the label pre-filled.
     if (!firestore) return;
     const newCategoryData: Omit<Category, 'id'> = {
         label,
