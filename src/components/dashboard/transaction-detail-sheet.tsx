@@ -185,7 +185,7 @@ export function TransactionDetailSheet({
       description: (
         <div className="flex items-center gap-2">
             <CheckCircle className="text-accent"/>
-            <span>Your preference has been anonymously recorded to improve the model.</span>
+            <span>Your preference has been anonymously recorded via Federated Preference Distillation to improve the global model.</span>
         </div>
       ),
     });
@@ -301,7 +301,9 @@ export function TransactionDetailSheet({
                   <div className="flex items-start gap-3 rounded-md bg-secondary p-3 text-secondary-foreground">
                     <Wand2 className="h-5 w-5 mt-0.5 flex-shrink-0" />
                     <p className="text-sm">
-                      Our LLM re-ranked this and suggests{' '}
+                      Initial confidence was low. The{' '}
+                      <span className="font-semibold">Confidence-Conditioned Pipeline</span>{' '}
+                      routed this to the LLM, which suggests{' '}
                       <span className="font-semibold">
                         {
                           categories.find(
@@ -309,7 +311,7 @@ export function TransactionDetailSheet({
                           )?.label
                         }
                       </span>
-                      . The category has been pre-selected for you.
+                      .
                     </p>
                   </div>
                 )}

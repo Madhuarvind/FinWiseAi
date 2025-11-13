@@ -1,6 +1,7 @@
-import { ShieldCheck, Scale } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { ShieldCheck, Scale, FileText, Bot } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { FairnessMetricsTable } from "@/components/analytics/fairness-metrics-table";
+import { Badge } from "@/components/ui/badge";
 
 const fairnessData = {
     groups: ['Low Value (<$20)', 'Med Value ($20-$100)', 'High Value (>$100)'],
@@ -49,6 +50,30 @@ export default function ResponsibleAIPage() {
             </CardHeader>
             <CardContent>
                 <FairnessMetricsTable data={fairnessData} />
+            </CardContent>
+         </Card>
+
+         <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2"><FileText />Policy-Aware Category Planner (PACP)</CardTitle>
+                 <CardDescription>
+                    A compliance layer that identifies and enforces rules for regulatory-sensitive categories.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="flex items-center justify-between rounded-lg border bg-background p-4">
+                    <div className="flex items-center gap-3">
+                        <Bot className="h-6 w-6 text-primary"/>
+                        <div>
+                            <p className="font-semibold">PACP Status</p>
+                            <p className="text-sm text-muted-foreground">Actively monitoring all classifications.</p>
+                        </div>
+                    </div>
+                    <Badge variant="secondary" className="bg-green-100 text-green-900 dark:bg-green-900/30 dark:text-green-300">Active</Badge>
+                </div>
+                <div className="mt-4 text-sm text-muted-foreground">
+                    <p>The PACP engine automatically tags sensitive categories (e.g., Gambling, Loans) and can trigger specific actions, such as data redaction or escalation for manual review, ensuring compliance with regional and internal policies.</p>
+                </div>
             </CardContent>
          </Card>
     </div>
