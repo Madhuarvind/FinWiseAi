@@ -20,7 +20,7 @@ import { Settings, Bell } from 'lucide-react';
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: 'Dashboard' },
-  { href: '/data-manager', label: 'Data Manager', icon: 'DataManager' },
+  { href: '/data-ingestion', label: 'Data Ingestion', icon: 'DataManager' },
   { href: '/taxonomy', label: 'Taxonomy', icon: 'Taxonomy' },
   { href: '/model-hub', label: 'Model Hub', icon: 'ModelHub' },
   { href: '/analytics', label: 'Analytics', icon: 'Analytics' },
