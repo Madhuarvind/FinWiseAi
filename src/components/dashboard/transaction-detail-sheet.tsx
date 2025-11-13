@@ -181,11 +181,11 @@ export function TransactionDetailSheet({
     onUpdate({ ...transaction, category: currentCategory, status: 'reviewed' });
     setIsOpen(false);
     toast({
-      title: 'Feedback Submitted',
+      title: 'Feedback Received',
       description: (
         <div className="flex items-center gap-2">
             <CheckCircle className="text-accent"/>
-            <span>Transaction marked as <strong>{categories.find((c) => c.value === currentCategory)?.label}</strong>.</span>
+            <span>Your preference has been anonymously recorded to improve the model.</span>
         </div>
       ),
     });
