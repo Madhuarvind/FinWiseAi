@@ -112,7 +112,14 @@ export default function TransactionTable({
               const CategoryIcon = categoryDetails ? getCategoryIcon(categoryDetails.icon) : MoreHorizontal;
 
               return (
-                <TableRow key={transaction.id} onClick={() => handleOpenSheet(transaction)} className="cursor-pointer">
+                <TableRow 
+                  key={transaction.id} 
+                  onClick={() => handleOpenSheet(transaction)} 
+                  className={cn(
+                    "cursor-pointer",
+                    transaction.status === 'flagged' && 'bg-destructive/10 hover:bg-destructive/20'
+                  )}
+                >
                   <TableCell>{new Date(transaction.date).toLocaleDateString()}</TableCell>
                   <TableCell className="font-medium">{transaction.description}</TableCell>
                   <TableCell

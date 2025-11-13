@@ -25,7 +25,7 @@ import { generateSemanticFingerprint } from '@/ai/flows/generate-semantic-finger
 import { generateCounterfactualExplanation } from '@/ai/flows/generate-counterfactual-explanation';
 import { getTokenAttributions } from '@/ai/flows/get-token-attributions';
 import { findSimilarMerchants } from '@/ai/flows/find-similar-merchants';
-import { Loader2, Wand2, Lightbulb, Fingerprint, Repeat, CheckCircle, SearchCode, Cpu, ShieldQuestion } from 'lucide-react';
+import { Loader2, Wand2, Lightbulb, Fingerprint, Repeat, CheckCircle, SearchCode, Cpu, ShieldQuestion, AlertTriangle } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '../ui/badge';
@@ -150,7 +150,7 @@ export function TransactionDetailSheet({
           setAiState({
             explanation: explanationResult.explanation,
             suggestedCategory: suggestedCategoryValue,
-            llmReranked: categorizationResult.llmReRanked,
+            llmReRanked: categorizationResult.llmReRanked,
             semanticFingerprint: fingerprintResult.semanticFingerprint,
             counterfactual: counterfactualResult.counterfactualExplanation,
             attributions: attributionsResult.influentialWords,
@@ -232,6 +232,15 @@ export function TransactionDetailSheet({
           </SheetDescription>
         </SheetHeader>
         <div className="flex-1 space-y-6 overflow-y-auto pr-2">
+           {transaction.status === 'flagged' && (
+              <div className="flex items-start gap-3 rounded-md bg-destructive/10 p-3 text-destructive border border-destructive/20">
+                <AlertTriangle className="h-5 w-5 mt-0.5 flex-shrink-0" />
+                <div className='text-sm'>
+                  <p className="font-semibold">This transaction was flagged for review.</p>
+                  <p>The system detected a potential miscategorization or a sensitive transaction type that requires human confirmation.</p>
+                </div>
+              </div>
+            )}
           <div className="grid grid-cols-2 gap-4 rounded-lg border bg-card p-4">
             <InfoBlock 
               label="Description" 
