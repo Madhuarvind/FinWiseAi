@@ -99,7 +99,7 @@ export function SpendingByCategoryChart({
   const [activeIndex, setActiveIndex] = React.useState(0);
 
   const spendingByCategory = React.useMemo(() => {
-    if (!transactions || !categories) return [];
+    if (!transactions || !categories || categories.length === 0) return [];
     const spending: Record<string, number> = {};
     transactions.forEach((t) => {
       if (t.amount < 0) {
@@ -163,6 +163,9 @@ export function SpendingByCategoryChart({
             <Sector {...props} cornerRadius={4} />
           )}
         >
+          {spendingByCategory.map((entry, index) => (
+            <Sector key={`sector-${index}`} fill={entry.fill} />
+          ))}
           <Label
             content={() => {
               if (!activeSegment) return null;
@@ -183,9 +186,16 @@ export function SpendingByCategoryChart({
                        maximumFractionDigits: 0,
                     })}
                   </text>
-                  <foreignObject x="45%" y="55%" width="32" height="24">
-                     <Icon className="w-5 h-5 text-muted-foreground" />
-                  </foreignObject>
+                   <text
+                    x="50%"
+                    y="50%"
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    className="text-sm fill-muted-foreground"
+                    dy="1.2em"
+                  >
+                    {activeSegment.label}
+                  </text>
                 </g>
               );
             }}

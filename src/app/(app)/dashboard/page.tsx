@@ -230,7 +230,7 @@ export default function DashboardPage() {
           <CardContent>
             <SpendingByCategoryChart
               transactions={transactions}
-              categories={activeCategories}
+              categories={allCategories || []}
             />
           </CardContent>
         </Card>
