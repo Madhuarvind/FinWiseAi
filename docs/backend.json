@@ -85,7 +85,7 @@
       "properties": {
         "id": {
           "type": "string",
-          "description": "Unique identifier for the user profile."
+          "description": "Unique identifier for the user profile, matching the Firebase Auth UID."
         },
         "email": {
           "type": "string",
@@ -108,73 +108,33 @@
       },
       "required": [
         "id",
-        "email",
-        "firstName",
-        "lastName"
+        "email"
       ]
     }
   },
   "auth": {
     "providers": [
-      "password",
-      "anonymous"
+      "password"
     ]
   },
   "firestore": {
-    "structure": [
-      {
-        "path": "/users/{userId}",
-        "definition": {
-          "entityName": "UserProfile",
-          "schema": {
-            "$ref": "#/backend/entities/UserProfile"
-          },
-          "description": "Stores user profile information.  The `userId` parameter is the Firebase Authentication UID. Ensures path-based ownership: only the authenticated user can read/write their own profile.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The Firebase Authentication UID of the user."
-            }
-          ]
-        }
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/entities/UserProfile"
       },
-      {
-        "path": "/categories/{categoryId}",
-        "definition": {
-          "entityName": "Category",
-          "schema": {
-            "$ref": "#/backend/entities/Category"
-          },
-          "description": "Stores transaction categories. Access control for creation/modification may rely on a separate admin role collection.",
-          "params": [
-            {
-              "name": "categoryId",
-              "description": "Unique identifier for the category."
-            }
-          ]
-        }
+      "description": "Stores user profile information. The `userId` parameter is the Firebase Authentication UID."
+    },
+    "/categories/{categoryId}": {
+      "schema": {
+        "$ref": "#/entities/Category"
       },
-      {
-        "path": "/users/{userId}/transactions/{transactionId}",
-        "definition": {
-          "entityName": "Transaction",
-          "schema": {
-            "$ref": "#/backend/entities/Transaction"
-          },
-          "description": "Stores financial transactions for a specific user.  Path-based ownership ensures only the authenticated user can read/write their own transactions.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The Firebase Authentication UID of the user."
-            },
-            {
-              "name": "transactionId",
-              "description": "Unique identifier for the transaction."
-            }
-          ]
-        }
-      }
-    ],
-    "reasoning": "The Firestore structure is designed to be secure, scalable, and debuggable, adhering to the principles of Authorization Independence, Clarity of Intent, DBAC (Database-Based Access Control), QAPs (Rules are not Filters), and Invariants.  The design primarily focuses on user-owned data with clear hierarchical paths and denormalization where necessary for authorization.\n\n1.  **UserProfile:** User profiles are stored under `/users/{userId}`. This path-based ownership ensures that only the authenticated user can access their profile data. This structure supports secure `list` operations because access is controlled at the collection level based on the authenticated user's ID.\n\n2.  **Categories:** Categories are stored globally under `/categories/{categoryId}`.  While the current structure doesn't explicitly define who can create/modify categories, one could create a separate `/roles_admin/{userId}` collection to grant admin privileges. Rules would check for the existence of a document in this collection.\n\n3.  **Transactions:** Transactions are stored under `/users/{userId}/transactions/{transactionId}`. This path-based ownership ensures that only the authenticated user can access their transaction data. This is a `User 1:N Transaction` relationship. No denormalization is required here, as ownership is enforced by the path.\n\n**Authorization Independence (CRITICAL):**  Authorization independence is achieved primarily through path-based ownership for user-specific data. Since each user's data is stored under their own `userId`, security rules can be written to validate that `request.auth.uid == userId` without needing to `get()` any parent documents. For categories, existence in `/roles_admin` would grant admin access.\n\n**QAPs (Rules are not Filters):** The structure supports secure `list` operations because access is controlled at the collection level based on the authenticated user's ID.  Rules can securely `list` the `/users/{userId}/transactions` collection, ensuring that only the authenticated user's transactions are returned without needing to filter based on document data.\n"
+      "description": "Stores transaction categories. Access control for creation/modification may rely on a separate admin role collection."
+    },
+    "/users/{userId}/transactions/{transactionId}": {
+      "schema": {
+        "$ref": "#/entities/Transaction"
+      },
+      "description": "Stores financial transactions for a specific user. Path-based ownership ensures only the authenticated user can read/write their own transactions."
+    }
   }
 }

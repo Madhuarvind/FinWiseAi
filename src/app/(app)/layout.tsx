@@ -1,5 +1,6 @@
 'use client';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import * as React from 'react';
 import {
   SidebarProvider,
   Sidebar,
@@ -16,7 +17,10 @@ import {
 import { Logo, navIcons } from '@/components/icons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Settings, Bell } from 'lucide-react';
+import { Settings, Bell, LogOut, LogIn } from 'lucide-react';
+import { useAuth, useUser } from '@/firebase';
+import { Skeleton } from '@/components/ui/skeleton';
+import Link from 'next/link';
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: 'Dashboard' },
@@ -36,6 +40,28 @@ const settingsNav = [
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, isUserLoading } = useUser();
+  const auth = useAuth();
+
+  React.useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.push('/login');
+    }
+  }, [isUserLoading, user, router]);
+
+  const handleSignOut = async () => {
+    await auth.signOut();
+    router.push('/login');
+  };
+
+  if (isUserLoading || !user) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <Skeleton className="h-full w-full" />
+      </div>
+    );
+  }
 
   return (
     <SidebarProvider>
@@ -88,15 +114,20 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     })}
             </SidebarMenu>
             <SidebarSeparator />
-             <div className="flex items-center gap-3 p-2">
-                <Avatar className="h-9 w-9">
-                <AvatarImage src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="@user" />
-                <AvatarFallback>U</AvatarFallback>
-                </Avatar>
-                <div className="flex flex-col text-sm group-data-[collapsible=icon]:hidden">
-                    <span className="font-medium text-sidebar-foreground">User</span>
-                    <span className="text-muted-foreground text-xs">user@finwise.ai</span>
+             <div className="flex items-center justify-between p-2">
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-9 w-9">
+                  <AvatarImage src={user.photoURL || `https://i.pravatar.cc/150?u=${user.uid}`} alt={user.email || 'user'} />
+                  <AvatarFallback>{user.email?.[0].toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col text-sm group-data-[collapsible=icon]:hidden">
+                      <span className="font-medium text-sidebar-foreground truncate">{user.displayName || 'User'}</span>
+                      <span className="text-muted-foreground text-xs truncate">{user.email}</span>
+                  </div>
                 </div>
+                 <Button variant="ghost" size="icon" onClick={handleSignOut} className="group-data-[collapsible=icon]:hidden h-8 w-8">
+                    <LogOut />
+                </Button>
             </div>
         </SidebarFooter>
       </Sidebar>

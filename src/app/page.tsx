@@ -21,7 +21,7 @@ export default function WelcomePage() {
           </p>
           <div className="mt-8">
             <Button size="lg" asChild>
-              <Link href="/dashboard">
+              <Link href="/register">
                 Get Started <ArrowRight className="ml-2" />
               </Link>
             </Button>
