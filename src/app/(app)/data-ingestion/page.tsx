@@ -39,6 +39,7 @@ export default function DataIngestionPage() {
   const [categoryToGenerate, setCategoryToGenerate] = React.useState<string>(categories[0]?.value || '');
 
   React.useEffect(() => {
+    // This ensures that `new Date()` is only called on the client side, after hydration.
     setDate(new Date());
   }, []);
 
