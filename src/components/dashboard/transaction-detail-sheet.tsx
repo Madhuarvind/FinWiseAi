@@ -297,7 +297,7 @@ export function TransactionDetailSheet({
                 </SelectContent>
               </Select>
             </div>
-             {aiState.llmReranked && !aiState.isLoading && (
+             {aiState.llmReRanked && !aiState.isLoading && (
                   <div className="flex items-start gap-3 rounded-md bg-secondary p-3 text-secondary-foreground">
                     <Wand2 className="h-5 w-5 mt-0.5 flex-shrink-0" />
                     <p className="text-sm">
