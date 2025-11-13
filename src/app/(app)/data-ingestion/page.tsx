@@ -1,13 +1,13 @@
 'use client';
 
 import * as React from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, PlusCircle, UploadCloud, FileText, CheckCircle, XCircle, Wand2, Loader2 } from 'lucide-react';
+import { CalendarIcon, PlusCircle, UploadCloud, FileText, CheckCircle, XCircle, Wand2, Loader2, TextSearch } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -16,9 +16,11 @@ import TransactionTable from '@/components/dashboard/transaction-table';
 import { preprocessTransactions } from '@/lib/preprocessing';
 import { Separator } from '@/components/ui/separator';
 import { synthesizeTransactions } from '@/ai/flows/synthesize-transactions';
+import { reconstructTransactionFromText } from '@/ai/flows/reconstruct-transaction-from-text';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, addDoc, serverTimestamp, doc, setDoc, writeBatch } from 'firebase/firestore';
+import { Textarea } from '@/components/ui/textarea';
 
 export default function DataIngestionPage() {
   const { toast } = useToast();
@@ -61,6 +63,10 @@ export default function DataIngestionPage() {
   const [isGenerating, setIsGenerating] = React.useState(false);
   const [numToGenerate, setNumToGenerate] = React.useState("5");
   const [categoryToGenerate, setCategoryToGenerate] = React.useState<string>('');
+
+  // Unstructured text state
+  const [unstructuredText, setUnstructuredText] = React.useState('');
+  const [isReconstructing, setIsReconstructing] = React.useState(false);
 
   React.useEffect(() => {
     if (categories && categories.length > 0 && !categoryToGenerate) {
@@ -258,6 +264,28 @@ export default function DataIngestionPage() {
       setIsGenerating(false);
     }
   };
+  
+  const handleReconstruct = async () => {
+    if (!unstructuredText) {
+        toast({ variant: 'destructive', title: 'No text provided', description: 'Please paste some text for the AI to reconstruct.' });
+        return;
+    }
+    setIsReconstructing(true);
+    toast({ title: 'AI is reconstructing...', description: 'Parsing the text to extract transaction details.' });
+    try {
+        const result = await reconstructTransactionFromText(unstructuredText);
+        setDescription(result.description);
+        setAmount(result.amount.toString());
+        setDate(new Date(result.date));
+        setUnstructuredText('');
+        toast({ title: 'Reconstruction Complete!', description: 'The form has been populated with the extracted details.' });
+    } catch (error) {
+        console.error("Reconstruction failed:", error);
+        toast({ variant: 'destructive', title: 'Reconstruction Failed', description: 'The AI could not understand the provided text.' });
+    } finally {
+        setIsReconstructing(false);
+    }
+  };
 
 
   return (
@@ -271,135 +299,154 @@ export default function DataIngestionPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className='lg:col-span-2'>
-          <CardHeader>
-            <CardTitle>Manual & Bulk Data Entry</CardTitle>
-          </CardHeader>
-          <CardContent className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-              <div className='space-y-4'>
-                 <h3 className="font-medium">Add a Single Transaction</h3>
-                <form onSubmit={handleAddTransaction} className="space-y-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className='space-y-6'>
+          <Card>
+            <CardHeader>
+              <CardTitle>Manual Transaction Entry</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleAddTransaction} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="description">Merchant Description</Label>
+                  <Input
+                    id="description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="e.g., Amazon Marketplace"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="description">Merchant Description</Label>
+                    <Label htmlFor="amount">Amount</Label>
                     <Input
-                      id="description"
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      placeholder="e.g., Amazon Marketplace"
+                      id="amount"
+                      type="number"
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                      placeholder="e.g., 42.99"
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="amount">Amount</Label>
-                      <Input
-                        id="amount"
-                        type="number"
-                        value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
-                        placeholder="e.g., 42.99"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="date">Date</Label>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant={"outline"}
-                            className={cn("w-full justify-start text-left font-normal", !date && "text-muted-foreground")}
-                          >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {date ? format(date, "PPP") : <span>Pick a date</span>}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0">
-                          <Calendar mode="single" selected={date} onSelect={setDate} initialFocus />
-                        </PopoverContent>
-                      </Popover>
-                    </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="date">Date</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant={"outline"}
+                          className={cn("w-full justify-start text-left font-normal", !date && "text-muted-foreground")}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {date ? format(date, "PPP") : <span>Pick a date</span>}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0">
+                        <Calendar mode="single" selected={date} onSelect={setDate} initialFocus />
+                      </PopoverContent>
+                    </Popover>
                   </div>
-                  <div className="flex justify-end">
-                    <Button type="submit">
-                      <PlusCircle className="mr-2 h-4 w-4" />
-                      Add Transaction
-                    </Button>
-                  </div>
-                </form>
-              </div>
-
-             <div className='space-y-4'>
-                <h3 className="font-medium">Bulk Import from File</h3>
-                <div className='flex flex-col gap-4 justify-center items-center text-center p-8 border-2 border-dashed border-muted rounded-lg h-[255px]'>
-                  {!file ? (
-                      <>
-                          <div className='p-3 bg-muted rounded-full'>
-                              <UploadCloud className="h-8 w-8 text-muted-foreground" />
-                          </div>
-                          <p className="text-muted-foreground mb-2">Drag & drop a file or click to select</p>
-                          <Button variant="outline" asChild>
-                              <Label htmlFor="file-upload" className='cursor-pointer'>
-                                Select File
-                              </Label>
-                          </Button>
-                          <Input id="file-upload" type="file" className="sr-only" onChange={handleFileChange} accept=".csv,.json" />
-                      </>
-                  ) : (
-                      <div className='flex flex-col items-center gap-3'>
-                          <FileText className='h-10 w-10 text-primary'/>
-                          <p className='font-medium'>{file.name}</p>
-                          <p className='text-xs text-muted-foreground'>Ready for ingestion</p>
-                      </div>
-                  )}
                 </div>
-                 <Button onClick={handleFileUpload} disabled={!file || isProcessing} className="w-full">
-                  {isProcessing ? 'Processing...' : 'Upload and Ingest'}
-                </Button>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>Synthetic Data Generation</CardTitle>
-            <CardDescription>
-              Use the AI to create realistic sample data to bootstrap your models.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="category-select">Category</Label>
-                <Select value={categoryToGenerate} onValueChange={setCategoryToGenerate} disabled={!categories || categories.length === 0}>
-                  <SelectTrigger id="category-select">
-                    <SelectValue placeholder="Select a category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories?.map(cat => (
-                      <SelectItem key={cat.id} value={cat.id}>{cat.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                 {(!categories || categories.length === 0) && <p className='text-xs text-muted-foreground'>Please add a category on the Taxonomy page first.</p>}
-              </div>
-               <div className="space-y-2">
-                <Label htmlFor="num-to-generate">Number to Generate</Label>
-                <Input
-                  id="num-to-generate"
-                  type="number"
-                  value={numToGenerate}
-                  onChange={(e) => setNumToGenerate(e.target.value)}
-                  placeholder="e.g., 10"
+                <div className="flex justify-end">
+                  <Button type="submit">
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Add Transaction
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+           <Card>
+            <CardHeader>
+              <CardTitle>AI-Powered Reconstruction</CardTitle>
+              <CardDescription>
+                Paste unstructured text (e.g., an email receipt, a text message) and let the AI parse it.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Textarea
+                    placeholder="e.g., 'Just paid back John for pizza, it was ₹450 on July 23rd'"
+                    value={unstructuredText}
+                    onChange={(e) => setUnstructuredText(e.target.value)}
+                    rows={4}
                 />
-              </div>
-            </div>
-          </CardContent>
-           <CardContent>
-             <Button onClick={handleGenerateSyntheticData} disabled={isGenerating || !categories || categories.length === 0} className="w-full">
-              {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Wand2 className="mr-2 h-4 w-4" />}
-              {isGenerating ? 'Generating...' : 'Generate Transactions'}
-            </Button>
-          </CardContent>
-        </Card>
+            </CardContent>
+            <CardFooter>
+                 <Button onClick={handleReconstruct} disabled={isReconstructing} className="w-full">
+                    {isReconstructing ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <TextSearch className="mr-2 h-4 w-4" />}
+                    {isReconstructing ? 'Reconstructing...' : 'Reconstruct & Populate Form'}
+                 </Button>
+            </CardFooter>
+          </Card>
+        </div>
+        
+        <div className='space-y-6'>
+            <Card>
+            <CardHeader>
+                <CardTitle>Bulk & Synthetic Data</CardTitle>
+            </CardHeader>
+            <CardContent className='space-y-6'>
+                <div>
+                  <h3 className="font-medium mb-2">Bulk Import from File</h3>
+                  <div className='flex flex-col gap-4 justify-center items-center text-center p-6 border-2 border-dashed border-muted rounded-lg h-[150px]'>
+                    {!file ? (
+                        <>
+                            <div className='p-3 bg-muted rounded-full'>
+                                <UploadCloud className="h-6 w-6 text-muted-foreground" />
+                            </div>
+                            <Button variant="outline" size="sm" asChild>
+                                <Label htmlFor="file-upload" className='cursor-pointer'>
+                                Select File
+                                </Label>
+                            </Button>
+                            <Input id="file-upload" type="file" className="sr-only" onChange={handleFileChange} accept=".csv,.json" />
+                        </>
+                    ) : (
+                        <div className='flex flex-col items-center gap-2'>
+                            <FileText className='h-8 w-8 text-primary'/>
+                            <p className='font-medium text-sm'>{file.name}</p>
+                        </div>
+                    )}
+                  </div>
+                  <Button onClick={handleFileUpload} disabled={!file || isProcessing} className="w-full mt-4">
+                    {isProcessing ? 'Processing...' : 'Upload and Ingest'}
+                  </Button>
+                </div>
+                 <Separator/>
+                <div>
+                   <h3 className="font-medium mb-2">Synthetic Data Generation</h3>
+                    <div className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="category-select">Category</Label>
+                            <Select value={categoryToGenerate} onValueChange={setCategoryToGenerate} disabled={!categories || categories.length === 0}>
+                            <SelectTrigger id="category-select">
+                                <SelectValue placeholder="Select a category" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {categories?.map(cat => (
+                                <SelectItem key={cat.id} value={cat.id}>{cat.label}</SelectItem>
+                                ))}
+                            </SelectContent>
+                            </Select>
+                            {(!categories || categories.length === 0) && <p className='text-xs text-muted-foreground'>Please add a category on the Taxonomy page first.</p>}
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="num-to-generate">Number to Generate</Label>
+                            <Input
+                            id="num-to-generate"
+                            type="number"
+                            value={numToGenerate}
+                            onChange={(e) => setNumToGenerate(e.target.value)}
+                            placeholder="e.g., 10"
+                            />
+                        </div>
+                        <Button onClick={handleGenerateSyntheticData} disabled={isGenerating || !categories || categories.length === 0} className="w-full">
+                            {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Wand2 className="mr-2 h-4 w-4" />}
+                            {isGenerating ? 'Generating...' : 'Generate Transactions'}
+                        </Button>
+                    </div>
+                </div>
+            </CardContent>
+            </Card>
+        </div>
       </div>
 
       <Separator />
@@ -426,5 +473,3 @@ export default function DataIngestionPage() {
     </div>
   );
 }
-
-    

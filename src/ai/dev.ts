@@ -10,3 +10,4 @@ import '@/ai/flows/get-token-attributions.ts';
 import '@/ai/flows/find-similar-merchants.ts';
 import '@/ai/flows/synthesize-transactions.ts';
 import '@/ai/flows/decode-spending-intent.ts';
+import '@/ai/flows/reconstruct-transaction-from-text.ts';
