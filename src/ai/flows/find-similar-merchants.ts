@@ -32,8 +32,8 @@ const findSimilarMerchantsPrompt = ai.definePrompt({
   name: 'findSimilarMerchantsPrompt',
   input: { schema: FindSimilarMerchantsInputSchema },
   output: { schema: FindSimilarMerchantsOutputSchema },
-  prompt: `You are a dense retrieval system (like one using a FAISS index) powered by a Siamese Network trained on merchant data.
-  Your task is to find 3-4 semantically similar but varied merchant names for the given query. Include common misspellings or variations.
+  prompt: `You are a privacy-preserving fuzzy matching system (like one using salted n-gram hashing and Bloom filters).
+  Your task is to find 3-4 similar merchant strings for the given query, as if you were matching them based on their hashed structural similarities, not just their semantic meaning. Include common abbreviations, typos, and variations.
   
   Query: "{{merchantName}}"
 
