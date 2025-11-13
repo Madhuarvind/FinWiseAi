@@ -54,7 +54,9 @@ export default function TransactionTable({
 
   const sortedTransactions = React.useMemo(() => {
     if (!sortKey) return transactions;
-    return [...transactions].sort((a, b) => {
+    // Show only the first 5 transactions
+    const limitedTransactions = transactions.slice(0, 5);
+    return [...limitedTransactions].sort((a, b) => {
       const aValue = a[sortKey as keyof Transaction];
       const bValue = b[sortKey as keyof Transaction];
       
@@ -76,10 +78,6 @@ export default function TransactionTable({
       )
     );
   };
-
-  const getCategoryLabel = (categoryId: string) => {
-    return categories.find((c) => c.value === categoryId)?.label || 'N/A';
-  };
   
   const getCategoryDetails = (categoryId: string) => {
     return categories.find((c) => c.value === categoryId);
@@ -96,7 +94,7 @@ export default function TransactionTable({
 
   return (
     <>
-      <div className="overflow-hidden rounded-lg border">
+      <div className="overflow-hidden rounded-lg">
         <Table>
           <TableHeader>
             <TableRow>
@@ -114,11 +112,11 @@ export default function TransactionTable({
               const CategoryIcon = categoryDetails ? getCategoryIcon(categoryDetails.icon) : MoreHorizontal;
 
               return (
-                <TableRow key={transaction.id}>
+                <TableRow key={transaction.id} onClick={() => handleOpenSheet(transaction)} className="cursor-pointer">
                   <TableCell>{new Date(transaction.date).toLocaleDateString()}</TableCell>
                   <TableCell className="font-medium">{transaction.description}</TableCell>
                   <TableCell
-                    className={cn(transaction.amount > 0 ? 'text-accent-foreground' : 'text-foreground')}
+                    className={cn(transaction.amount > 0 ? 'text-green-600' : 'text-foreground')}
                   >
                     {transaction.amount.toLocaleString('en-US', {
                       style: 'currency',
@@ -148,7 +146,7 @@ export default function TransactionTable({
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
+                        <Button variant="ghost" size="icon" onClick={(e) => e.stopPropagation()}>
                           <MoreHorizontal className="h-4 w-4" />
                           <span className="sr-only">More actions</span>
                         </Button>
