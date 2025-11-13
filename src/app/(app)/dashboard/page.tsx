@@ -18,11 +18,13 @@ import { UniverseSelector } from '@/components/dashboard/universe-selector';
 import { Button } from '@/components/ui/button';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection } from 'firebase/firestore';
+import { useToast } from '@/hooks/use-toast';
 
 export default function DashboardPage() {
   const [activeUniverseId, setActiveUniverseId] = React.useState<Universe['id']>('banking');
   const { user } = useUser();
   const firestore = useFirestore();
+  const { toast } = useToast();
 
   const transactionsQuery = useMemoFirebase(() => {
     if (!user || !firestore) return null;
@@ -72,6 +74,13 @@ export default function DashboardPage() {
       </div>
     );
   }
+
+  const handleActivateEmotionSafeMode = () => {
+    toast({
+      title: 'Emotion-Safe Mode Activated',
+      description: 'Spending locks are now active for vulnerable categories and times.',
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -161,7 +170,7 @@ export default function DashboardPage() {
                     <CardDescription>This looks like impulsive nighttime shopping. Shall I set a spending lock for this category after 10 PM?</CardDescription>
                 </CardHeader>
                 <CardContent className='pt-0'>
-                     <Button variant="secondary" size="sm">Activate Emotion-Safe Mode</Button>
+                     <Button variant="secondary" size="sm" onClick={handleActivateEmotionSafeMode}>Activate Emotion-Safe Mode</Button>
                 </CardContent>
             </Card>
             <Card className="bg-secondary/30 border-secondary/50">
