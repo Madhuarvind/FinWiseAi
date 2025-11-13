@@ -1,9 +1,10 @@
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ConfusionMatrix } from '@/components/analytics/confusion-matrix';
-import { Frown, Gauge, Target, Scale, ShieldCheck } from 'lucide-react';
+import { Frown, Gauge, Target, Scale, ShieldCheck, TrendingUp } from 'lucide-react';
 import { PerCategoryAccuracyChart } from '@/components/analytics/per-category-accuracy-chart';
 import { FairnessMetricsTable } from '@/components/analytics/fairness-metrics-table';
+import { MerchantDriftChart } from '@/components/analytics/merchant-drift-chart';
 
 const performanceData = {
   macroF1: 0.92,
@@ -41,6 +42,14 @@ const performanceData = {
       },
     ],
   },
+  merchantDrift: [
+    { month: 'Jan', drift: 0.02, merchant: "Starbucks" },
+    { month: 'Feb', drift: 0.03, merchant: "Starbucks" },
+    { month: 'Mar', drift: 0.05, merchant: "Starbucks" },
+    { month: 'Apr', drift: 0.15, merchant: "Starbucks" },
+    { month: 'May', drift: 0.12, merchant: "Starbucks" },
+    { month: 'Jun', drift: 0.11, merchant: "Starbucks" },
+  ],
 };
 
 export default function AnalyticsPage() {
@@ -144,6 +153,29 @@ export default function AnalyticsPage() {
             </CardHeader>
             <CardContent>
                 <FairnessMetricsTable data={performanceData.fairnessMetrics} />
+            </CardContent>
+         </Card>
+       </div>
+       
+        <div className="space-y-6 pt-4">
+         <div>
+            <h2 className="font-headline text-2xl font-semibold tracking-tight text-foreground flex items-center gap-2">
+                <TrendingUp className="text-primary"/>
+                Merchant Evolution Report (METS)
+            </h2>
+            <p className="text-muted-foreground">
+                Tracking how merchant semantics change over time.
+            </p>
+         </div>
+         <Card>
+            <CardHeader>
+                <CardTitle>Semantic Drift: &quot;Starbucks&quot;</CardTitle>
+                 <CardDescription>
+                    Tracking the change in transaction meaning. A drift in April was detected, corresponding to a new &quot;Reserve&quot; store rollout.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <MerchantDriftChart data={performanceData.merchantDrift} />
             </CardContent>
          </Card>
        </div>
