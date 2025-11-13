@@ -173,8 +173,9 @@ export function SpendingByCategoryChart({
                     x="50%"
                     y="50%"
                     textAnchor="middle"
-                    dominantBaseline="central"
+                    dominantBaseline="middle"
                     className="text-2xl font-bold fill-foreground"
+                    dy="-0.5em"
                   >
                     {activeSegment.value.toLocaleString('en-IN', {
                       style: 'currency',
@@ -182,7 +183,7 @@ export function SpendingByCategoryChart({
                        maximumFractionDigits: 0,
                     })}
                   </text>
-                  <foreignObject x="42%" y="60%" width="32" height="24">
+                  <foreignObject x="45%" y="55%" width="32" height="24">
                      <Icon className="w-5 h-5 text-muted-foreground" />
                   </foreignObject>
                 </g>
