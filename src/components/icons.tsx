@@ -13,6 +13,10 @@ import {
   Utensils,
   BookOpen,
   LayoutDashboard,
+  ToyBrick,
+  AreaChart,
+  Settings,
+  LifeBuoy
 } from 'lucide-react';
 
 export const Logo = () => (
@@ -38,6 +42,10 @@ export const categoryIcons = {
 export const navIcons = {
   Dashboard: LayoutDashboard,
   Taxonomy: BookOpen,
+  ModelHub: ToyBrick,
+  Analytics: AreaChart,
+  Settings: Settings,
+  Support: LifeBuoy
 };
 
 export const getCategoryIcon = (
