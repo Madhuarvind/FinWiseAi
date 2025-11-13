@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer, LabelList, Cell } from 'recharts';
@@ -63,3 +64,5 @@ export function MedicalExpenseForecast({ data }: MedicalExpenseForecastProps) {
     </Card>
   );
 }
+
+    
