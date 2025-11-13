@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import type { Transaction, Category, Embedding } from '@/lib/types';
+import type { Transaction, Category, Embedding, Universe } from '@/lib/types';
 import { categorizeTransactionWithLLM } from '@/ai/flows/categorize-transaction-with-llm';
 import { explainTransactionClassification } from '@/ai/flows/explain-transaction-classification';
 import { generateSemanticDNA } from '@/ai/flows/generate-semantic-dna';
@@ -76,12 +76,14 @@ export function TransactionDetailSheet({
   transaction,
   categories,
   onUpdate,
+  activeUniverse
 }: {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   transaction: Transaction;
   categories: Category[];
-  onUpdate: (transaction: Transaction) => void;
+  onUpdate: (transactionId: string, updates: Partial<Transaction>) => void;
+  activeUniverse: Universe['id'];
 }) {
   const [currentCategory, setCurrentCategory] = React.useState(
     transaction.category
@@ -191,14 +193,23 @@ export function TransactionDetailSheet({
   }, [isOpen, transaction, categories, toast]);
 
   const handleConfirm = () => {
-    onUpdate({ ...transaction, category: currentCategory, status: 'reviewed' });
+    const updates: Partial<Transaction> = {
+      status: 'reviewed',
+      category: currentCategory, // Always update the primary category for consistency
+      multiCategory: {
+        ...(transaction.multiCategory || { banking: 'other', behavioral: 'other', minimalist: 'other', personalized: 'other' }),
+        [activeUniverse]: currentCategory, // Update the specific universe
+      }
+    };
+
+    onUpdate(transaction.id, updates);
     setIsOpen(false);
     toast({
       title: 'Feedback Received (SCOA/CTR)',
       description: (
         <div className="flex items-center gap-2">
             <CheckCircle className="text-accent"/>
-            <span>Your preference has been recorded. The model will learn from this correction via Federated Preference Distillation.</span>
+            <span>Your preference has been recorded for the {activeUniverse} view. The model will learn from this correction.</span>
         </div>
       ),
     });
@@ -278,7 +289,7 @@ export function TransactionDetailSheet({
         <SheetHeader>
           <SheetTitle>Transaction Details &amp; XAI</SheetTitle>
           <SheetDescription>
-            Review, re-categorize, and understand the AI's reasoning.
+            Review, re-categorize, and understand the AI's reasoning for the <span className='capitalize font-medium'>{activeUniverse}</span> universe.
           </SheetDescription>
         </SheetHeader>
         <div className="flex-1 space-y-6 overflow-y-auto pr-6 pl-2 -ml-2">

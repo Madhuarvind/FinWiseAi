@@ -23,7 +23,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import type { Transaction, Category } from '@/lib/types';
+import type { Transaction, Category, Universe } from '@/lib/types';
 import { TransactionDetailSheet } from './transaction-detail-sheet';
 import { cn } from '@/lib/utils';
 import { getCategoryIcon } from '@/components/icons';
@@ -35,9 +35,11 @@ type SortKey = keyof Transaction | '';
 export default function TransactionTable({
   transactions,
   categories,
+  activeUniverse,
 }: {
   transactions: Transaction[];
   categories: Category[];
+  activeUniverse: Universe['id'];
 }) {
   const [selectedTransaction, setSelectedTransaction] =
     React.useState<Transaction | null>(null);
@@ -74,11 +76,10 @@ export default function TransactionTable({
     setSheetOpen(true);
   };
 
-  const handleUpdateTransaction = async (updatedTransaction: Transaction) => {
+  const handleUpdateTransaction = async (transactionId: string, updates: Partial<Transaction>) => {
     if (!user || !firestore) return;
-    const { id, ...dataToSave } = updatedTransaction;
-    const docRef = doc(firestore, 'users', user.uid, 'transactions', id);
-    await setDoc(docRef, dataToSave, { merge: true });
+    const docRef = doc(firestore, 'users', user.uid, 'transactions', transactionId);
+    await setDoc(docRef, updates, { merge: true });
     // Realtime listener will update the state, no need to manually set state here.
   };
   
@@ -176,6 +177,7 @@ export default function TransactionTable({
           transaction={selectedTransaction}
           categories={categories}
           onUpdate={handleUpdateTransaction}
+          activeUniverse={activeUniverse}
         />
       )}
     </>

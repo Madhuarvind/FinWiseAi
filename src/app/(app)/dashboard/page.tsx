@@ -216,6 +216,7 @@ export default function DashboardPage() {
             <TransactionTable
               transactions={transactions}
               categories={allCategories || []}
+              activeUniverse={activeUniverseId}
             />
           </CardContent>
         </Card>
