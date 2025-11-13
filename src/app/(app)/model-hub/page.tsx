@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -191,7 +190,7 @@ export default function ModelHubPage() {
                     <p className="text-sm text-muted-foreground">
                         The MAS intelligently explores the data distribution to find samples that offer the highest potential for model improvement. This ensures your human-in-the-loop efforts are always focused on the most impactful data.
                     </p>
-                </Content>
+                </CardContent>
                 <CardFooter>
                     <Button disabled>
                         <FlaskConical className="mr-2 h-4 w-4"/>
