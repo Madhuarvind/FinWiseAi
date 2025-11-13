@@ -92,7 +92,6 @@ export const navIcons = {
   Bias: Scale,
   Security: ShieldCheck,
   Trips: Briefcase,
-  BookText: BookText,
 };
 
 export const getCategoryIcon = (
