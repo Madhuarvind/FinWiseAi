@@ -50,7 +50,7 @@ const adapters = [
      {
         name: "Utility-Providers-v2",
         basedOn: "FAI-BERT v1.1.0",
-        description: "Legacy adapter for utility payment patterns. Needs migration to FAI-BERT v1.2.0.",
+        description: "Legacy adapter for utility payment patterns. This represents a previous stable version.",
         status: "Archived",
         samples: 1200
     }
@@ -123,7 +123,7 @@ export default function ModelHubPage() {
                                 <Wrench className="mr-2 h-4 w-4"/>
                                 Fine-Tune Model
                             </Button>
-                            <Button variant="ghost" size="sm" className="ml-auto" disabled={adapter.status !== 'Active'}>
+                            <Button variant="ghost" size="sm" className="ml-auto" disabled={adapter.status === 'Needs Training'}>
                                 <Rocket className="mr-2 h-4 w-4"/>
                                 Deploy
                             </Button>
