@@ -25,7 +25,7 @@ import { generateSemanticDNA } from '@/ai/flows/generate-semantic-dna';
 import { generateCounterfactualExplanation } from '@/ai/flows/generate-counterfactual-explanation';
 import { getTokenAttributions } from '@/ai/flows/get-token-attributions';
 import { findSimilarMerchants } from '@/ai/flows/find-similar-merchants';
-import { Loader2, Wand2, Lightbulb, Fingerprint, Repeat, CheckCircle, SearchCode, Cpu, ShieldCheck, AlertTriangle, Network } from 'lucide-react';
+import { Loader2, Wand2, Lightbulb, Repeat, CheckCircle, SearchCode, Cpu, ShieldCheck, AlertTriangle, Network } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '../ui/badge';
@@ -236,8 +236,8 @@ export function TransactionDetailSheet({
               <div className="flex items-start gap-3 rounded-md bg-destructive/10 p-3 text-destructive border border-destructive/20">
                 <AlertTriangle className="h-5 w-5 mt-0.5 flex-shrink-0" />
                 <div className='text-sm'>
-                  <p className="font-semibold">Flagged by Semantic Shock Detector (SSD)</p>
-                  <p>The system detected a novel merchant pattern or an out-of-distribution semantic signature, requiring human confirmation.</p>
+                  <p className="font-semibold">Flagged by Generative Error Simulation Engine (GESE)</p>
+                  <p>The system predicted a high probability of misclassification for this item, requiring human confirmation to ensure accuracy.</p>
                 </div>
               </div>
             )}
