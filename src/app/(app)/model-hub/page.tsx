@@ -1,5 +1,4 @@
 
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,9 +7,9 @@ import { Separator } from '@/components/ui/separator';
 
 const models = [
     {
-        name: "FAI-BERT",
+        name: "FAI-BERT (CDAT)",
         version: "v1.2.0",
-        description: "Domain-adaptive foundation model for financial text. Trained on MLM, NSP, and contrastive learning.",
+        description: "Domain-adaptive foundation model (Cross-Domain Alignment Transformer) trained with multimodal contrastive learning to align merchant understanding across text, voice, and web data.",
         type: "Foundation Model",
         status: "Active",
         icon: BrainCircuit,
@@ -192,7 +191,7 @@ export default function ModelHubPage() {
                     <p className="text-sm text-muted-foreground">
                         The MAS intelligently explores the data distribution to find samples that offer the highest potential for model improvement. This ensures your human-in-the-loop efforts are always focused on the most impactful data.
                     </p>
-                </CardContent>
+                </Content>
                 <CardFooter>
                     <Button disabled>
                         <FlaskConical className="mr-2 h-4 w-4"/>
