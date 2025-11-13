@@ -177,16 +177,19 @@ function RuleGenDialog({ category, isOpen, setIsOpen }: { category: Category | n
         if (isOpen && category) {
             setIsLoading(true);
             setRules([]);
+            // Use a timer to simulate network/computation delay for a better UX
             const timer = setTimeout(async () => {
                 try {
                     const result = await findSimilarMerchants({ merchantName: category.label });
                     setRules(result.similarMerchants);
                 } catch (e) {
-                    // Handle error
+                    // In a real app, you'd show a toast notification here
+                    console.error("Failed to generate rules:", e);
                 } finally {
                     setIsLoading(false);
                 }
-            }, 1500); // Simulate network delay
+            }, 1500); // Simulate 1.5 seconds of AI "thinking"
+            
             return () => clearTimeout(timer);
         }
     }, [isOpen, category]);
@@ -209,6 +212,7 @@ function RuleGenDialog({ category, isOpen, setIsOpen }: { category: Category | n
                         </div>
                         <Skeleton className="h-8 w-full" />
                         <Skeleton className="h-8 w-2/3" />
+                        <Skeleton className="h-8 w-3/4" />
                     </div>
                 ) : (
                     <div>
