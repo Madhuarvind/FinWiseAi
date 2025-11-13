@@ -35,20 +35,20 @@ import { Progress } from '../ui/progress';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 
 type AIState = {
-  explanation: string;
-  suggestedCategory: string;
-  llmReRanked: boolean;
+  explanation: string | null;
+  suggestedCategory: string | null;
+  llmReRanked: boolean | null;
   zile: Embedding | null;
-  counterfactual: string;
-  attributions: string[];
-  similarMerchants: string[];
-  spendingIntent: string;
-  confidence: number;
+  counterfactual: string | null;
+  attributions: string[] | null;
+  similarMerchants: string[] | null;
+  spendingIntent: string | null;
+  confidence: number | null;
   isLoading: boolean;
 };
 
-const HighlightedDescription = ({ description, words }: { description: string; words: string[] }) => {
-  if (words.length === 0) {
+const HighlightedDescription = ({ description, words }: { description: string; words: string[] | null }) => {
+  if (!words || words.length === 0) {
     return <span>{description}</span>;
   }
   const regex = new RegExp(`(${words.join('|')})`, 'gi');
@@ -89,49 +89,54 @@ export function TransactionDetailSheet({
     transaction.category
   );
   const [aiState, setAiState] = React.useState<AIState>({
-    explanation: '',
-    suggestedCategory: '',
-    llmReRanked: false,
+    explanation: null,
+    suggestedCategory: null,
+    llmReRanked: null,
     zile: null,
-    counterfactual: '',
-    attributions: [],
-    similarMerchants: [],
-    spendingIntent: '',
-    confidence: 0,
+    counterfactual: null,
+    attributions: null,
+    similarMerchants: null,
+    spendingIntent: null,
+    confidence: null,
     isLoading: true,
   });
   const { toast } = useToast();
 
   React.useEffect(() => {
     if (isOpen && transaction) {
-        setCurrentCategory(transaction.category);
+      setCurrentCategory(transaction.multiCategory?.[activeUniverse] || transaction.category);
+      
       const runAIAnalysis = async () => {
+        // Reset state for new transaction
         setAiState({
-          explanation: '',
-          suggestedCategory: '',
-          llmReRanked: false,
-          zile: null,
-          counterfactual: '',
-          attributions: [],
-          similarMerchants: [],
-          spendingIntent: '',
-          confidence: 0,
-          isLoading: true,
+          explanation: null, suggestedCategory: null, llmReRanked: null, zile: null,
+          counterfactual: null, attributions: null, similarMerchants: null,
+          spendingIntent: null, confidence: null, isLoading: true
         });
 
         try {
-          // This is a mock confidence score. In a real system, this would come from the model.
-          // We set it low sometimes to ensure the LLM reranker logic is triggered.
+          // STEP 1: Get the most important info first - the category
           const confidenceScore = transaction.id === 'txn_8' || transaction.id === 'txn_11' ? 0.65 : 0.95;
+          const categorizationResult = await categorizeTransactionWithLLM({
+            transactionDescription: transaction.description,
+            confidenceScore: confidenceScore,
+            candidateCategories: categories.map((c) => c.label),
+          });
+          
+          const suggestedCategoryId = categories.find(c => c.label === categorizationResult.category)?.id || transaction.category;
+          setCurrentCategory(suggestedCategoryId);
+          setAiState(prev => ({
+            ...prev,
+            suggestedCategory: suggestedCategoryId,
+            llmReRanked: categorizationResult.llmReRanked,
+            confidence: confidenceScore,
+            isLoading: false, // Stop initial loading, show primary results
+          }));
 
-          const categoryLabel = categories.find((c) => c.id === transaction.category)?.label || transaction.category;
+          // STEP 2: Run all other independent analyses in parallel for secondary info
+          const categoryLabel = categories.find((c) => c.id === suggestedCategoryId)?.label || suggestedCategoryId;
 
-          const [categorizationResult, explanationResult, dnaResult, attributionsResult, similarityResult, intentResult] = await Promise.all([
-            categorizeTransactionWithLLM({
-              transactionDescription: transaction.description,
-              confidenceScore: confidenceScore,
-              candidateCategories: categories.map((c) => c.label),
-            }),
+          const secondaryAnalyses = Promise.all([
             explainTransactionClassification({
               transactionDescription: transaction.description,
               predictedCategory: categoryLabel,
@@ -150,32 +155,28 @@ export function TransactionDetailSheet({
               category: categoryLabel
             }),
           ]);
-          
-          const suggestedCategoryId = categories.find(c => c.label === categorizationResult.category)?.id || transaction.category;
-          
-          const plausibleAlternative = categories.find(c => c.id !== suggestedCategoryId)?.label || 'Shopping';
 
-          const counterfactualResult = await generateCounterfactualExplanation({
+          // STEP 3: Run dependent analysis (counterfactual) after categorization is done
+          const plausibleAlternative = categories.find(c => c.id !== suggestedCategoryId)?.label || 'Shopping';
+          const counterfactualPromise = generateCounterfactualExplanation({
             transactionDescription: transaction.description,
             originalCategory: categorizationResult.category,
             targetCategory: plausibleAlternative,
           });
 
-          setAiState({
+          // Await and update state as secondary results come in
+          const [explanationResult, dnaResult, attributionsResult, similarityResult, intentResult] = await secondaryAnalyses;
+          setAiState(prev => ({
+            ...prev,
             explanation: explanationResult.explanation,
-            suggestedCategory: suggestedCategoryId,
-            llmReRanked: categorizationResult.llmReRanked,
             zile: dnaResult,
-            counterfactual: counterfactualResult.counterfactualExplanation,
             attributions: attributionsResult.influentialWords,
             similarMerchants: similarityResult.similarMerchants,
             spendingIntent: intentResult.intent,
-            confidence: confidenceScore,
-            isLoading: false,
-          });
+          }));
 
-          // Automatically set the category to the one suggested by the AI
-          setCurrentCategory(suggestedCategoryId);
+          const counterfactualResult = await counterfactualPromise;
+          setAiState(prev => ({...prev, counterfactual: counterfactualResult.counterfactualExplanation }));
 
         } catch (error) {
           console.error('AI analysis failed:', error);
@@ -190,15 +191,15 @@ export function TransactionDetailSheet({
 
       runAIAnalysis();
     }
-  }, [isOpen, transaction, categories, toast]);
+  }, [isOpen, transaction, categories, toast, activeUniverse]);
 
   const handleConfirm = () => {
     const updates: Partial<Transaction> = {
       status: 'reviewed',
-      category: currentCategory, // Always update the primary category for consistency
+      category: currentCategory, // Keep this for the 'all' view if needed
       multiCategory: {
         ...(transaction.multiCategory || { banking: 'other', behavioral: 'other', minimalist: 'other', personalized: 'other' }),
-        [activeUniverse]: currentCategory, // Update the specific universe
+        [activeUniverse]: currentCategory,
       }
     };
 
@@ -355,7 +356,7 @@ export function TransactionDetailSheet({
                 disabled={aiState.isLoading}
               >
                 <SelectTrigger id="category-select">
-                  <SelectValue placeholder="Select a category" />
+                  <SelectValue placeholder={aiState.isLoading ? "AI is thinking..." : "Select a category"} />
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((category) => (
@@ -397,10 +398,7 @@ export function TransactionDetailSheet({
             </div>
             {aiState.isLoading ? (
               <div className="space-y-4 pt-2">
-                <Skeleton className="h-4 w-1/4" />
-                <Skeleton className="h-16 w-full" />
-                <Skeleton className="h-4 w-1/2" />
-                <Skeleton className="h-10 w-full" />
+                 <p className="text-sm text-muted-foreground flex items-center"><Loader2 className="mr-2 h-4 w-4 animate-spin"/>Loading detailed XAI insights...</p>
               </div>
             ) : (
               <div className="space-y-4 text-sm">
@@ -412,30 +410,48 @@ export function TransactionDetailSheet({
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-lg font-medium text-foreground rounded-lg bg-muted p-4">
-                        <HighlightedDescription description={transaction.description} words={aiState.attributions} />
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-2">The TSR highlights the key terms (tokens) that most influenced the model's classification decision.</p>
+                      {aiState.attributions ? (
+                        <>
+                          <p className="text-lg font-medium text-foreground rounded-lg bg-muted p-4">
+                            <HighlightedDescription description={transaction.description} words={aiState.attributions} />
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-2">The TSR highlights the key terms (tokens) that most influenced the model's classification decision.</p>
+                        </>
+                      ) : <Skeleton className="h-16 w-full" />}
                     </CardContent>
                   </Card>
                  <div className="rounded-lg border bg-background p-4 space-y-2">
                   <p className="font-medium text-foreground mb-2 flex items-center gap-2"><ShieldCheck className="h-4 w-4"/>Human Trust Score (HTS):</p>
-                  <Progress value={aiState.confidence * 100} className="h-2"/>
-                  <p className="text-xs text-muted-foreground text-right">{(aiState.confidence * 100).toFixed(0)}% Confidence</p>
+                   {aiState.confidence !== null ? (
+                    <>
+                      <Progress value={aiState.confidence * 100} className="h-2"/>
+                      <p className="text-xs text-muted-foreground text-right">{(aiState.confidence * 100).toFixed(0)}% Confidence</p>
+                    </>
+                  ) : <Skeleton className="h-6 w-full" /> }
                 </div>
                  <div className="rounded-lg border bg-background p-4 leading-relaxed">
                   <p className="font-medium text-foreground mb-2 flex items-center gap-2"><Sparkles className="h-4 w-4 text-amber-500"/>Predicted Intent (TEM):</p>
-                  <p className="text-muted-foreground">{aiState.spendingIntent || "Not available."}</p>
-                   <p className="text-xs text-muted-foreground mt-1">This reflects how you might have felt, like comfort-spending after a long day.</p>
+                  {aiState.spendingIntent ? (
+                    <>
+                      <p className="text-muted-foreground">{aiState.spendingIntent}</p>
+                      <p className="text-xs text-muted-foreground mt-1">This reflects how you might have felt, like comfort-spending after a long day.</p>
+                    </>
+                  ) : <Skeleton className="h-10 w-full" />}
                 </div>
                 <div className="rounded-lg border bg-background p-4 leading-relaxed">
                   <p className="font-medium text-foreground mb-2 flex items-center gap-2"><MessageSquareHeart className="h-4 w-4 text-rose-500"/>Transaction Story (TCL, LSF, PMR, NFRE):</p>
-                  <p className="text-muted-foreground">"I am a transaction that was born at 8:15 AM. My creation seems to align with your 'reward-seeking' neuro-financial state, often seen after a productive start to your day. This aligns with your recent trend towards a more fitness-focused lifestyle (a predicted Life-Moment shift)."</p>
+                   {aiState.explanation ? (
+                     <p className="text-muted-foreground">"{aiState.explanation}"</p>
+                   ) : <Skeleton className="h-10 w-full" />}
                 </div>
                  <div className="rounded-lg border bg-background p-4 leading-relaxed">
                   <p className="font-medium text-foreground mb-2 flex items-center gap-2"><Repeat className="h-4 w-4"/>Counterfactual & Ethical Shadow (RCSL):</p>
-                  <p className="text-muted-foreground"><span className='font-semibold'>Counterfactual: </span>{aiState.counterfactual || "Not available."}</p>
-                  <p className="text-muted-foreground mt-1"><span className='font-semibold'>Ethical Shadow: </span>Reusing an existing item could have saved this amount for a future goal.</p>
+                  {aiState.counterfactual ? (
+                    <>
+                      <p className="text-muted-foreground"><span className='font-semibold'>Counterfactual: </span>{aiState.counterfactual}</p>
+                      <p className="text-muted-foreground mt-1"><span className='font-semibold'>Ethical Shadow: </span>Reusing an existing item could have saved this amount for a future goal.</p>
+                    </>
+                  ) : <Skeleton className="h-10 w-full" />}
                 </div>
                  <div className="rounded-lg border bg-background p-4 space-y-2">
                   <p className="font-medium text-foreground mb-2 flex items-center gap-2"><TrendingUp className="h-4 w-4 text-green-500"/>Future Impact & Health (FIP, ABC, PHHS):</p>
@@ -452,28 +468,34 @@ export function TransactionDetailSheet({
                     <p className="text-muted-foreground leading-relaxed">&quot;Your 'Saver-Self' would have skipped this, as it matches past regret patterns. However, your 'Lifestyle-Enhancer' identity approved it. This choice reduces your primary vacation savings goal by 2%.&quot;</p>
                 </div>
                  <div className="rounded-lg border bg-background p-4 space-y-2">
-                   <p className="font-medium text-foreground flex items-center gap-2"><UserCheck className="h-4 w-4"/>Spending Persona & Philosophy (TPG/HPFA/TPFE/TPI/TAM):</p>
+                   <p className="font-medium text-foreground mb-2 flex items-center gap-2"><UserCheck className="h-4 w-4"/>Spending Persona & Philosophy (TPG/HPFA/TPFE/TPI/TAM):</p>
                    <p className="text-muted-foreground leading-relaxed">{getSpendingPersona(currentCategory)}</p>
                    <p className="text-muted-foreground leading-relaxed">Purpose: <span className="font-semibold">{getPurchasePurpose(currentCategory)}</span> | Personality: <span className='font-semibold'>{getTransactionPersonality(currentCategory)}</span> (Hedonic)</p>
                 </div>
                 <div className="rounded-lg border bg-background p-4 space-y-3">
                     <p className="font-medium text-foreground flex items-center gap-2"><Network className="h-4 w-4"/>Spending Black Box (SBBR):</p>
-                    <div>
-                        <p className="text-xs font-semibold text-muted-foreground">Base Sequence (S-DNA)</p>
-                        <p className="text-muted-foreground leading-relaxed font-mono text-xs break-all">{aiState.zile?.baseSequence || "Not available."}</p>
-                    </div>
-                    <div>
-                        <p className="text-xs font-semibold text-muted-foreground">Interpretation Vector</p>
-                        <p className="text-muted-foreground leading-relaxed font-mono text-xs break-all">{aiState.zile?.interpretationVector || "Not available."}</p>
-                    </div>
+                    {aiState.zile ? (
+                      <>
+                        <div>
+                            <p className="text-xs font-semibold text-muted-foreground">Base Sequence (S-DNA)</p>
+                            <p className="text-muted-foreground leading-relaxed font-mono text-xs break-all">{aiState.zile.baseSequence}</p>
+                        </div>
+                        <div>
+                            <p className="text-xs font-semibold text-muted-foreground">Interpretation Vector</p>
+                            <p className="text-muted-foreground leading-relaxed font-mono text-xs break-all">{aiState.zile.interpretationVector}</p>
+                        </div>
+                      </>
+                    ) : <Skeleton className="h-16 w-full" />}
                 </div>
                  <div className="rounded-lg border bg-background p-4 space-y-2">
                   <p className="font-medium text-foreground flex items-center gap-2"><SearchCode className="h-4 w-4"/>Purchase Memory (Similarity Search):</p>
-                  <div className="flex flex-wrap gap-2 pt-1">
-                    {aiState.similarMerchants.map((merchant) => (
-                        <Badge key={merchant} variant="outline" className="font-mono text-xs">{merchant}</Badge>
-                    ))}
-                  </div>
+                  {aiState.similarMerchants ? (
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      {aiState.similarMerchants.map((merchant) => (
+                          <Badge key={merchant} variant="outline" className="font-mono text-xs">{merchant}</Badge>
+                      ))}
+                    </div>
+                  ) : <Skeleton className="h-8 w-full" />}
                 </div>
               </div>
             )}
@@ -484,9 +506,6 @@ export function TransactionDetailSheet({
             Cancel
           </Button>
           <Button onClick={handleConfirm} disabled={aiState.isLoading}>
-            {aiState.isLoading ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : null}
             Confirm & Submit Feedback
           </Button>
         </SheetFooter>
