@@ -35,9 +35,7 @@ export default function RootLayout({
           process.env.NODE_ENV === 'development' && 'debug-screens'
         )}
       >
-        <Providers>
-          {children}
-        </Providers>
+        <Providers>{children}</Providers>
         <Toaster />
       </body>
     </html>
