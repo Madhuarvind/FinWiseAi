@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, LabelList } from 'recharts';
