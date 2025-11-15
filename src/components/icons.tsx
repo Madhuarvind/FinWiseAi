@@ -53,6 +53,9 @@ import {
   MemoryStick,
   Cloud,
   Smartphone,
+  Rocket,
+  Award,
+  Shield,
 } from 'lucide-react';
 
 export const Logo = () => (
@@ -105,6 +108,9 @@ export const categoryIcons = {
   MemoryStick,
   Cloud,
   Smartphone,
+  Rocket,
+  Award,
+  Shield,
 };
 
 export const navIcons = {
@@ -118,7 +124,7 @@ export const navIcons = {
   Support: LifeBuoy,
   Bias: Scale,
   Security: ShieldCheck,
-  Trips: Briefcase,
+  Goals: Gem,
   Policy: FileText,
 };
 

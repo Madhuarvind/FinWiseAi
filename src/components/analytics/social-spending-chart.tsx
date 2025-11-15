@@ -1,6 +1,6 @@
 'use client';
 
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, LabelList } from 'recharts';
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, LabelList, Cell } from 'recharts';
 
 import {
   ChartConfig,
@@ -53,6 +53,9 @@ export function SocialSpendingChart({ data }: SocialSpendingChartProps) {
                 className="fill-foreground text-sm font-bold"
                 formatter={(value: number) => `₹${value.toLocaleString()}`}
             />
+             {data.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={entry.fill} />
+            ))}
         </Bar>
       </BarChart>
     </ChartContainer>

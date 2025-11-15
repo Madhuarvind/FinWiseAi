@@ -85,18 +85,14 @@ export default function TransactionTable({
     if (!sortKey || !transactions) return transactions || [];
     
     return [...transactions].sort((a, b) => {
-      const aValue = a[sortKey as keyof Transaction] ?? (a.createdAt ? (a.createdAt.seconds * 1000 + a.createdAt.nanoseconds / 1000000) : 0);
-      const bValue = b[sortKey as keyof Transaction] ?? (b.createdAt ? (b.createdAt.seconds * 1000 + b.createdAt.nanoseconds / 1000000) : 0);
+      let aValue: any = a[sortKey as keyof Transaction];
+      let bValue: any = b[sortKey as keyof Transaction];
 
-      // Handle server timestamps properly
-      if (a.createdAt && b.createdAt) {
-        const aTime = a.createdAt.seconds * 1000 + a.createdAt.nanoseconds / 1000000;
-        const bTime = b.createdAt.seconds * 1000 + b.createdAt.nanoseconds / 1000000;
-        if (aTime < bTime) return sortDirection === 'asc' ? -1 : 1;
-        if (aTime > bTime) return sortDirection === 'asc' ? 1 : -1;
-        return 0;
+      if (sortKey === 'createdAt') {
+        aValue = a.createdAt ? a.createdAt.seconds * 1000 + (a.createdAt.nanoseconds || 0) / 1000000 : 0;
+        bValue = b.createdAt ? b.createdAt.seconds * 1000 + (b.createdAt.nanoseconds || 0) / 1000000 : 0;
       }
-
+      
       if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
       if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
       return 0;
@@ -151,8 +147,12 @@ export default function TransactionTable({
               const isHighlighted = highlightedRows.has(transaction.id);
               
               let dateToShow = transaction.date;
-              if (transaction.createdAt && transaction.createdAt.seconds) {
-                dateToShow = new Date(transaction.createdAt.seconds * 1000).toLocaleDateString();
+              if (transaction.createdAt && typeof transaction.createdAt === 'object' && 'seconds' in transaction.createdAt) {
+                 try {
+                    dateToShow = new Date(transaction.createdAt.seconds * 1000).toLocaleDateString();
+                 } catch (e) {
+                    // fall back to original date
+                 }
               }
 
 

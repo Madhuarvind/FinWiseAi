@@ -121,7 +121,7 @@ export function TransactionDetailSheet({
 
         try {
           // STEP 1: Get the most important info first - the category
-          const confidenceScore = transaction.id === 'txn_8' || transaction.id === 'txn_11' ? 0.65 : 0.95;
+          const confidenceScore = transaction.status === 'flagged' ? 0.58 : 0.95;
           const categorizationResult = await categorizeTransactionWithLLM({
             transactionDescription: transaction.description,
             confidenceScore: confidenceScore,
@@ -304,8 +304,8 @@ export function TransactionDetailSheet({
               <div className="flex items-start gap-3 rounded-md bg-destructive/10 p-3 text-destructive border border-destructive/20">
                 <AlertTriangle className="h-5 w-5 mt-0.5 flex-shrink-0" />
                 <div className='text-sm'>
-                  <p className="font-semibold">Flagged for Feedback (PFT)</p>
-                  <p>The Predictive Feedback Targeting engine identified this as a high-value transaction for model improvement.</p>
+                  <p className="font-semibold">This transaction was flagged for your feedback.</p>
+                  <p>The AI is only {((aiState.confidence || 0) * 100).toFixed(0)}% sure this is correct. Your review will help improve its accuracy.</p>
                 </div>
               </div>
             )}
@@ -352,7 +352,7 @@ export function TransactionDetailSheet({
 
           <div className="space-y-4">
             <h3 className="font-semibold text-foreground">
-              Teach Mode: Review & Correct
+              Teach Mode: Review &amp; Correct
             </h3>
             <div className="space-y-2">
               <Label htmlFor="category-select">Verify Category</Label>
@@ -431,7 +431,7 @@ export function TransactionDetailSheet({
                   ) : <Skeleton className="h-6 w-full" /> }
                 </div>
                  <div className="rounded-lg border bg-background p-4 leading-relaxed">
-                  <p className="font-medium text-foreground mb-2 flex items-center gap-2"><Sparkles className="h-4 w-4 text-amber-500"/>Predicted Intent & Emotional Temperature (TET):</p>
+                  <p className="font-medium text-foreground mb-2 flex items-center gap-2"><Sparkles className="h-4 w-4 text-amber-500"/>Predicted Intent &amp; Emotional Temperature (TET):</p>
                   {aiState.spendingIntent ? (
                     <>
                       <p className="text-muted-foreground">{aiState.spendingIntent}</p>
@@ -446,7 +446,7 @@ export function TransactionDetailSheet({
                    ) : <Skeleton className="h-10 w-full" />}
                 </div>
                  <div className="rounded-lg border bg-background p-4 leading-relaxed">
-                  <p className="font-medium text-foreground mb-2 flex items-center gap-2"><Repeat className="h-4 w-4"/>Counterfactual & Ethical Shadow (RCSL):</p>
+                  <p className="font-medium text-foreground mb-2 flex items-center gap-2"><Repeat className="h-4 w-4"/>Counterfactual &amp; Ethical Shadow (RCSL):</p>
                   {aiState.counterfactual ? (
                     <>
                       <p className="text-muted-foreground"><span className='font-semibold'>Counterfactual: </span>{aiState.counterfactual}</p>
@@ -455,7 +455,7 @@ export function TransactionDetailSheet({
                   ) : <Skeleton className="h-10 w-full" />}
                 </div>
                  <div className="rounded-lg border bg-background p-4 space-y-2">
-                  <p className="font-medium text-foreground mb-2 flex items-center gap-2"><TrendingUp className="h-4 w-4 text-green-500"/>Future Impact & Health (FIP, ABC, PHHS):</p>
+                  <p className="font-medium text-foreground mb-2 flex items-center gap-2"><TrendingUp className="h-4 w-4 text-green-500"/>Future Impact &amp; Health (FIP, ABC, PHHS):</p>
                    <ul className='list-disc list-inside text-muted-foreground space-y-1'>
                       <li>Continuing this spend monthly would total <span className='font-semibold'>₹{(Math.abs(transaction.amount) * 12).toFixed(2)}</span> annually.</li>
                       <li>This purchase lowers your 'Shopping' budget health score by <span className='font-semibold'>3%</span> this week.</li>
@@ -469,7 +469,7 @@ export function TransactionDetailSheet({
                     <p className="text-muted-foreground leading-relaxed">&quot;Synthesized advice from your agents (Future Self, Frugality, Well-being): The 'Frugality Agent' flags this as non-essential, while the 'Mental Well-being Agent' notes its potential as a mood-booster. Your 'Future Self' suggests allocating this to your 'Gadget Goal' instead. The consensus leans towards mindful spending.&quot;</p>
                 </div>
                  <div className="rounded-lg border bg-background p-4 space-y-2">
-                   <p className="font-medium text-foreground mb-2 flex items-center gap-2"><UserCheck className="h-4 w-4"/>Spending Persona & Philosophy (CPAC):</p>
+                   <p className="font-medium text-foreground mb-2 flex items-center gap-2"><UserCheck className="h-4 w-4"/>Spending Persona &amp; Philosophy (CPAC):</p>
                    <p className="text-muted-foreground leading-relaxed">{getSpendingPersona(currentCategory)}</p>
                    <p className="text-muted-foreground leading-relaxed">Purpose: <span className="font-semibold">{getPurchasePurpose(currentCategory)}</span> | Personality: <span className='font-semibold'>{getTransactionPersonality(currentCategory)}</span> (Hedonic)</p>
                 </div>
@@ -507,7 +507,7 @@ export function TransactionDetailSheet({
             Cancel
           </Button>
           <Button onClick={handleConfirm} disabled={aiState.isLoading}>
-            Confirm & Teach AI
+            Confirm &amp; Teach AI
           </Button>
         </SheetFooter>
       </SheetContent>
