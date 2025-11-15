@@ -110,6 +110,32 @@
         "id",
         "email"
       ]
+    },
+    "Policy": {
+      "title": "Policy",
+      "type": "object",
+      "description": "A structured policy object that defines categorization rules.",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier for the policy." },
+        "name": { "type": "string", "description": "A short, human-readable name for the policy." },
+        "naturalLanguage": { "type": "string", "description": "The original policy text in plain English." },
+        "conditions": {
+          "type": "object",
+          "properties": {
+            "merchant": { "type": "array", "items": { "type": "string" } },
+            "dayOfWeek": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "action": {
+          "type": "object",
+          "properties": {
+            "type": { "type": "string", "enum": ["CLASSIFY"] },
+            "category": { "type": "string" }
+          }
+        },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "naturalLanguage", "conditions", "action"]
     }
   },
   "auth": {
@@ -135,6 +161,12 @@
         "$ref": "#/entities/Transaction"
       },
       "description": "Stores financial transactions for a specific user. Path-based ownership ensures only the authenticated user can read/write their own transactions."
+    },
+    "/policies/{policyId}": {
+      "schema": {
+        "$ref": "#/entities/Policy"
+      },
+      "description": "Stores versioned, machine-readable policies for the Policy-Driven Categorisation OS (PD-COS)."
     }
   }
 }

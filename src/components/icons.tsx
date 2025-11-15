@@ -47,6 +47,7 @@ import {
   BookText,
   Eye,
   SearchCode,
+  FileText,
 } from 'lucide-react';
 
 export const Logo = () => (
@@ -79,7 +80,7 @@ export const categoryIcons = {
   Gem,
   Briefcase,
   Users,
-  Receipt,
+Receipt,
 };
 
 export const navIcons = {
@@ -94,6 +95,7 @@ export const navIcons = {
   Bias: Scale,
   Security: ShieldCheck,
   Trips: Briefcase,
+  Policy: FileText,
 };
 
 export const getCategoryIcon = (

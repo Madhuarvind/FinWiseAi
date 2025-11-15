@@ -62,3 +62,18 @@ export type Trip = {
     };
     transactions: Transaction[];
 }
+
+export type Policy = {
+    id: string;
+    name: string;
+    naturalLanguage: string;
+    conditions: {
+        merchant: string[];
+        dayOfWeek?: string[];
+    };
+    action: {
+        type: 'CLASSIFY';
+        category: string;
+    };
+    createdAt: any; // Firestore Timestamp
+};

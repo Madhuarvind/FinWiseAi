@@ -6,10 +6,11 @@
  *  - /users/{userId}: Stores user profile information, accessible only to the owning user.
  *  - /categories/{categoryId}: Stores transaction categories, publicly readable, with writes potentially restricted to admins.
  *  - /users/{userId}/transactions/{transactionId}: Stores transactions for a user, accessible only to the owning user.
+ *  - /policies/{policyId}: Stores categorization policies, publicly readable for now.
  * @keySecurityDecisions
  *  - User listing is disallowed.
  *  - User profiles and transactions are strictly owned by the user ID in the path.
- *  - Categories are publicly readable, but write access requires further implementation using an admin role.
+ *  - Categories and policies are publicly readable to allow the client engine to function.
  *  - The ruleset prioritizes authorization and does not enforce strict data validation in this prototyping phase.
  */
 rules_version = '2';
@@ -45,13 +46,6 @@ service cloud.firestore {
     /**
      * @description Rules for user profiles.
      * @path /users/{userId}
-     * @allow (create) - Authenticated user with UID 'user123' can create their profile at /users/user123.
-     * @allow (get) - Authenticated user with UID 'user123' can get their profile at /users/user123.
-     * @allow (update) - Authenticated user with UID 'user123' can update their profile at /users/user123.
-     * @allow (delete) - Authenticated user with UID 'user123' can delete their profile at /users/user123.
-     * @deny (create) - Authenticated user with UID 'user456' cannot create a profile at /users/user123.
-     * @deny (get) - Unauthenticated user cannot get any user profile.
-     * @principle Enforces document ownership for writes and restricts read access to the owner.
      */
     match /users/{userId} {
       allow get: if isOwner(userId);
@@ -64,38 +58,35 @@ service cloud.firestore {
     /**
      * @description Rules for transaction categories.
      * @path /categories/{categoryId}
-     * @allow (get, list) - Any signed-in user can read category data.
-     * @allow (create) - Any signed-in user can create a category.
-     * @deny (update, delete) - No user can update or delete a category without admin rights (future).
-     * @principle Public read, authenticated-user writes.
      */
     match /categories/{categoryId} {
       allow get: if isSignedIn();
       allow list: if isSignedIn();
       allow create: if isSignedIn();
-      allow update: if isSignedIn(); // Allow updates for now
-      allow delete: if isSignedIn(); // Allow deletion for now
+      allow update: if isSignedIn();
+      allow delete: if isSignedIn();
     }
 
     /**
      * @description Rules for user transactions.
      * @path /users/{userId}/transactions/{transactionId}
-     * @allow (create) - Authenticated user with UID 'user123' can create a transaction at /users/user123/transactions/tx1.
-     * @allow (get) - Authenticated user with UID 'user123' can get their transaction at /users/user123/transactions/tx1.
-     * @allow (update) - Authenticated user with UID 'user123' can update their transaction at /users/user123/transactions/tx1.
-     * @allow (delete) - Authenticated user with UID 'user123' can delete their transaction at /users/user123/transactions/tx1.
-     * @deny (create) - Authenticated user with UID 'user456' cannot create a transaction at /users/user123/transactions/tx1.
-     * @deny (get) - Unauthenticated user cannot get any transaction.
-     * @principle Enforces document ownership for writes and restricts read access to the owner.
      */
     match /users/{userId}/transactions/{transactionId} {
       allow get: if isOwner(userId);
       allow list: if isOwner(userId);
-      // Ensure user can only create transactions for themselves
       allow create: if isOwner(userId) && request.resource.data.userProfileId == userId;
-      // Ensure user can only update their own transactions, and can't change the owner
       allow update: if isOwner(userId) && request.resource.data.userProfileId == resource.data.userProfileId;
       allow delete: if isOwner(userId);
+    }
+
+    /**
+     * @description Rules for policies.
+     * @path /policies/{policyId}
+     */
+    match /policies/{policyId} {
+      // For now, allow any signed-in user to read/write policies for demo purposes.
+      // In production, this would be restricted to admin roles.
+      allow read, write: if isSignedIn();
     }
   }
 }
