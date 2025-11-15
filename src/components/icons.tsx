@@ -44,6 +44,7 @@ import {
   Telescope,
   TrendingUp,
   AlertTriangle,
+  UserX,
 } from 'lucide-react';
 
 export const Logo = () => (
@@ -86,6 +87,7 @@ export const categoryIcons = {
   Telescope,
   TrendingUp,
   AlertTriangle,
+  UserX,
 };
 
 export const navIcons = {

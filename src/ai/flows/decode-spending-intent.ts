@@ -20,7 +20,7 @@ const DecodeSpendingIntentInputSchema = z.object({
 export type DecodeSpendingIntentInput = z.infer<typeof DecodeSpendingIntentInputSchema>;
 
 const DecodeSpendingIntentOutputSchema = z.object({
-  intent: z.string().describe('A short, human-friendly sentence describing the likely intent behind the purchase.'),
+  intent: z.string().describe('A short, human-friendly sentence describing the likely intent behind the purchase, including an emotional temperature score (0.0 to 1.0).'),
 });
 export type DecodeSpendingIntentOutput = z.infer<typeof DecodeSpendingIntentOutputSchema>;
 
@@ -34,16 +34,16 @@ const decodeSpendingIntentPrompt = ai.definePrompt({
   name: 'decodeSpendingIntentPrompt',
   input: { schema: DecodeSpendingIntentInputSchema },
   output: { schema: DecodeSpendingIntentOutputSchema },
-  prompt: `You are an expert at inferring consumer spending intent. Based on the transaction details, generate a short, insightful sentence about the likely motivation for this purchase.
+  prompt: `You are an expert at inferring consumer spending intent. Based on the transaction details, generate a short, insightful sentence about the likely motivation for this purchase and include an "emotional temperature" score (0.0 = purely rational, 1.0 = highly impulsive).
 
 Consider the context:
 - A {{timeOfDay}} purchase on a {{dayOfWeek}} at "{{description}}" in the "{{category}}" category.
 
 Example Intents:
-- "This looks like a routine morning coffee purchase."
-- "This appears to be a recurring monthly subscription."
-- "This seems to be a weekend dining-out expense."
-- "This resembles a one-off online shopping purchase."
+- "This looks like a routine morning coffee purchase. Emotional Temperature: 0.2"
+- "This appears to be a recurring monthly subscription. Emotional Temperature: 0.1"
+- "This seems to be a weekend dining-out expense with friends. Emotional Temperature: 0.6"
+- "This late-night purchase resembles an impulsive online shopping spree. Emotional Temperature: 0.9"
 
 Your turn. Generate the intent statement:
 `,

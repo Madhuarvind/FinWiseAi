@@ -7,7 +7,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card';
 
 interface MerchantDriftChartProps {
   data: { month: string; drift: number }[];
