@@ -7,6 +7,7 @@ import * as React from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { decodeSpendingIntent } from "@/ai/flows/decode-spending-intent";
+import { generateAdversarialExamples } from "@/ai/flows/generate-adversarial-examples";
 import { Separator } from "@/components/ui/separator";
 
 export default function SecurityPage() {
@@ -14,32 +15,29 @@ export default function SecurityPage() {
     const [isLoading, setIsLoading] = React.useState<Record<string, boolean>>({});
     const [dialogContent, setDialogContent] = React.useState<{ title: string; description: string; content: React.ReactNode } | null>(null);
 
-    const handleRunAIF = async () => {
-        setIsLoading(prev => ({ ...prev, aif: true }));
-        toast({ title: "Adversarial Intent Filter Initialized", description: "Analyzing a potentially malicious transaction string..."});
+    const handleRunAAS = async () => {
+        setIsLoading(prev => ({ ...prev, aas: true }));
+        toast({ title: "Adversarial Attack Simulator Initialized", description: "The Red-Team AI is generating attack variants..."});
         try {
-            const result = await decodeSpendingIntent({
-                description: "gift card and snacks", // Ambiguous string
-                timeOfDay: "Afternoon",
-                dayOfWeek: "Saturday",
-                category: "Shopping"
+            const result = await generateAdversarialExamples({
+                originalDescription: "ONLINE CASINO DEPOSIT",
+                targetCategory: "Donation"
             });
             setDialogContent({
-                title: "AIF Analysis Complete",
-                description: "The filter analyzed the ambiguous string to determine the likely underlying intent.",
+                title: "AAS Simulation Complete",
+                description: "The AI generated these adversarial strings to try and disguise a 'Gambling' transaction as a 'Donation'.",
                 content: (
-                     <div className="mt-4 text-sm">
-                        <p className="text-muted-foreground">The AIF flagged the transaction as potentially trying to hide a 'gift card' purchase within a routine 'snacks' purchase. The predicted intent is:</p>
-                        <p className="mt-2 font-semibold text-foreground bg-secondary/30 p-3 rounded-lg">
-                           {result.intent}
-                        </p>
-                    </div>
+                     <ul className="mt-4 space-y-2 text-sm text-muted-foreground bg-secondary/30 p-4 rounded-lg font-mono">
+                        {result.examples.map((example, i) => (
+                            <li key={i}>{example}</li>
+                        ))}
+                    </ul>
                 )
             });
         } catch (e) {
-            toast({ variant: 'destructive', title: "AIF Failed", description: "Could not decode spending intent."});
+            toast({ variant: 'destructive', title: "AAS Failed", description: "Could not generate adversarial examples."});
         } finally {
-            setIsLoading(prev => ({ ...prev, aif: false }));
+            setIsLoading(prev => ({ ...prev, aas: false }));
         }
     };
     
@@ -145,9 +143,9 @@ export default function SecurityPage() {
             <h2 className="text-xl font-semibold tracking-tight">System Integrity Monitors</h2>
             <Card>
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Bot />Adversarial Intent Filter (AIF)</CardTitle>
+                    <CardTitle className="flex items-center gap-2"><Bot />Adversarial Attack Simulator (AAS)</CardTitle>
                     <CardDescription>
-                        A specialized security layer that detects malicious or unusual transaction strings designed to evade categorization or hide intent.
+                        A "Red-Team" AI agent that generates adversarial transaction strings to test model robustness.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -155,20 +153,20 @@ export default function SecurityPage() {
                         <div className="flex items-center gap-3">
                             <Bot className="h-6 w-6 text-primary"/>
                             <div>
-                                <p className="font-semibold">AIF Status</p>
-                                <p className="text-sm text-muted-foreground">Actively monitoring all incoming transactions.</p>
+                                <p className="font-semibold">AAS Status</p>
+                                <p className="text-sm text-muted-foreground">Ready to generate attack variants.</p>
                             </div>
                         </div>
                         <Badge variant="secondary" className="bg-green-100 text-green-900 dark:bg-green-900/30 dark:text-green-300">Active</Badge>
                     </div>
                     <div className="mt-4 text-sm text-muted-foreground">
-                        <p>The AIF is trained to recognize patterns associated with adversarial attacks, such as character swapping, benign string injection, and other manipulation techniques. Any transaction flagged by the AIF is immediately sent for human review and is not processed automatically.</p>
+                        <p>The AAS is trained to think like an attacker, creating examples with obfuscated names, misleading keywords, and unicode tricks. You can use these generated examples to benchmark your model's resilience and create a more robust training dataset.</p>
                     </div>
                 </CardContent>
                 <CardFooter>
-                    <Button onClick={handleRunAIF} disabled={isLoading['aif']}>
-                         {isLoading['aif'] ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldAlert className="mr-2 h-4 w-4"/>}
-                         {isLoading['aif'] ? "Analyzing..." : "Analyze Sample Adversarial Txn"}
+                    <Button onClick={handleRunAAS} disabled={isLoading['aas']}>
+                         {isLoading['aas'] ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldAlert className="mr-2 h-4 w-4"/>}
+                         {isLoading['aas'] ? "Generating..." : "Generate Attack Variants"}
                     </Button>
                 </CardFooter>
             </Card>

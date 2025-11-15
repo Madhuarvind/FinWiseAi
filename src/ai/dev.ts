@@ -12,3 +12,4 @@ import '@/ai/flows/synthesize-transactions.ts';
 import '@/ai/flows/decode-spending-intent.ts';
 import '@/ai/flows/reconstruct-transaction-from-text.ts';
 import '@/ai/flows/generate-policy-from-text.ts';
+import '@/ai/flows/generate-adversarial-examples.ts';
