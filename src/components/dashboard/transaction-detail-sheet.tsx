@@ -473,7 +473,7 @@ export function TransactionDetailSheet({
                    <p className="text-muted-foreground leading-relaxed">Purpose: <span className="font-semibold">{getPurchasePurpose(currentCategory)}</span> | Personality: <span className='font-semibold'>{getTransactionPersonality(currentCategory)}</span> (Hedonic)</p>
                 </div>
                 <div className="rounded-lg border bg-background p-4 space-y-3">
-                    <p className="font-medium text-foreground flex items-center gap-2"><Network className="h-4 w-4"/>Spending Black Box (SBBR):</p>
+                    <p className="font-medium text-foreground flex items-center gap-2"><Network className="h-4 w-4"/>Spending Black Box Recorder (SBBR):</p>
                     {aiState.zile ? (
                       <>
                         <div>
