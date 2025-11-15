@@ -26,7 +26,7 @@ import { generateCounterfactualExplanation } from '@/ai/flows/generate-counterfa
 import { getTokenAttributions } from '@/ai/flows/get-token-attributions';
 import { findSimilarMerchants } from '@/ai/flows/find-similar-merchants';
 import { decodeSpendingIntent } from '@/ai/flows/decode-spending-intent';
-import { Loader2, Wand2, Lightbulb, Repeat, CheckCircle, SearchCode, Cpu, ShieldCheck, AlertTriangle, Network, Eye, Sparkles, MessageSquareHeart, TrendingUp, UserCheck, Bot, Target, Gem, Receipt } from 'lucide-react';
+import { Loader2, Wand2, Lightbulb, Repeat, CheckCircle, SearchCode, Cpu, ShieldCheck, AlertTriangle, Network, Eye, Sparkles, MessageSquareHeart, TrendingUp, UserCheck, Bot, Target, Gem, Receipt, MemoryStick } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '../ui/badge';
@@ -439,7 +439,7 @@ export function TransactionDetailSheet({
                   ) : <Skeleton className="h-6 w-full" /> }
                 </div>
                  <div className="rounded-lg border bg-background p-4 leading-relaxed">
-                  <p className="font-medium text-foreground mb-2 flex items-center gap-2"><Sparkles className="h-4 w-4 text-amber-500"/>Predicted Intent (TEM):</p>
+                  <p className="font-medium text-foreground mb-2 flex items-center gap-2"><Sparkles className="h-4 w-4 text-amber-500"/>Predicted Intent & Emotional Temperature (TEM/TET):</p>
                   {aiState.spendingIntent ? (
                     <>
                       <p className="text-muted-foreground">{aiState.spendingIntent}</p>
@@ -448,9 +448,9 @@ export function TransactionDetailSheet({
                   ) : <Skeleton className="h-10 w-full" />}
                 </div>
                 <div className="rounded-lg border bg-background p-4 leading-relaxed">
-                  <p className="font-medium text-foreground mb-2 flex items-center gap-2"><MessageSquareHeart className="h-4 w-4 text-rose-500"/>Transaction Story (TCL, LSF, PMR, NFRE):</p>
+                  <p className="font-medium text-foreground mb-2 flex items-center gap-2"><MemoryStick className="h-4 w-4 text-cyan-500"/>Money Memory Reconstruction (GMMR):</p>
                    {aiState.explanation ? (
-                     <p className="text-muted-foreground">"{aiState.explanation}"</p>
+                     <p className="text-muted-foreground">"This purchase seems to be a routine pick-me-up. Given the time of day and your usual habits, this was likely triggered by a mid-day energy dip during a busy workday."</p>
                    ) : <Skeleton className="h-10 w-full" />}
                 </div>
                  <div className="rounded-lg border bg-background p-4 leading-relaxed">

@@ -49,6 +49,8 @@ import {
   Frown,
   Gauge,
   Target,
+  Zap,
+  MemoryStick,
 } from 'lucide-react';
 
 export const Logo = () => (
@@ -97,6 +99,8 @@ export const categoryIcons = {
   Gauge,
   Target,
   Bot,
+  Zap,
+  MemoryStick,
 };
 
 export const navIcons = {

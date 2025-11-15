@@ -13,7 +13,7 @@ import TransactionTable from '@/components/dashboard/transaction-table';
 import { universes } from '@/lib/data';
 import type { Category, Transaction, Universe } from '@/lib/types';
 import { preprocessTransactions } from '@/lib/preprocessing';
-import { DollarSign, AlertTriangle, Activity, MessageSquareHeart, BookText, Fingerprint, ShieldAlert, Loader2 } from 'lucide-react';
+import { DollarSign, AlertTriangle, Activity, MessageSquareHeart, BookText, Fingerprint, ShieldAlert, Loader2, BrainCircuit, Zap } from 'lucide-react';
 import { SpendingByCategoryChart } from '@/components/dashboard/spending-by-category-chart';
 import { UniverseSelector } from '@/components/dashboard/universe-selector';
 import { Button } from '@/components/ui/button';
@@ -140,17 +140,17 @@ export default function DashboardPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Financial Mood DNA (FM-DNA)
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <BrainCircuit className="h-4 w-4"/> Financial Consciousness
             </CardTitle>
             <Fingerprint className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-xl font-bold font-mono tracking-widest">C-R-L-S-I</div>
+            <div className="text-xl font-bold font-mono tracking-widest text-primary">Calm, Intentional</div>
             <p className="text-xs text-muted-foreground">
-              (Calm, Routine, Low-Risk, Stable, Intentional)
+             (Low Anxiety, High Discipline)
             </p>
-             <p className="text-xs text-muted-foreground mt-1">Lore: Evolving from 'Saver' to 'Smart Investor'.</p>
+             <p className="text-xs text-muted-foreground mt-1">Lore: Consciousness is evolving from 'Saver' to 'Strategic Investor'.</p>
           </CardContent>
         </Card>
         <Card>
@@ -197,14 +197,14 @@ export default function DashboardPage() {
             <Card className="border-destructive/50">
                  <CardHeader>
                     <CardTitle className="text-base font-semibold flex items-center gap-2">
-                        <ShieldAlert className="h-5 w-5 text-destructive"/>
-                        Habit Vulnerability Radar (HVR)
+                        <Zap className="h-5 w-5 text-destructive"/>
+                        Emotion-Time Fusion Engine (ETFE)
                     </CardTitle>
-                    <CardDescription>AI has identified your spending weak points to help you stay on track.</CardDescription>
+                    <CardDescription>AI has identified your emotional danger zones to help you stay on track.</CardDescription>
                  </CardHeader>
                   <CardContent className="text-sm pt-0">
-                    <p><span className='font-semibold'>Vulnerable Hours:</span> 10 PM - 2 AM</p>
-                    <p><span className='font-semibold'>Vulnerable Category:</span> Online Shopping</p>
+                    <p><span className='font-semibold'>High Impulse Zone:</span> 10 PM - 1 AM</p>
+                    <p><span className='font-semibold'>Emotional Shopping Window:</span> Sunday Evening</p>
                  </CardContent>
             </Card>
         </div>

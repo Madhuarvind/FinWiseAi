@@ -1,7 +1,7 @@
 'use client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Bot, Binary, Telescope, Loader2, Fingerprint, Network } from 'lucide-react';
+import { Bot, Binary, Telescope, Loader2, Fingerprint, Network, Repeat } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import * as React from 'react';
 import { useToast } from '@/hooks/use-toast';
@@ -98,7 +98,7 @@ export default function SimulationLabPage() {
     <div className="space-y-8">
       <div>
         <h1 className="font-headline text-3xl font-semibold tracking-tight text-foreground">
-          AI Simulation Lab
+          Financial Reality & Simulation Lab
         </h1>
         <p className="text-muted-foreground">
           Explore advanced financial visualizations and predictive simulations.
@@ -132,12 +132,12 @@ export default function SimulationLabPage() {
        <Separator/>
 
         <div className="space-y-6">
-            <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2"><Binary className="text-primary"/>Financial Parallel World Simulator (FPWS)</h2>
+            <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2"><Repeat className="text-primary"/>Financial Parallel Universe Navigator (FPUN)</h2>
             <Card>
                 <CardHeader>
-                    <CardTitle>Simulate Your Alternate Financial Future</CardTitle>
+                    <CardTitle>Simulate Your Alternate Financial Lives</CardTitle>
                     <CardDescription>
-                      Ever wonder "what if?" This tool lets you explore parallel financial worlds by changing key variables in your spending habits using counterfactual reasoning.
+                      Ever wonder "what if?" This tool lets you explore parallel financial universes by changing key variables in your spending habits using counterfactual reasoning.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -146,19 +146,19 @@ export default function SimulationLabPage() {
                             <p className="font-medium">Choose a Scenario</p>
                             <Button variant="outline" className="w-full justify-start text-left" onClick={() => handleRunCounterfactual('delivery')} disabled={isLoading['counterfactual']}>
                                 {isLoading['counterfactual'] ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Binary className="mr-2 h-4 w-4" />}
-                                If I stopped all food delivery...
+                                Universe: No Food Delivery
                             </Button>
                             <Button variant="secondary" className="w-full justify-start text-left" onClick={() => handleRunCounterfactual('subscription')} disabled={isLoading['counterfactual']}>
                                 {isLoading['counterfactual'] ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Binary className="mr-2 h-4 w-4" />}
-                                If I cut all subscriptions...
+                                Universe: Minimalist (No Subscriptions)
                             </Button>
-                            <Button variant="outline" className="w-full justify-start text-left" disabled>If I saved 20% more monthly...</Button>
+                            <Button variant="outline" className="w-full justify-start text-left" disabled>Universe: Investor (Save 20% More)</Button>
                         </div>
                         <div className="md:col-span-2 rounded-lg border bg-background p-4 flex items-center justify-center">
                             <div className="text-center">
                                 <Bot className="h-12 w-12 mx-auto text-muted-foreground" />
                                 <p className="mt-4 font-medium text-foreground">AI Simulation Results</p>
-                                <p className="text-muted-foreground text-sm">Select a scenario to see the simulated outcome.</p>
+                                <p className="text-muted-foreground text-sm">Select a parallel universe to see the simulated outcome.</p>
                             </div>
                         </div>
                     </div>
@@ -169,12 +169,12 @@ export default function SimulationLabPage() {
        <Separator/>
 
        <div className="space-y-6">
-            <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2"><Network className="text-primary"/>Spending Black Box Recorder (SBBR)</h2>
+            <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2"><Network className="text-primary"/>Hyper-Contextual Transaction Rewriting (HTR)</h2>
             <Card>
                 <CardHeader>
                     <CardTitle>Generate a Semantic DNA Fingerprint</CardTitle>
                     <CardDescription>
-                       Simulate the creation of a "Zero Interpretation Loss Embedding" (ZILE) — the rich feature vector the AI uses for complex analysis.
+                       Simulate how the AI rewrites a transaction's semantic DNA based on different contextual universes, a core component of the Zero Interpretation Loss Embedding (ZILE).
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -183,7 +183,7 @@ export default function SimulationLabPage() {
                 <CardFooter>
                     <Button onClick={handleRunSBBR} disabled={isLoading['sbbr']}>
                          {isLoading['sbbr'] ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Fingerprint className="mr-2 h-4 w-4"/>}
-                         {isLoading['sbbr'] ? "Generating..." : "Generate Semantic Fingerprint"}
+                         {isLoading['sbbr'] ? "Generating..." : "Generate & Rewrite Semantic DNA"}
                     </Button>
                 </CardFooter>
             </Card>
