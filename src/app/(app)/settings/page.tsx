@@ -9,14 +9,26 @@ import { useUser } from '@/firebase';
 import { Switch } from '@/components/ui/switch';
 import { toast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
+import { Cloud, Smartphone } from 'lucide-react';
 
 export default function SettingsPage() {
   const { user } = useUser();
+  const [isCloudEnabled, setIsCloudEnabled] = React.useState(true);
 
   const handleSaveChanges = () => {
     toast({
       title: 'Settings Saved',
       description: 'Your changes have been successfully saved.',
+    });
+  };
+
+  const handleCloudToggle = (checked: boolean) => {
+    setIsCloudEnabled(checked);
+    toast({
+        title: checked ? 'Cloud AI Enabled' : 'On-Device AI Active',
+        description: checked 
+            ? 'The full suite of advanced cloud AI features is now active.'
+            : 'Using basic, privacy-first on-device categorization. Advanced features are disabled.',
     });
   };
 
@@ -49,6 +61,35 @@ export default function SettingsPage() {
           </div>
         </CardContent>
         <CardFooter className="border-t px-6 py-4">
+            <Button onClick={handleSaveChanges}>Save Changes</Button>
+        </CardFooter>
+      </Card>
+      
+      <Card>
+        <CardHeader>
+          <CardTitle>Data & Privacy</CardTitle>
+          <CardDescription>
+            Manage how your data is processed and control your privacy settings.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+             <div className="flex flex-row items-center justify-between rounded-lg border p-4">
+                <div className="space-y-0.5">
+                    <Label className="text-base flex items-center gap-2">
+                        {isCloudEnabled ? <Cloud className="text-primary"/> : <Smartphone />}
+                        {isCloudEnabled ? 'Cloud-Powered AI Intelligence' : 'On-Device Shadow Categorizer'}
+                    </Label>
+                    <p className="text-sm text-muted-foreground">
+                        {isCloudEnabled 
+                            ? 'Enables advanced insights, XAI, and predictive features. Your data is processed securely in the cloud.'
+                            : 'Basic categorization runs locally on your device for maximum privacy. Advanced AI features are disabled.'
+                        }
+                    </p>
+                </div>
+                <Switch checked={isCloudEnabled} onCheckedChange={handleCloudToggle}/>
+            </div>
+        </CardContent>
+         <CardFooter className="border-t px-6 py-4">
             <Button onClick={handleSaveChanges}>Save Changes</Button>
         </CardFooter>
       </Card>

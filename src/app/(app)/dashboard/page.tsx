@@ -239,14 +239,21 @@ export default function DashboardPage() {
     <Dialog open={isJournalOpen} onOpenChange={setIsJournalOpen}>
         <DialogContent className="sm:max-w-2xl">
             <DialogHeader>
-                <DialogTitle>Financial Journal</DialogTitle>
+                <DialogTitle>Intent-Driven Financial Chat</DialogTitle>
                 <DialogDescription>
-                    An AI-generated narrative of your financial story and habits.
+                    Ask the AI to narrate your financial story from different perspectives.
                 </DialogDescription>
             </DialogHeader>
-            <div className="py-4">
-                <div className="flex h-96 w-full items-center justify-center rounded-lg border-2 border-dashed">
-                    <p className="text-muted-foreground">Journal entries and visualizations will be displayed here.</p>
+            <div className="py-4 space-y-4">
+                <div className="p-4 border rounded-lg bg-muted h-64 overflow-y-auto">
+                    <p className="text-sm text-muted-foreground">[Chat history placeholder]</p>
+                    <p className="font-medium mt-4">AI: Hello! How can I help you understand your finances today?</p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                    <Button variant="outline" size="sm">Explain this month like I'm 10.</Button>
+                    <Button variant="outline" size="sm">Show me transactions I might regret.</Button>
+                    <Button variant="outline" size="sm">If I want to save ₹5000, what should I cut?</Button>
+                    <Button variant="outline" size="sm">Talk to me like a strict mentor.</Button>
                 </div>
             </div>
             <DialogFooter>

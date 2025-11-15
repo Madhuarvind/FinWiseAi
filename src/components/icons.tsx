@@ -51,6 +51,8 @@ import {
   Target,
   Zap,
   MemoryStick,
+  Cloud,
+  Smartphone,
 } from 'lucide-react';
 
 export const Logo = () => (
@@ -101,6 +103,8 @@ export const categoryIcons = {
   Bot,
   Zap,
   MemoryStick,
+  Cloud,
+  Smartphone,
 };
 
 export const navIcons = {

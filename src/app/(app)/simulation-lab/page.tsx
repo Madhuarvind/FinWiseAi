@@ -101,7 +101,7 @@ export default function SimulationLabPage() {
           Financial Reality & Simulation Lab
         </h1>
         <p className="text-muted-foreground">
-          Explore advanced financial visualizations and predictive simulations.
+          Explore advanced financial visualizations and predictive "What-If" simulations.
         </p>
       </div>
 
@@ -132,33 +132,33 @@ export default function SimulationLabPage() {
        <Separator/>
 
         <div className="space-y-6">
-            <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2"><Repeat className="text-primary"/>Financial Parallel Universe Navigator (FPUN)</h2>
+            <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2"><Repeat className="text-primary"/>Transaction "What-If" Playground</h2>
             <Card>
                 <CardHeader>
                     <CardTitle>Simulate Your Alternate Financial Lives</CardTitle>
                     <CardDescription>
-                      Ever wonder "what if?" This tool lets you explore parallel financial universes by changing key variables in your spending habits using counterfactual reasoning.
+                      Ever wonder "what if?" This tool lets you explore parallel financial universes by changing key variables in your spending habits and seeing the immediate impact.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="space-y-2">
-                            <p className="font-medium">Choose a Scenario</p>
+                            <p className="font-medium">Choose a Simulation Scenario</p>
                             <Button variant="outline" className="w-full justify-start text-left" onClick={() => handleRunCounterfactual('delivery')} disabled={isLoading['counterfactual']}>
                                 {isLoading['counterfactual'] ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Binary className="mr-2 h-4 w-4" />}
-                                Universe: No Food Delivery
+                                What if I stop food delivery?
                             </Button>
                             <Button variant="secondary" className="w-full justify-start text-left" onClick={() => handleRunCounterfactual('subscription')} disabled={isLoading['counterfactual']}>
                                 {isLoading['counterfactual'] ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Binary className="mr-2 h-4 w-4" />}
-                                Universe: Minimalist (No Subscriptions)
+                                What if I cut all subscriptions?
                             </Button>
-                            <Button variant="outline" className="w-full justify-start text-left" disabled>Universe: Investor (Save 20% More)</Button>
+                            <Button variant="outline" className="w-full justify-start text-left" disabled>What if I save 20% more?</Button>
                         </div>
                         <div className="md:col-span-2 rounded-lg border bg-background p-4 flex items-center justify-center">
                             <div className="text-center">
                                 <Bot className="h-12 w-12 mx-auto text-muted-foreground" />
                                 <p className="mt-4 font-medium text-foreground">AI Simulation Results</p>
-                                <p className="text-muted-foreground text-sm">Select a parallel universe to see the simulated outcome.</p>
+                                <p className="text-muted-foreground text-sm">Select a scenario to see the simulated outcome.</p>
                             </div>
                         </div>
                     </div>
