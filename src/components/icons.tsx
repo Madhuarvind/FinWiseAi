@@ -80,7 +80,7 @@ export const categoryIcons = {
   Gem,
   Briefcase,
   Users,
-Receipt,
+  Receipt,
 };
 
 export const navIcons = {
