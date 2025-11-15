@@ -13,18 +13,7 @@ function initializeFirebase() {
     return getSdks(app);
   }
 
-  let firebaseApp;
-  try {
-    firebaseApp = initializeApp();
-  } catch (e) {
-    if (process.env.NODE_ENV === 'production') {
-      console.warn(
-        'Automatic Firebase initialization failed. Falling back to firebaseConfig.',
-        e
-      );
-    }
-    firebaseApp = initializeApp(firebaseConfig);
-  }
+  const firebaseApp = initializeApp(firebaseConfig);
   return getSdks(firebaseApp);
 }
 
@@ -45,6 +34,8 @@ export * from './non-blocking-updates';
 export * from './non-blocking-login';
 export * from './errors';
 export * from './error-emitter';
+export * from './auth/use-user';
+
 
 // This function is now internal to the firebase module.
 // The public API is the FirebaseClientProvider and the hooks.
