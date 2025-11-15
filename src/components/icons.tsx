@@ -43,6 +43,7 @@ import {
   Network,
   Telescope,
   TrendingUp,
+  AlertTriangle,
 } from 'lucide-react';
 
 export const Logo = () => (
@@ -84,6 +85,7 @@ export const categoryIcons = {
   Network,
   Telescope,
   TrendingUp,
+  AlertTriangle,
 };
 
 export const navIcons = {
@@ -106,3 +108,5 @@ export const getCategoryIcon = (
 ): LucideIcon => {
   return categoryIcons[iconName] || ShoppingCart;
 };
+
+    
