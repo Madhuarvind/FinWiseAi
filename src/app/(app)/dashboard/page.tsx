@@ -13,7 +13,7 @@ import TransactionTable from '@/components/dashboard/transaction-table';
 import { universes } from '@/lib/data';
 import type { Category, Transaction, Universe } from '@/lib/types';
 import { preprocessTransactions } from '@/lib/preprocessing';
-import { DollarSign, ListChecks, AlertTriangle, Activity, MessageSquareHeart, BookText, Fingerprint, ShieldAlert, Loader2 } from 'lucide-react';
+import { DollarSign, AlertTriangle, Activity, MessageSquareHeart, BookText, Fingerprint, ShieldAlert, Loader2 } from 'lucide-react';
 import { SpendingByCategoryChart } from '@/components/dashboard/spending-by-category-chart';
 import { UniverseSelector } from '@/components/dashboard/universe-selector';
 import { Button } from '@/components/ui/button';
