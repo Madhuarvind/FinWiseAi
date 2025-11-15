@@ -102,7 +102,7 @@ export default function TaxonomyPage() {
             </CardHeader>
             <CardContent>
                 <div className="text-sm text-muted-foreground">
-                    <p><span className="font-semibold text-foreground">&quot;Dining&quot;</span> is evolving. The model predicts a 15% increase in &quot;morning coffee&quot; transactions clustering within this category over the next 30 days, suggesting a potential new sub-category: <span className="font-semibold text-foreground">&quot;Coffee Runs&quot;</span>.</p>
+                    <p><span className="font-semibold text-foreground">"Dining"</span> is evolving. The model predicts a 15% increase in "morning coffee" transactions clustering within this category over the next 30 days, suggesting a potential new sub-category: <span className="font-semibold text-foreground">"Coffee Runs"</span>.</p>
                 </div>
             </CardContent>
             </Card>
@@ -115,7 +115,7 @@ export default function TaxonomyPage() {
                 </CardHeader>
                 <CardContent>
                      <div className="text-sm text-muted-foreground">
-                        <p>Analysis of semantic distance shows a <span className="font-semibold text-amber-600">78% overlap</span> between <span className="font-semibold text-foreground">&quot;Food & Drink&quot;</span> and <span className="font-semibold text-foreground">&quot;Groceries&quot;</span>. The AI recommends merging these to improve model accuracy.</p>
+                        <p>Analysis of semantic distance shows a <span className="font-semibold text-amber-600">78% overlap</span> between <span className="font-semibold text-foreground">"Food & Drink"</span> and <span className="font-semibold text-foreground">"Groceries"</span>. The AI recommends merging these to improve model accuracy.</p>
                     </div>
                 </CardContent>
                  <CardFooter>
