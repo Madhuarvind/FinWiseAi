@@ -45,6 +45,10 @@ import {
   TrendingUp,
   AlertTriangle,
   UserX,
+  Wallet,
+  Frown,
+  Gauge,
+  Target,
 } from 'lucide-react';
 
 export const Logo = () => (
@@ -88,6 +92,11 @@ export const categoryIcons = {
   TrendingUp,
   AlertTriangle,
   UserX,
+  Wallet,
+  Frown,
+  Gauge,
+  Target,
+  Bot,
 };
 
 export const navIcons = {

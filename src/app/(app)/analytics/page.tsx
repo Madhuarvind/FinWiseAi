@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Frown, Gauge, Target, HeartPulse, ShieldCheck, TrendingUp, Bot, Users, Activity, Fingerprint, Repeat } from 'lucide-react';
+import { Frown, Gauge, Target, HeartPulse, ShieldCheck, TrendingUp, Bot, Users, Activity, Fingerprint, Repeat, Wallet } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { ConfusionMatrix } from '@/components/analytics/confusion-matrix';
 import { PerCategoryAccuracyChart } from '@/components/analytics/per-category-accuracy-chart';
@@ -154,10 +154,10 @@ export default function AnalyticsPage() {
           <div>
             <h2 className="font-headline text-2xl font-semibold tracking-tight text-foreground flex items-center gap-2">
                 <HeartPulse className="text-primary"/>
-                Health Analytics
+                Health Analytics (PFAG)
             </h2>
             <p className="text-muted-foreground">
-                Monitoring financial signals related to your health and well-being.
+                The Psycho-Financial Anomaly Guardian monitors signals related to your health and well-being.
             </p>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -170,7 +170,7 @@ export default function AnalyticsPage() {
           <Separator />
            <div>
             <h2 className="font-headline text-2xl font-semibold tracking-tight text-foreground">
-                Behavioral Dynamics
+                Behavioral Dynamics (AMIF)
             </h2>
             <p className="text-muted-foreground">
                 Analyzing the underlying patterns and adaptability of your financial habits.
@@ -230,7 +230,7 @@ export default function AnalyticsPage() {
             <div>
                 <h2 className="font-headline text-2xl font-semibold tracking-tight text-foreground flex items-center gap-2">
                     <Bot className="text-primary"/>
-                    Predictive Category Drift Oracle (PCDO)
+                    Predictive Category Drift Oracle (FCSS/CQPR)
                 </h2>
                 <p className="text-muted-foreground">
                     Forecasting future changes in category definitions.
@@ -255,7 +255,7 @@ export default function AnalyticsPage() {
                 <div>
                     <h2 className="font-headline text-2xl font-semibold tracking-tight text-foreground flex items-center gap-2">
                         <TrendingUp className="text-primary"/>
-                        Merchant Evolution Report (METS)
+                        Merchant Evolution Report (AMIF)
                     </h2>
                     <p className="text-muted-foreground">
                         Tracking how merchant semantics change over time.
@@ -277,7 +277,7 @@ export default function AnalyticsPage() {
                 <div>
                     <h2 className="font-headline text-2xl font-semibold tracking-tight text-foreground flex items-center gap-2">
                         <Users className="text-primary"/>
-                        Social Spending Benchmark (SSSC)
+                        Social Spending Benchmark (AMIF)
                     </h2>
                     <p className="text-muted-foreground">
                         Comparing your spending to a synthetic, anonymized peer group.

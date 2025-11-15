@@ -33,6 +33,9 @@ import { Badge } from '../ui/badge';
 import { cn } from '@/lib/utils';
 import { Progress } from '../ui/progress';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
+import { doc, setDoc } from 'firebase/firestore';
+
 
 type AIState = {
   explanation: string | null;
@@ -101,6 +104,8 @@ export function TransactionDetailSheet({
     isLoading: true,
   });
   const { toast } = useToast();
+  const firestore = useFirestore();
+  const { user } = useUser();
 
   React.useEffect(() => {
     if (isOpen && transaction) {
@@ -194,14 +199,18 @@ export function TransactionDetailSheet({
   }, [isOpen, transaction, categories, toast, activeUniverse]);
 
   const handleConfirm = () => {
+    if (!user || !firestore) return;
     const updates: Partial<Transaction> = {
       status: 'reviewed',
-      category: currentCategory, // Keep this for the 'all' view if needed
+      category: currentCategory,
       multiCategory: {
         ...(transaction.multiCategory || { banking: 'other', behavioral: 'other', minimalist: 'other', personalized: 'other' }),
         [activeUniverse]: currentCategory,
       }
     };
+    
+    const docRef = doc(firestore, 'users', user.uid, 'transactions', transaction.id);
+    setDoc(docRef, updates, { merge: true });
 
     onUpdate(transaction.id, updates);
     setIsOpen(false);
