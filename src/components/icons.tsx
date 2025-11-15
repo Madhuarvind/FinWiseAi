@@ -108,5 +108,3 @@ export const getCategoryIcon = (
 ): LucideIcon => {
   return categoryIcons[iconName] || ShoppingCart;
 };
-
-    
