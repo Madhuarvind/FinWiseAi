@@ -81,8 +81,8 @@ export default function DashboardPage() {
 
   const handleActivateEmotionSafeMode = () => {
     toast({
-      title: 'Emotion-Safe Mode Activated',
-      description: 'Spending locks are now active for vulnerable categories and times.',
+      title: 'Cognitive Repair Activated',
+      description: 'Emotion-Safe spending locks are now active for vulnerable categories and times.',
     });
   };
 
@@ -123,7 +123,7 @@ export default function DashboardPage() {
                 currency: 'INR',
               })}
             </div>
-            <p className="text-xs text-muted-foreground">in the last 30 days</p>
+            <p className="text-xs text-muted-foreground">in the last 30 days (Cool Blue Zone)</p>
           </CardContent>
         </Card>
         <Card>
@@ -176,7 +176,7 @@ export default function DashboardPage() {
                         <MessageSquareHeart className="h-5 w-5 text-accent-foreground"/>
                         Neuro-Financial Reflex (NFRS)
                     </CardTitle>
-                    <CardDescription>NFRS activated: A late-night shopping pattern was detected. Shall I set a spending lock for this category after 10 PM?</CardDescription>
+                    <CardDescription>NFRS reflex triggered: A late-night shopping pattern was detected. This is a cognitive repair suggestion (CRS) to prevent impulse spending.</CardDescription>
                 </CardHeader>
                 <CardContent className='pt-0'>
                      <Button variant="secondary" size="sm" onClick={handleActivateEmotionSafeMode}>Activate Emotion-Safe Mode</Button>

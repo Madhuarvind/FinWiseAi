@@ -474,7 +474,7 @@ export function TransactionDetailSheet({
                 </div>
                 <div className="rounded-lg border bg-background p-4 space-y-2">
                     <p className="font-medium text-foreground flex items-center gap-2"><Bot className="h-4 w-4"/>Ethical Micro-Advisor Swarm (EMA-Swarm):</p>
-                    <p className="text-muted-foreground leading-relaxed">&quot;Synthesized advice: The 'Frugality Agent' flags this as non-essential, while the 'Mental Well-being Agent' notes its potential as a mood-booster. The 'Wealth Agent' suggests allocating this to your 'Gadget Goal' instead. The consensus leans towards mindful spending.&quot;</p>
+                    <p className="text-muted-foreground leading-relaxed">&quot;Synthesized advice from your agents (Future Self, Frugality, Well-being): The 'Frugality Agent' flags this as non-essential, while the 'Mental Well-being Agent' notes its potential as a mood-booster. Your 'Future Self' suggests allocating this to your 'Gadget Goal' instead. The consensus leans towards mindful spending.&quot;</p>
                 </div>
                  <div className="rounded-lg border bg-background p-4 space-y-2">
                    <p className="font-medium text-foreground mb-2 flex items-center gap-2"><UserCheck className="h-4 w-4"/>Spending Persona & Philosophy (TPG/HPFA/TPFE/TPI/TAM):</p>
