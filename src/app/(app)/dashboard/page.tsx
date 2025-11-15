@@ -129,13 +129,13 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Spending Stability (SSM)
+              Financial Entropy Score (FES)
             </CardTitle>
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">Healthy</div>
-             <p className="text-xs text-muted-foreground">Your weekly spending is consistent.</p>
+            <div className="text-2xl font-bold text-green-600">0.21 (Low & Stable)</div>
+             <p className="text-xs text-muted-foreground">Your spending is predictable and structured.</p>
           </CardContent>
         </Card>
         <Card>
@@ -150,7 +150,7 @@ export default function DashboardPage() {
             <p className="text-xs text-muted-foreground">
              (Low Anxiety, High Discipline)
             </p>
-             <p className="text-xs text-muted-foreground mt-1">Lore: Consciousness is evolving from 'Saver' to 'Strategic Investor'.</p>
+             <p className="text-xs text-muted-foreground mt-1"><span className="font-semibold">Financial Epoch (ATAS):</span> Evolved from 'Saver' to 'Strategic Investor'.</p>
           </CardContent>
         </Card>
         <Card>
@@ -174,9 +174,9 @@ export default function DashboardPage() {
                 <CardHeader>
                     <CardTitle className="text-base font-semibold flex items-center gap-2">
                         <MessageSquareHeart className="h-5 w-5 text-accent-foreground"/>
-                        Emotional Saving Advisor (ESA)
+                        Neuro-Financial Reflex (NFRS)
                     </CardTitle>
-                    <CardDescription>This looks like impulsive nighttime shopping. Shall I set a spending lock for this category after 10 PM?</CardDescription>
+                    <CardDescription>NFRS activated: A late-night shopping pattern was detected. Shall I set a spending lock for this category after 10 PM?</CardDescription>
                 </CardHeader>
                 <CardContent className='pt-0'>
                      <Button variant="secondary" size="sm" onClick={handleActivateEmotionSafeMode}>Activate Emotion-Safe Mode</Button>

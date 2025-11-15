@@ -468,13 +468,13 @@ export function TransactionDetailSheet({
                       <li>Continuing this spend monthly would total <span className='font-semibold'>₹{(Math.abs(transaction.amount) * 12).toFixed(2)}</span> annually.</li>
                       <li>This purchase lowers your 'Shopping' budget health score by <span className='font-semibold'>3%</span> this week.</li>
                       <li>Your next 'Shopping' purchase is predicted in <span className='font-semibold'>~4 days</span> based on your habits.</li>
-                      <li><span className='font-semibold'>(POA):</span> AI suggests this purchase was likely influenced by a <span className='font-semibold'>seasonal discount</span>.</li>
+                      <li><span className='font-semibold'>(SLI):</span> AI suggests this purchase was likely influenced by a <span className='font-semibold'>seasonal discount</span> based on merchant linguistics.</li>
                        <li><span className='font-semibold'>Ripple Effect (PCV):</span> This reduces your available savings this month, a potential delay to your 'New Gadget' goal by <span className='font-semibold'>2 days</span>.</li>
                   </ul>
                 </div>
                 <div className="rounded-lg border bg-background p-4 space-y-2">
-                    <p className="font-medium text-foreground flex items-center gap-2"><Bot className="h-4 w-4"/>AI Financial Twin's Advice (AIFT/GIP/SRD/FMIS):</p>
-                    <p className="text-muted-foreground leading-relaxed">&quot;Your 'Saver-Self' would have skipped this, as it matches past regret patterns. However, your 'Lifestyle-Enhancer' identity approved it. This choice reduces your primary vacation savings goal by 2%.&quot;</p>
+                    <p className="font-medium text-foreground flex items-center gap-2"><Bot className="h-4 w-4"/>Ethical Micro-Advisor Swarm (EMA-Swarm):</p>
+                    <p className="text-muted-foreground leading-relaxed">&quot;Synthesized advice: The 'Frugality Agent' flags this as non-essential, while the 'Mental Well-being Agent' notes its potential as a mood-booster. The 'Wealth Agent' suggests allocating this to your 'Gadget Goal' instead. The consensus leans towards mindful spending.&quot;</p>
                 </div>
                  <div className="rounded-lg border bg-background p-4 space-y-2">
                    <p className="font-medium text-foreground mb-2 flex items-center gap-2"><UserCheck className="h-4 w-4"/>Spending Persona & Philosophy (TPG/HPFA/TPFE/TPI/TAM):</p>
