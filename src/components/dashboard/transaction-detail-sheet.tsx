@@ -209,17 +209,14 @@ export function TransactionDetailSheet({
       }
     };
     
-    const docRef = doc(firestore, 'users', user.uid, 'transactions', transaction.id);
-    setDoc(docRef, updates, { merge: true });
-
     onUpdate(transaction.id, updates);
     setIsOpen(false);
     toast({
-      title: 'Feedback Received (SCOA/CTR)',
+      title: 'Feedback Received & Model Updated',
       description: (
         <div className="flex items-center gap-2">
             <CheckCircle className="text-accent"/>
-            <span>Your preference has been recorded for the {activeUniverse} view. The model will learn from this correction.</span>
+            <span>Your preference for the '{activeUniverse}' brain has been recorded. It will learn from this.</span>
         </div>
       ),
     });
@@ -307,8 +304,8 @@ export function TransactionDetailSheet({
               <div className="flex items-start gap-3 rounded-md bg-destructive/10 p-3 text-destructive border border-destructive/20">
                 <AlertTriangle className="h-5 w-5 mt-0.5 flex-shrink-0" />
                 <div className='text-sm'>
-                  <p className="font-semibold">Flagged by CISA/SFA</p>
-                  <p>This transaction was flagged as a potential regret-prone purchase due to unusual timing or amount, requiring human confirmation.</p>
+                  <p className="font-semibold">Flagged for Feedback (PFT)</p>
+                  <p>The Predictive Feedback Targeting engine identified this as a high-value transaction for model improvement.</p>
                 </div>
               </div>
             )}
@@ -355,7 +352,7 @@ export function TransactionDetailSheet({
 
           <div className="space-y-4">
             <h3 className="font-semibold text-foreground">
-              Human-in-the-Loop: Review & Correct
+              Teach Mode: Review & Correct
             </h3>
             <div className="space-y-2">
               <Label htmlFor="category-select">Verify Category</Label>
@@ -380,9 +377,7 @@ export function TransactionDetailSheet({
                   <div className="flex items-start gap-3 rounded-md bg-secondary p-3 text-secondary-foreground">
                     <Wand2 className="h-5 w-5 mt-0.5 flex-shrink-0" />
                     <p className="text-sm">
-                      Initial confidence was low. The{' '}
-                      <span className="font-semibold">Confidence-Conditioned Pipeline</span>{' '}
-                      routed this to the LLM, which suggests{' '}
+                      Initial confidence was low. The AI engine routed this to the LLM, which suggests{' '}
                       <span className="font-semibold">
                         {
                           categories.find(
@@ -401,9 +396,6 @@ export function TransactionDetailSheet({
               <h3 className="font-semibold text-foreground flex items-center gap-2">
                 <Lightbulb className="text-primary" /> Explainable AI (XAI) Analysis
               </h3>
-              <div className='flex items-center gap-1.5 text-sm font-semibold'>
-                <Gem className="h-4 w-4 text-primary"/> Karma: <span className='text-primary'>+3</span>
-              </div>
             </div>
             {aiState.isLoading ? (
               <div className="space-y-4 pt-2">
@@ -439,7 +431,7 @@ export function TransactionDetailSheet({
                   ) : <Skeleton className="h-6 w-full" /> }
                 </div>
                  <div className="rounded-lg border bg-background p-4 leading-relaxed">
-                  <p className="font-medium text-foreground mb-2 flex items-center gap-2"><Sparkles className="h-4 w-4 text-amber-500"/>Predicted Intent & Emotional Temperature (TEM/TET):</p>
+                  <p className="font-medium text-foreground mb-2 flex items-center gap-2"><Sparkles className="h-4 w-4 text-amber-500"/>Predicted Intent & Emotional Temperature (TET):</p>
                   {aiState.spendingIntent ? (
                     <>
                       <p className="text-muted-foreground">{aiState.spendingIntent}</p>
@@ -477,12 +469,12 @@ export function TransactionDetailSheet({
                     <p className="text-muted-foreground leading-relaxed">&quot;Synthesized advice from your agents (Future Self, Frugality, Well-being): The 'Frugality Agent' flags this as non-essential, while the 'Mental Well-being Agent' notes its potential as a mood-booster. Your 'Future Self' suggests allocating this to your 'Gadget Goal' instead. The consensus leans towards mindful spending.&quot;</p>
                 </div>
                  <div className="rounded-lg border bg-background p-4 space-y-2">
-                   <p className="font-medium text-foreground mb-2 flex items-center gap-2"><UserCheck className="h-4 w-4"/>Spending Persona & Philosophy (TPG/HPFA/TPFE/TPI/TAM):</p>
+                   <p className="font-medium text-foreground mb-2 flex items-center gap-2"><UserCheck className="h-4 w-4"/>Spending Persona & Philosophy (CPAC):</p>
                    <p className="text-muted-foreground leading-relaxed">{getSpendingPersona(currentCategory)}</p>
                    <p className="text-muted-foreground leading-relaxed">Purpose: <span className="font-semibold">{getPurchasePurpose(currentCategory)}</span> | Personality: <span className='font-semibold'>{getTransactionPersonality(currentCategory)}</span> (Hedonic)</p>
                 </div>
                 <div className="rounded-lg border bg-background p-4 space-y-3">
-                    <p className="font-medium text-foreground flex items-center gap-2"><Network className="h-4 w-4"/>Spending Black Box Recorder (SBBR):</p>
+                    <p className="font-medium text-foreground flex items-center gap-2"><Network className="h-4 w-4"/>Spending Black Box Recorder (HTR):</p>
                     {aiState.zile ? (
                       <>
                         <div>
@@ -515,7 +507,7 @@ export function TransactionDetailSheet({
             Cancel
           </Button>
           <Button onClick={handleConfirm} disabled={aiState.isLoading}>
-            Confirm & Submit Feedback
+            Confirm & Teach AI
           </Button>
         </SheetFooter>
       </SheetContent>

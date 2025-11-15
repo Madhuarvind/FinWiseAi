@@ -82,8 +82,8 @@ export default function PolicyOSPage() {
     }
     setIsGenerating(true);
     toast({
-      title: 'AI is generating policy...',
-      description: 'Converting natural language to a structured policy.',
+      title: 'AI is learning your rule...',
+      description: 'Converting your instructions into a structured policy.',
     });
 
     try {
@@ -99,16 +99,16 @@ export default function PolicyOSPage() {
       });
 
       toast({
-        title: 'Policy Generated & Deployed!',
-        description: `The "${structuredPolicy.name}" policy is now active.`,
+        title: 'Rule Learned & Deployed!',
+        description: `The "${structuredPolicy.name}" policy is now active in the engine.`,
       });
       setPolicyText('');
     } catch (error) {
       console.error('Failed to generate or save policy:', error);
       toast({
         variant: 'destructive',
-        title: 'Policy Generation Failed',
-        description: 'Could not convert the text into a valid policy.',
+        title: 'Learning Failed',
+        description: 'The AI could not understand your instructions.',
       });
     } finally {
       setIsGenerating(false);
@@ -145,19 +145,18 @@ export default function PolicyOSPage() {
         <div>
           <h1 className="font-headline text-3xl font-semibold tracking-tight text-foreground flex items-center gap-2">
             <FileText className="h-8 w-8 text-primary" />
-            Policy-Driven Categorisation OS
+            Teach Mode: The Policy OS
           </h1>
           <p className="text-muted-foreground">
-            Define, manage, and deploy transaction categorization rules using
-            natural language.
+            Directly teach the AI how to categorize transactions using natural language. Your rules become permanent policies.
           </p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Create a New Policy</CardTitle>
+            <CardTitle>Teach the AI a New Rule</CardTitle>
             <CardDescription>
-              Write a rule in plain English. The AI will convert it into a
+              Write an instruction in plain English. The AI will convert it into a
               deployable policy that the categorization engine will use at
               runtime.
             </CardDescription>
@@ -179,8 +178,8 @@ export default function PolicyOSPage() {
                 <Wand2 className="mr-2 h-4 w-4" />
               )}
               {isGenerating
-                ? 'Generating & Deploying...'
-                : 'Generate & Deploy Policy'}
+                ? 'Teaching AI & Deploying...'
+                : 'Teach AI & Deploy Rule'}
             </Button>
           </CardFooter>
         </Card>
@@ -189,8 +188,7 @@ export default function PolicyOSPage() {
           <CardHeader>
             <CardTitle>Active Policies</CardTitle>
             <CardDescription>
-              This is the current set of rules driving the categorization
-              engine.
+              This is the current set of rules you have taught the AI.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -256,7 +254,7 @@ export default function PolicyOSPage() {
                   ) : (
                     <TableRow>
                       <TableCell colSpan={4} className="text-center h-24">
-                        No policies found. Create one to get started.
+                        No policies found. Teach the AI a rule to get started.
                       </TableCell>
                     </TableRow>
                   )}
