@@ -17,7 +17,7 @@ export type ReconstructTransactionInput = z.infer<typeof ReconstructTransactionI
 const ReconstructTransactionOutputSchema = z.object({
   description: z.string().describe('The extracted merchant name or description.'),
   amount: z.number().describe('The extracted monetary amount.'),
-  date: z.string().format('date-time').describe('The extracted date of the transaction in ISO 8601 format.'),
+  date: z.string().describe('The extracted date of the transaction in ISO 8601 format.'),
 });
 export type ReconstructTransactionOutput = z.infer<typeof ReconstructTransactionOutputSchema>;
 
@@ -38,7 +38,7 @@ const reconstructTransactionPrompt = ai.definePrompt({
   - Be precise.
 
   Example 1:
-  Text: "Just paid back John for pizza, it was 450 on July 23rd"
+  Text: "Just paid back John for pizza, it was ₹450 on July 23rd"
   Output: { "description": "Pizza with John", "amount": 450, "date": "2024-07-23T00:00:00.000Z" }
 
   Example 2:
