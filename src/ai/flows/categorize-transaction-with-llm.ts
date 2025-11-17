@@ -38,18 +38,21 @@ const categorizeTransactionPrompt = ai.definePrompt({
   name: 'categorizeTransactionPrompt',
   input: {schema: CategorizeTransactionWithLLMInputSchema},
   output: {schema: z.object({ category: z.string() })},
-  prompt: `You are a financial expert tasked with categorizing a transaction.
-  Based on the transaction description, choose the most appropriate category from the provided list.
+  prompt: `You are a meticulous financial analyst. Your task is to categorize a transaction based on its description by choosing the most logical category from the provided list. Pay close attention to merchant names.
 
-  Transaction Description: {{{transactionDescription}}}
+Transaction Description:
+"{{{transactionDescription}}}"
   
-  Available Categories:
-  {{#each candidateCategories}}
-  - {{{this}}}
-  {{/each}}
+Available Categories:
+{{#each candidateCategories}}
+- {{{this}}}
+{{/each}}
 
-  Return only the single best category name.
-  `,
+Example:
+- Description: "Amazon Mktplace"
+- Your output should be "Shopping".
+
+Return only the single best category name from the list.`,
 });
 
 const categorizeTransactionWithLLMFlow = ai.defineFlow(
