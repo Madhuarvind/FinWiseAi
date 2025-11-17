@@ -13,3 +13,4 @@ import '@/ai/flows/decode-spending-intent.ts';
 import '@/ai/flows/reconstruct-transaction-from-text.ts';
 import '@/ai/flows/generate-policy-from-text.ts';
 import '@/ai/flows/generate-adversarial-examples.ts';
+import '@/ai/flows/quantify-uncertainty.ts';
