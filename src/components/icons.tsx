@@ -49,6 +49,10 @@ import {
   Frown,
   Gauge,
   Target,
+  UploadCloud,
+  CheckCircle,
+  XCircle,
+  TextSearch,
 } from 'lucide-react';
 
 export const Logo = () => (
@@ -96,6 +100,10 @@ export const categoryIcons = {
   Frown,
   Gauge,
   Target,
+  UploadCloud,
+  CheckCircle,
+  XCircle,
+  TextSearch,
 };
 
 export const navIcons = {
