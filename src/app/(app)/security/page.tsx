@@ -132,7 +132,7 @@ export default function SecurityPage() {
                         <p className="text-sm text-muted-foreground">This agent audits model outputs against fairness metrics (like predictive parity) and internal policies (e.g., AML/KYC heuristics) to ensure regulatory compliance.</p>
                     </CardContent>
                      <CardFooter>
-                         <Button variant="outline" onClick={handleRunRegulatorAgent} disabled={isLoading['regulator']}>
+                         <Button onClick={handleRunRegulatorAgent} disabled={isLoading['regulator']}>
                             {isLoading['regulator'] ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Bot className="mr-2 h-4 w-4"/>}
                             {isLoading['regulator'] ? "Auditing..." : "View Compliance Report"}
                          </Button>
@@ -166,7 +166,7 @@ export default function SecurityPage() {
                         <p className="text-sm text-muted-foreground">This agent simulates user journeys to verify that product-specific rules are correctly applied post-categorization, ensuring business logic integrity.</p>
                     </CardContent>
                      <CardFooter>
-                        <Button variant="outline" onClick={handleRunProductAgent} disabled={isLoading['product']}>
+                        <Button onClick={handleRunProductAgent} disabled={isLoading['product']}>
                              {isLoading['product'] ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Bot className="mr-2 h-4 w-4"/>}
                             {isLoading['product'] ? "Verifying..." : "Verify Business Logic"}
                         </Button>
