@@ -11,7 +11,7 @@ export default {
     extend: {
       fontFamily: {
         body: ['Inter', ...fontFamily.sans],
-        headline: ['Space Grotesk', ...fontFamily.sans],
+        headline: ['Sora', ...fontFamily.sans],
       },
       colors: {
         background: 'hsl(var(--background))',
