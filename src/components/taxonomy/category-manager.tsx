@@ -472,7 +472,7 @@ export default function CategoryManager({
             <AlertDialogDescription>
               This action cannot be undone. This will permanently delete the "
               {selectedCategory?.label}" category.
-            </AlexDialogDescription>
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setSelectedCategory(null)}>

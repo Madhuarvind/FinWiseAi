@@ -109,7 +109,7 @@ export const navIcons = {
   Support: LifeBuoy,
   Bias: Scale,
   Security: ShieldCheck,
-  Goals: Plane,
+  Trips: Plane,
   Policy: FileText,
 };
 
