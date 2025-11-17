@@ -192,12 +192,12 @@ export default function ModelHubPage() {
                              <p className="text-sm text-muted-foreground mb-4">{adapter.description}</p>
                              <p className="text-xs text-muted-foreground">{adapter.samples.toLocaleString()} samples in dataset</p>
                         </CardContent>
-                        <CardFooter>
+                        <CardFooter className="flex items-center justify-between">
                              <Button size="sm" disabled={adapter.status !== 'Needs Training'}>
                                 <Wrench className="mr-2 h-4 w-4"/>
                                 Fine-Tune Model
                             </Button>
-                            <Button variant="ghost" size="sm" className="ml-auto" disabled={adapter.status !== 'Active'}>
+                            <Button variant="ghost" size="sm" disabled={adapter.status !== 'Active'}>
                                 <Rocket className="mr-2 h-4 w-4"/>
                                 Deploy
                             </Button>
