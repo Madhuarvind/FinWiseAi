@@ -152,7 +152,7 @@ export default function DataIngestionPage() {
     // In a real app, you'd parse the CSV/JSON file here.
     // For this demo, we'll simulate the file content.
     const fileTransactions: Omit<Transaction, 'id' | 'userProfileId' | 'createdAt'>[] = [
-      { date: '2024-07-20', description: 'DELTA AIRLINES', amount: -672.55, category: 'travel', status: 'pending', multiCategory: { banking: 'travel', behavioral: 'luxury', personalized: 'travel', minimalist: 'wants' } },
+      { date: '2024-07-20', description: 'DELTA AIRLINES', amount: -672.55, category: 'travel', status: 'pending', multiCategory: { banking: 'travel', behavioral: 'luxury', personalized: 'travel', minimalist: 'wants' }, receipt: { status: 'matched', receipt_id: 'rcpt_12345' }},
       { date: '2024-07-20', description: 'HOME DEPOT #123', amount: -88.12, category: 'home', status: 'pending', multiCategory: { banking: 'home', behavioral: 'necessity', personalized: 'home', minimalist: 'necessity' } },
       { date: '2024-07-20', description: 'Vendor without amount', amount: 0, category: 'home', status: 'flagged', multiCategory: { banking: 'home', behavioral: 'other', personalized: 'other', minimalist: 'other' } },
     ];

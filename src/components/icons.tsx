@@ -57,6 +57,7 @@ import {
   Wrench,
   Layers3,
   Rocket,
+  MemoryStick,
 } from 'lucide-react';
 
 export const Logo = () => (
@@ -114,6 +115,7 @@ export const categoryIcons = {
   Wrench,
   Rocket,
   FlaskConical,
+  MemoryStick,
 };
 
 export const navIcons = {
@@ -129,6 +131,7 @@ export const navIcons = {
   Security: ShieldCheck,
   Trips: Plane,
   Policy: FileText,
+  Goals: Gem,
 };
 
 export const getCategoryIcon = (

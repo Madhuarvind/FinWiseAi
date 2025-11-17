@@ -340,7 +340,7 @@ export function TransactionDetailSheet({
                 </Badge>} />
             {transaction.receipt && (
                <InfoBlock label="Receipt Status" value={
-                <Badge variant={transaction.receipt.status === 'matched' ? 'default' : 'secondary' } className={cn(transaction.receipt.status === 'matched' && "bg-green-100 text-green-900")}>
+                <Badge variant={transaction.receipt.status === 'matched' ? 'default' : 'secondary' } className={cn(transaction.receipt.status === 'matched' && "bg-green-100 text-green-900 dark:bg-green-900/30 dark:text-green-300 border-transparent")}>
                     <Receipt className="mr-1 h-3 w-3" />
                     {transaction.receipt.status === 'matched' ? 'Receipt Matched' : 'Refund Detected'}
                 </Badge>
