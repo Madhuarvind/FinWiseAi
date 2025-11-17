@@ -46,30 +46,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
 
-  React.useEffect(() => {
-    // This effect only handles redirecting unauthenticated users.
-    // The post-login redirect is now handled inside AuthForm.
-    if (!isUserLoading && !user) {
-      router.push('/login');
-    }
-  }, [isUserLoading, user, router]);
-
   const handleSignOut = async () => {
     if (auth) {
       await auth.signOut();
     }
     router.push('/login');
   };
-
-  if (isUserLoading || !user) {
-    // This loading state is crucial for protecting routes.
-    // It prevents a flash of content before the auth check completes.
-    return (
-      <div className="flex h-screen w-full items-center justify-center">
-        <Skeleton className="h-full w-full" />
-      </div>
-    );
-  }
 
   const activeNavItems = navItems.filter((item) => {
     // Special handling for the combined "Responsible AI" group
@@ -147,19 +129,19 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             <div className="flex items-center gap-3">
               <Avatar className="h-9 w-9">
                 <AvatarImage
-                  src={user.photoURL || `https://i.pravatar.cc/150?u=${user.uid}`}
-                  alt={user.email || 'user'}
+                  src={user?.photoURL || `https://i.pravatar.cc/150?u=${user?.uid}`}
+                  alt={user?.email || 'user'}
                 />
                 <AvatarFallback>
-                  {user.email?.[0].toUpperCase()}
+                  {user?.email?.[0].toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div className="flex flex-col text-sm group-data-[collapsible=icon]:hidden">
                 <span className="font-medium text-sidebar-foreground truncate">
-                  {user.displayName || 'User'}
+                  {user?.displayName || 'User'}
                 </span>
                 <span className="text-muted-foreground text-xs truncate">
-                  {user.email}
+                  {user?.email}
                 </span>
               </div>
             </div>
