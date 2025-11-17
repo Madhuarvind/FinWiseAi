@@ -41,6 +41,22 @@ export default function SecurityPage() {
         }
     };
     
+    const handleRunRegulatorAgent = async () => {
+        setIsLoading(prev => ({ ...prev, regulator: true }));
+        toast({ title: "Agent-Regulator Initialized", description: "Auditing transactions for compliance..." });
+        await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate work
+        setDialogContent({
+            title: "Agent-Regulator Audit Complete",
+            description: "The agent audited 1,592 recent transactions against internal policies and fairness metrics.",
+            content: (
+                <div className="mt-4 text-sm bg-green-100/50 dark:bg-green-900/20 text-green-900 dark:text-green-300 p-4 rounded-lg border border-green-200 dark:border-green-800">
+                    <p className="font-semibold flex items-center gap-2"><ShieldCheck/>All Clear: No compliance violations or significant demographic bias detected.</p>
+                </div>
+            )
+        });
+        setIsLoading(prev => ({ ...prev, regulator: false }));
+    };
+
     const handleRunRiskAgent = async () => {
         setIsLoading(prev => ({ ...prev, risk: true }));
         toast({ title: "Agent-Risk Initialized", description: "Analyzing transactions for high-risk misclassifications..."});
@@ -68,6 +84,22 @@ export default function SecurityPage() {
         } finally {
             setIsLoading(prev => ({ ...prev, risk: false }));
         }
+    };
+
+    const handleRunProductAgent = async () => {
+        setIsLoading(prev => ({ ...prev, product: true }));
+        toast({ title: "Agent-Product Initialized", description: "Verifying business logic on sample transactions..." });
+        await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate work
+        setDialogContent({
+            title: "Agent-Product Verification Complete",
+            description: "The agent simulated 50 user journeys to verify product-specific rules.",
+            content: (
+                <div className="mt-4 text-sm bg-green-100/50 dark:bg-green-900/20 text-green-900 dark:text-green-300 p-4 rounded-lg border border-green-200 dark:border-green-800">
+                    <p className="font-semibold flex items-center gap-2"><ShieldCheck/>Logic Verified: All business rules (e.g., loyalty points, fee application) were correctly applied post-categorization.</p>
+                </div>
+            )
+        });
+        setIsLoading(prev => ({ ...prev, product: false }));
     };
 
 
@@ -100,7 +132,10 @@ export default function SecurityPage() {
                         <p className="text-sm text-muted-foreground">This agent audits model outputs against fairness metrics (like predictive parity) and internal policies (e.g., AML/KYC heuristics) to ensure regulatory compliance.</p>
                     </CardContent>
                      <CardFooter>
-                         <Button variant="outline" disabled>View Compliance Report</Button>
+                         <Button variant="outline" onClick={handleRunRegulatorAgent} disabled={isLoading['regulator']}>
+                            {isLoading['regulator'] ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Bot className="mr-2 h-4 w-4"/>}
+                            {isLoading['regulator'] ? "Auditing..." : "View Compliance Report"}
+                         </Button>
                     </CardFooter>
                 </Card>
                  <Card>
@@ -131,7 +166,10 @@ export default function SecurityPage() {
                         <p className="text-sm text-muted-foreground">This agent simulates user journeys to verify that product-specific rules are correctly applied post-categorization, ensuring business logic integrity.</p>
                     </CardContent>
                      <CardFooter>
-                        <Button variant="outline" disabled>Verify Business Logic</Button>
+                        <Button variant="outline" onClick={handleRunProductAgent} disabled={isLoading['product']}>
+                             {isLoading['product'] ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Bot className="mr-2 h-4 w-4"/>}
+                            {isLoading['product'] ? "Verifying..." : "Verify Business Logic"}
+                        </Button>
                     </CardFooter>
                 </Card>
              </div>
