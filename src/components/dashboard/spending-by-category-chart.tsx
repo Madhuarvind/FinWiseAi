@@ -150,7 +150,18 @@ export function SpendingByCategoryChart({
       <PieChart onMouseEnter={onPieEnter}>
         <ChartTooltip
           cursor={false}
-          content={<ChartTooltipContent hideLabel />}
+          content={<ChartTooltipContent 
+            hideLabel 
+            formatter={(value, name, props) => (
+              <div className='flex flex-col gap-0.5'>
+                <span className='font-medium'>{props.payload?.label}</span>
+                <span className='text-muted-foreground'>{value.toLocaleString('en-IN', {
+                      style: 'currency',
+                      currency: 'INR',
+                })}</span>
+              </div>
+            )}
+          />}
         />
         <Pie
           data={spendingByCategory}

@@ -121,7 +121,7 @@ export function TransactionDetailSheet({
 
         try {
           // STEP 1: Get the most important info first - the category
-          const confidenceScore = transaction.status === 'flagged' ? 0.58 : 0.95;
+          const confidenceScore = transaction.status === 'flagged' ? 0.58 : 0.98;
           const categorizationResult = await categorizeTransactionWithLLM({
             transactionDescription: transaction.description,
             confidenceScore: confidenceScore,
