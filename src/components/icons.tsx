@@ -60,6 +60,7 @@ import {
   Rocket,
   MemoryStick,
   Globe,
+  Loader2,
 } from 'lucide-react';
 
 export const Logo = () => (

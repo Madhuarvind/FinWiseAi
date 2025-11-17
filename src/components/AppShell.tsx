@@ -17,7 +17,7 @@ import {
 import { Logo, navIcons } from '@/components/icons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Settings, Bell, LogOut, LogIn } from 'lucide-react';
+import { Settings, Bell, LogOut, LogIn, Loader2 } from 'lucide-react';
 import { useAuth, useUser } from '@/firebase';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
@@ -46,12 +46,26 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
 
+  React.useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.push('/login');
+    }
+  }, [isUserLoading, user, router]);
+
   const handleSignOut = async () => {
     if (auth) {
       await auth.signOut();
     }
     router.push('/login');
   };
+
+  if (isUserLoading || !user) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <SidebarProvider>
