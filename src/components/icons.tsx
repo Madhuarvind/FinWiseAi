@@ -58,6 +58,7 @@ import {
   Layers3,
   Rocket,
   MemoryStick,
+  Globe,
 } from 'lucide-react';
 
 export const Logo = () => (
@@ -116,6 +117,7 @@ export const categoryIcons = {
   Rocket,
   FlaskConical,
   MemoryStick,
+  Globe,
 };
 
 export const navIcons = {

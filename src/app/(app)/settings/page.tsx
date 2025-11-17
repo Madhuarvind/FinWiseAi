@@ -9,7 +9,8 @@ import { useUser } from '@/firebase';
 import { Switch } from '@/components/ui/switch';
 import { toast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
-import { Cloud, Smartphone } from 'lucide-react';
+import { Cloud, Smartphone, Globe } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function SettingsPage() {
   const { user } = useUser();
@@ -67,9 +68,9 @@ export default function SettingsPage() {
       
       <Card>
         <CardHeader>
-          <CardTitle>Data & Privacy</CardTitle>
+          <CardTitle>AI &amp; Data</CardTitle>
           <CardDescription>
-            Manage how your data is processed and control your privacy settings.
+            Manage how your data is processed and control AI features.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -87,6 +88,44 @@ export default function SettingsPage() {
                     </p>
                 </div>
                 <Switch checked={isCloudEnabled} onCheckedChange={handleCloudToggle}/>
+            </div>
+        </CardContent>
+         <CardFooter className="border-t px-6 py-4">
+            <Button onClick={handleSaveChanges}>Save Changes</Button>
+        </CardFooter>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Language &amp; Region</CardTitle>
+          <CardDescription>
+            Enable cross-lingual transaction categorization and cultural context awareness.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+            <div className="space-y-2">
+                <Label htmlFor="language-select">Language</Label>
+                <Select defaultValue="en">
+                    <SelectTrigger id="language-select">
+                        <SelectValue placeholder="Select language" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="en">English (US)</SelectItem>
+                        <SelectItem value="es">Español (Spanish)</SelectItem>
+                        <SelectItem value="hi">हिन्दी (Hindi)</SelectItem>
+                        <SelectItem value="ja">日本語 (Japanese)</SelectItem>
+                    </SelectContent>
+                </Select>
+                 <p className="text-xs text-muted-foreground">The AI will interpret transaction details in your chosen language.</p>
+            </div>
+            <div className="flex flex-row items-center justify-between rounded-lg border p-4">
+                <div className="space-y-0.5">
+                    <Label className="text-base">Auto-Detect Language</Label>
+                    <p className="text-sm text-muted-foreground">
+                        Detect and handle transactions with code-switching (e.g., Hindi + English).
+                    </p>
+                </div>
+                <Switch defaultChecked />
             </div>
         </CardContent>
          <CardFooter className="border-t px-6 py-4">
