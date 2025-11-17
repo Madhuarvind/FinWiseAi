@@ -57,7 +57,8 @@ import {
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '../ui/badge';
-import { initialCategoriesForSeed, universes } from '@/lib/data';
+import { universes } from '@/lib/data';
+import initialCategoriesForSeed from '@/lib/categories.json';
 import { useFirestore } from '@/firebase';
 import { collection, doc, setDoc, deleteDoc, writeBatch } from 'firebase/firestore';
 import { findSimilarMerchants } from '@/ai/flows/find-similar-merchants';
@@ -335,7 +336,7 @@ export default function CategoryManager({
       initialCategoriesForSeed.forEach(category => {
         const docId = category.label.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
         const docRef = doc(collectionRef, docId);
-        batch.set(docRef, category);
+        batch.set(docRef, category as any);
       });
 
       await batch.commit();
@@ -471,7 +472,7 @@ export default function CategoryManager({
             <AlertDialogDescription>
               This action cannot be undone. This will permanently delete the "
               {selectedCategory?.label}" category.
-            </AlertDialogDescription>
+            </AlexDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setSelectedCategory(null)}>
