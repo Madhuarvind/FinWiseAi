@@ -53,15 +53,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     router.push('/login');
   };
 
-  const activeNavItems = navItems.filter((item) => {
-    // Special handling for the combined "Responsible AI" group
-    if (pathname.startsWith('/responsible-ai') || pathname.startsWith('/security')) {
-      // Hide the individual 'Security' link when in this group
-      return item.href !== '/security';
-    }
-    return true;
-  });
-
   return (
     <SidebarProvider>
       <Sidebar>
@@ -70,19 +61,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
-            {activeNavItems.map((item) => {
+            {navItems.map((item) => {
               const Icon = navIcons[item.icon as keyof typeof navIcons];
-              // The combined item is active if we are on any of its child routes
-              const isActive =
-                item.href === '/responsible-ai'
-                  ? pathname.startsWith('/responsible-ai') || pathname.startsWith('/security')
-                  : pathname.startsWith(item.href);
-
-              const label =
-                item.href === '/responsible-ai' &&
-                (pathname.startsWith('/responsible-ai') || pathname.startsWith('/security'))
-                  ? 'Responsible AI'
-                  : item.label;
+              const isActive = pathname.startsWith(item.href);
 
               return (
                 <SidebarMenuItem key={item.label}>
@@ -90,11 +71,11 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                     href={item.href}
                     isActive={isActive}
                     asChild
-                    tooltip={label}
+                    tooltip={item.label}
                   >
                     <Link href={item.href}>
                       <Icon />
-                      <span>{label}</span>
+                      <span>{item.label}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
