@@ -1,3 +1,4 @@
+
 import type { Transaction } from '@/lib/types';
 import { format, parseISO, setHours, setMinutes, setSeconds } from 'date-fns';
 
@@ -67,7 +68,8 @@ export function preprocessTransactions(transactions: Transaction[]): Transaction
     const processedTransaction = { ...transaction };
 
     // 1. Normalize description to simulate cleaning and PII masking
-    processedTransaction.description = normalizeDescription(transaction.description);
+    // In this demo, we use the original description for readability, but the function is available.
+    // processedTransaction.description = normalizeDescription(transaction.description);
     
     // 2. Enrich with context
     const enrichedTransaction = enrichTransaction(processedTransaction);

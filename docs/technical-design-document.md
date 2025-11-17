@@ -84,7 +84,22 @@ All application data is stored in **Firestore**. The data structure is defined i
     -   **Schema:** `Category`
     -   **Description:** A global collection storing all available transaction categories, their icons, and associated metadata (like "universes"). All authenticated users can read this collection.
 
-### 3.2. Core Data Models (`src/lib/types.ts`)
+### 3.2. Dataset Management & Preprocessing
+
+To ensure model robustness and reproducibility, FinWiseAI employs a formal dataset management strategy.
+
+-   **Data Sourcing:** The system is designed to work with standard financial transaction data. For development and demonstration, a synthetic data generation pipeline is used to create realistic, privacy-safe data.
+
+-   **Synthetic Data Generation:** The `synthesize-transactions` Genkit flow is used to generate an arbitrary number of transactions for a given category. This is crucial for:
+    -   Bootstrapping the system without real user data.
+    -   Creating balanced datasets for training and evaluation.
+    -   Augmenting datasets for rare or new categories.
+
+-   **Preprocessing Pipeline (`src/lib/preprocessing.ts`):** All transactions, whether from a real source or synthetically generated, are passed through a standardized preprocessing pipeline before being used in the model. This ensures consistency and enriches the data. The pipeline consists of two main stages:
+    1.  **Normalization (`normalizeDescription`):** Raw transaction descriptions are cleaned to remove noise and create a canonical representation. This involves converting to lowercase, removing common stopwords ('inc', 'corp'), and stripping out symbols and random numbers that don't add semantic value.
+    2.  **Enrichment (`enrichTransaction`):** Temporal features are extracted and added to the transaction. This includes the day of the week (e.g., 'Monday') and the time of day ('Morning', 'Afternoon', 'Evening', 'Night'), which are strong predictors of spending behavior.
+
+### 3.3. Core Data Models (`src/lib/types.ts`)
 
 -   **`Transaction`**: Represents a single financial transaction. Includes fields for `description`, `amount`, `date`, `status`, and `multiCategory`, which stores different classifications for each "universe."
 -   **`Category`**: Defines a transaction category, including its `id`, `label`, `icon`, `moodColor`, and the `universes` it belongs to.

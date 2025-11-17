@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -116,7 +117,7 @@ export default function TransactionTable({
   }
 
   const SortableHeader = ({ tKey, label }: { tKey: SortKey; label: string }) => (
-    <TableHead onClick={()={() => handleSort(tKey)}} className="cursor-pointer">
+    <TableHead onClick={() => handleSort(tKey)} className="cursor-pointer">
       <div className="flex items-center gap-2">
         {label}
         {sortKey === tKey && (sortDirection === 'asc' ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />)}
@@ -159,7 +160,7 @@ export default function TransactionTable({
               return (
                 <TableRow 
                   key={transaction.id} 
-                  onClick={()={() => handleOpenSheet(transaction)}} 
+                  onClick={() => handleOpenSheet(transaction)} 
                   className={cn(
                     "cursor-pointer transition-colors duration-1000",
                     transaction.status === 'flagged' && 'bg-destructive/10 hover:bg-destructive/20',

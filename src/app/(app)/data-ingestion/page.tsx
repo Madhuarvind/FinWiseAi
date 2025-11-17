@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -216,34 +217,37 @@ export default function DataIngestionPage() {
       
       const batch = writeBatch(firestore);
       const collectionRef = collection(firestore, 'users', user.uid, 'transactions');
-      const generatedForLiveDisplay: Transaction[] = [];
+      
+      // The preprocessTransactions function is applied here
+      const processedForLiveDisplay: Transaction[] = preprocessTransactions(result.transactions.map((tx, index) => {
+          const docRef = doc(collectionRef); // Create a new doc for each transaction
+          return {
+              id: docRef.id, // Use the generated ID for the key
+              description: tx.description,
+              amount: -Math.abs(tx.amount),
+              date: format(new Date(), 'yyyy-MM-dd'),
+              category: categoryToGenerate,
+              status: 'pending',
+              userProfileId: user.uid,
+              createdAt: new Date(), // Use client-side date for instant sorting
+              multiCategory: {
+                  banking: categoryToGenerate,
+                  behavioral: 'other',
+                  personalized: 'other',
+                  minimalist: 'other',
+              },
+          };
+      }));
 
-      result.transactions.forEach((tx) => {
-        const docRef = doc(collectionRef);
-        const newTx: Transaction = {
-          id: docRef.id, // Use the generated ID for the key
-          description: tx.description,
-          amount: -Math.abs(tx.amount),
-          date: format(new Date(), 'yyyy-MM-dd'),
-          category: categoryToGenerate,
-          status: 'pending',
-          userProfileId: user.uid,
-          createdAt: new Date(), // Use client-side date for instant sorting
-          multiCategory: {
-            banking: categoryToGenerate,
-            behavioral: 'other',
-            personalized: 'other',
-            minimalist: 'other',
-          },
-        };
-        batch.set(docRef, { ...newTx, createdAt: serverTimestamp() }); // Use server timestamp for DB
-        generatedForLiveDisplay.push(newTx);
+      processedForLiveDisplay.forEach(tx => {
+        const docRef = doc(firestore, 'users', user.uid, 'transactions', tx.id);
+        batch.set(docRef, { ...tx, createdAt: serverTimestamp() });
       });
       
       // Show transactions appearing one by one
-      for (let i = 0; i < generatedForLiveDisplay.length; i++) {
+      for (let i = 0; i < processedForLiveDisplay.length; i++) {
         await new Promise(resolve => setTimeout(resolve, 300)); // Stagger the appearance
-        setLiveGeneratedTransactions(prev => [generatedForLiveDisplay[i], ...prev]);
+        setLiveGeneratedTransactions(prev => [processedForLiveDisplay[i], ...prev]);
       }
       
       await batch.commit();
