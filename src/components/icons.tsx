@@ -49,13 +49,6 @@ import {
   Frown,
   Gauge,
   Target,
-  Zap,
-  MemoryStick,
-  Cloud,
-  Smartphone,
-  Rocket,
-  Award,
-  Shield,
 } from 'lucide-react';
 
 export const Logo = () => (
@@ -103,14 +96,6 @@ export const categoryIcons = {
   Frown,
   Gauge,
   Target,
-  Bot,
-  Zap,
-  MemoryStick,
-  Cloud,
-  Smartphone,
-  Rocket,
-  Award,
-  Shield,
 };
 
 export const navIcons = {
@@ -124,7 +109,7 @@ export const navIcons = {
   Support: LifeBuoy,
   Bias: Scale,
   Security: ShieldCheck,
-  Goals: Gem,
+  Goals: Plane,
   Policy: FileText,
 };
 

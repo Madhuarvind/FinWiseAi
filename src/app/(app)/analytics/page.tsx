@@ -1,14 +1,13 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Frown, Gauge, Target, HeartPulse, ShieldCheck, TrendingUp, Bot, Users, Activity, Fingerprint, Repeat, Wallet } from 'lucide-react';
+import { Frown, Gauge, Target, Bot, Users, TrendingUp, ShieldCheck } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { ConfusionMatrix } from '@/components/analytics/confusion-matrix';
 import { PerCategoryAccuracyChart } from '@/components/analytics/per-category-accuracy-chart';
-import { HealthRiskScore } from '@/components/analytics/health-risk-score';
-import { MedicalExpenseForecast } from '@/components/analytics/medical-expense-forecast';
 import { SocialSpendingChart } from '@/components/analytics/social-spending-chart';
 import { MerchantDriftChart } from '@/components/analytics/merchant-drift-chart';
+import { FairnessMetricsTable } from '@/components/analytics/fairness-metrics-table';
 
 // --- Placeholder Data ---
 const confusionMatrixData = {
@@ -30,27 +29,6 @@ const perCategoryAccuracyData = [
   { category: 'Entertainment', accuracy: 0.85 },
 ];
 
-const healthRiskData = {
-    score: 68,
-    trend: 'increasing' as const,
-    rationale: 'Increased frequency of pharmacy purchases and a recent telemedicine transaction were the primary drivers of this elevated risk score.',
-    recommendations: [
-        { text: 'Schedule a preventative health check-up', confidence: 0.9 },
-        { text: 'Review health insurance coverage for prescription drugs', confidence: 0.85 },
-    ]
-}
-
-const medicalExpenseData = {
-    totalForecast: 12500,
-    confidenceInterval: 1500,
-    breakdown: [
-        { category: 'Prescriptions', value: 6000, color: 'hsl(var(--chart-1))' },
-        { category: 'Consultations', value: 4000, color: 'hsl(var(--chart-2))' },
-        { category: 'Preventative', value: 2500, color: 'hsl(var(--chart-3))' },
-    ],
-    estimatedSavings: 2200,
-}
-
 const socialSpendingData = [
     { name: 'You', value: 4200, fill: 'hsl(var(--primary))' },
     { name: 'Peer Group', value: 3500, fill: 'hsl(var(--muted))' }
@@ -64,6 +42,22 @@ const merchantDriftData = [
     { month: 'May', drift: 0.08 },
     { month: 'Jun', drift: 0.11 },
 ];
+
+const fairnessData = {
+    groups: ['Low Value (<$20)', 'Med Value ($20-$100)', 'High Value (>$100)'],
+    metrics: [
+      {
+        metric: 'Equal Opportunity',
+        scores: [0.94, 0.95, 0.93],
+        description: 'Measures if the model performs equally well for all groups on positive outcomes.',
+      },
+      {
+        metric: 'Predictive Parity',
+        scores: [0.98, 0.97, 0.98],
+        description: 'Ensures the probability of a correct prediction is the same for all groups.',
+      },
+    ],
+  };
 
 
 export default function AnalyticsPage() {
@@ -147,60 +141,6 @@ export default function AnalyticsPage() {
             </CardContent>
         </Card>
       </div>
-
-      <Separator />
-
-      <div className="space-y-6">
-          <div>
-            <h2 className="font-headline text-2xl font-semibold tracking-tight text-foreground flex items-center gap-2">
-                <HeartPulse className="text-primary"/>
-                Health Analytics (PFAG)
-            </h2>
-            <p className="text-muted-foreground">
-                The Psycho-Financial Anomaly Guardian monitors signals related to your health and well-being.
-            </p>
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <HealthRiskScore {...healthRiskData} />
-            <MedicalExpenseForecast data={medicalExpenseData} />
-        </div>
-      </div>
-      
-      <div className="space-y-6">
-          <Separator />
-           <div>
-            <h2 className="font-headline text-2xl font-semibold tracking-tight text-foreground">
-                Behavioral Dynamics (AMIF)
-            </h2>
-            <p className="text-muted-foreground">
-                Analyzing the underlying patterns and adaptability of your financial habits.
-            </p>
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-             <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Repeat />Fractal Pattern Analysis (BFA)</CardTitle>
-                     <CardDescription>
-                        Identifies repeating micro-patterns in spending behavior.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="text-sm text-muted-foreground">
-                    <p>Detected a repeating pattern: a small coffee purchase is followed by a larger `food delivery` order within 3 hours, 85% of the time on weekdays. This suggests a work-related stress-spending loop.</p>
-                </CardContent>
-            </Card>
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Activity />Spending Neuroplasticity (SNT)</CardTitle>
-                     <CardDescription>
-                        Tracks how flexible your spending habits are over time.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="text-sm text-muted-foreground">
-                   <p>Your SNT score is <span className="font-bold text-primary">0.78</span>, indicating a high willingness to adapt spending. Your time-to-habit-change is <span className="font-bold text-primary">12 days</span>, down from 28 days last quarter.</p>
-                </CardContent>
-            </Card>
-        </div>
-      </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="space-y-6">
@@ -221,7 +161,7 @@ export default function AnalyticsPage() {
                     </p>
                 </CardHeader>
                 <CardContent>
-                    <p className="text-sm text-muted-foreground">The model shows high predictive parity. However, the False Positive Rate for 'High Value' transactions is slightly elevated, suggesting a need for more diverse training data in that segment.</p>
+                    <FairnessMetricsTable data={fairnessData} />
                 </CardContent>
             </Card>
         </div>
