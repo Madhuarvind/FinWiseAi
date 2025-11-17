@@ -53,6 +53,10 @@ import {
   CheckCircle,
   XCircle,
   TextSearch,
+  GitMerge,
+  Wrench,
+  Layers3,
+  Rocket,
 } from 'lucide-react';
 
 export const Logo = () => (
@@ -104,6 +108,12 @@ export const categoryIcons = {
   CheckCircle,
   XCircle,
   TextSearch,
+  Bot,
+  Layers3,
+  GitMerge,
+  Wrench,
+  Rocket,
+  FlaskConical,
 };
 
 export const navIcons = {
