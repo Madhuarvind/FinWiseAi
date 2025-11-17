@@ -26,7 +26,7 @@ const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: 'Dashboard' },
   { href: '/data-ingestion', label: 'Data Ingestion', icon: 'DataManager' },
   { href: '/taxonomy', label: 'Taxonomy', icon: 'Taxonomy' },
-  { href: '/goals', label: 'Goals', icon: 'Goals' },
+  { href: '/trips', label: 'Trips', icon: 'Goals' },
   { href: '/model-hub', label: 'Model Hub', icon: 'ModelHub' },
   { href: '/analytics', label: 'Analytics', icon: 'Analytics' },
   { href: '/simulation-lab', label: 'Simulation Lab', icon: 'SimulationLab' },
