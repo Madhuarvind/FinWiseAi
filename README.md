@@ -1,38 +1,32 @@
+
 # 🧠 FinWiseAI: A New Era of Financial Intelligence
 
 **FinWiseAI** is a next-generation financial application that redefines transaction management. Moving far beyond simple categorization, it functions as a multi-layered cognitive platform, providing users with deep, explainable, and hyper-personalized insights into their financial lives.
 
-Built with a state-of-the-art tech stack including **Next.js**, **Firebase**, and **Google's Gemini AI via Genkit**, FinWiseAI transforms a standard transaction list into a dynamic, intelligent financial co-pilot.
+Built with a state-of-the-art tech stack including **Next.js**, **Firebase**, and **Google's Gemini AI via Genkit**, FinWiseAI transforms a standard transaction list into a dynamic, intelligent financial co-pilot, ready for the **GHCI 2025 Hackathon**.
 
 ---
 
 ## ✨ Core Features & Innovations
 
-The system's architecture is a multi-layered cognitive framework, designed to deliver unparalleled financial intelligence.
+The system's architecture is a multi-layered cognitive framework designed to deliver an end-to-end, reproducible, and transparent AI pipeline.
 
-### 🧠 Layer 1: Core AI Engine
-A hybrid intelligence pipeline that balances speed, cost, and accuracy. It uses a confidence-based system to route transactions to either a fast, rule-based engine or a powerful LLM for nuanced analysis.
+### 🧠 Tier 1: Core Intelligence Systems
+- **Quantum-Inspired Uncertainty Quantification (QIUQE):** Decomposes model uncertainty into its epistemic and aleatoric components, providing deeper insights than a simple confidence score.
+- **Self-Evolving Category Discovery (SECDS):** Autonomously discovers and suggests new spending categories from transaction data.
+- **Neural Architecture Search (NAS-OM):** A simulated model factory for optimizing, fine-tuning, and distilling models for peak performance.
 
-### 💖 Layer 2: Behavioral Intelligence
-This layer focuses on understanding the *user* behind the data. It introduces concepts like:
-- **Financial Consciousness Projection (FCP):** Detects the emotional state behind spending.
-- **Financial Entropy Score (FES):** Measures the chaos or structure in a user's financial life.
-- **Neuro-Financial Reflex System (NFRS):** Develops automated "reflexes" to protect against harmful patterns.
+### 🛡️ Tier 2: Robustness & Security
+- **Adversarial Robustness Testing (ARTS):** A "Red-Team" AI agent generates adversarial examples to constantly test and improve model resilience.
+- **Federated Learning Privacy Layer (FLPL):** Simulates transforming sensitive data into anonymous "Semantic DNA" vectors for privacy-preserving analytics.
+- **Blockchain-Based Model Provenance (BMP):** A simulated immutable audit trail for every model decision, ensuring transparency and compliance.
 
-### 🔍 Layer 3: Explainable AI (XAI)
-Provides unprecedented transparency into every decision the AI makes, featuring:
-- **Money Memory Reconstruction (GMMR):** Reconstructs the hidden story and intent behind a transaction.
-- **Transaction Semantic Radiograph (TSR):** Visually highlights the specific words that influenced the AI's classification.
-- **Ethical Micro-Advisor Swarm (EMA-Swarm):** A council of AI agents with different moral viewpoints providing synthesized advice.
-
-### 🛡️ Layer 4: Robustness & Metacognition
-The system's self-awareness and self-healing layer, which includes:
-- **Transaction Metacognition Engine (TME):** The "brain" that thinks about its own thinking, evaluates confidence, and decides which tools to use.
-- **User-Trainable FinAI:** A "Teach Mode" where users can define financial rules in natural language.
-- **Adversarial Attack Simulator (AAS):** A "Red-Team" agent that actively tries to break the model to improve its robustness.
-
-### 🌌 Layer 5: AGI-Level Simulation
-Futuristic features that allow users to simulate and predict complex financial scenarios, such as the **Financial Parallel Universe Navigator** where users can explore "what-if" scenarios in real-time.
+### 🔍 Tier 3-5: Explainable & Predictive AI (XAI)
+- **Explainable AI Narrative Generator (XAING):** Generates human-like stories to explain the "why" behind every transaction classification.
+- **Feature Attribution Visualizer (FAV):** The "Transaction Semantic Radiograph" visually highlights the specific words that influenced the AI's decision.
+- **Causal Inference Engine (CIES):** A "What-If" playground that allows users to explore alternate financial universes by simulating different spending choices.
+- **Predictive Spending Forecaster (PSF):** Forecasts future spending patterns and predicts when the next purchase in a category is likely to occur.
+- **Real-Time Concept Drift Detector (RCDD):** Tracks how merchant meanings evolve over time and alerts for "category drift."
 
 ---
 

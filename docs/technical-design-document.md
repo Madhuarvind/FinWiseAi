@@ -1,7 +1,7 @@
 
 # FinWiseAI: Technical Design Document
 
-**Version:** 1.0
+**Version:** 2.0
 **Date:** 24/07/2024
 **Project:** FinWiseAI — Hybrid, Explainable, and Autonomous Financial Transaction Categorisation System
 
@@ -43,26 +43,35 @@ The system is designed as a hybrid client-server application, leveraging the str
 -   **Database & Auth:** Firebase provides the entire backend infrastructure for data storage and user management. All data reads and writes occur directly from the client to Firestore, secured by **Firestore Security Rules**.
 -   **AI Logic:** Genkit flows are defined as **Server Actions (`'use server'`)**. These server-side functions encapsulate all interactions with the Gemini LLM. Client components invoke these flows as if they were local asynchronous functions, and Next.js handles the secure communication.
 
-### 2.3. Hybrid AI Architecture
+### 2.3. Hybrid AI Architecture: The End-to-End Pipeline
 
-The core of FinWiseAI is its multi-stage classification pipeline, designed for a balance of speed, cost, and accuracy.
+The core of FinWiseAI is its multi-stage classification pipeline, designed for a balance of speed, cost, and accuracy. This represents the full, reproducible workflow from a raw transaction to an explained, enriched data point.
 
-1.  **Stage 1: Client-Side Heuristics (Confidence Simulation):**
-    -   A confidence score is simulated on the client (e.g., in `TransactionDetailSheet`). In a production environment, this would represent a fast, rule-based system.
-    -   If confidence is high (e.g., ≥ 0.95), the system uses the top candidate category.
+1.  **Data Ingestion & Preprocessing:**
+    -   Transactions are ingested via manual entry, file upload, or synthetic generation (`data-ingestion/page.tsx`).
+    -   All transactions are passed through a standardized pipeline (`src/lib/preprocessing.ts`), which normalizes descriptions and enriches the data with temporal features (day of week, time of day).
 
-2.  **Stage 2: Adaptive LLM Reranker:**
-    -   For low-confidence transactions, the client invokes the `categorizeTransactionWithLLMFlow`.
+2.  **Stage 1: Confidence-Conditioned Pipeline (CCP):**
+    -   A confidence score is simulated on the client (`TransactionDetailSheet.tsx`) to represent a fast, rule-based engine.
+    -   If confidence is high (e.g., ≥ 0.95), the system uses the top candidate category, ensuring low latency for simple cases.
+
+3.  **Stage 2: Adaptive LLM Re-Ranker:**
+    -   For low-confidence transactions, the client invokes the `categorizeTransactionWithLLM` flow.
     -   This Genkit flow uses the Gemini model to analyze the transaction and select the best category from a list of candidates, acting as a powerful, nuanced reranker for ambiguous cases.
 
-3.  **Stage 3: Parallel XAI & Enrichment Flows:**
+4.  **Stage 3: Parallel XAI & Enrichment Flows:**
     -   Once a classification is determined, the client triggers a suite of parallel Genkit flows to generate explainability and enrichment data. This includes:
-        -   `explainTransactionClassification`: Creates a human-like story.
-        -   `generateSemanticDNA`: Generates the embedding "fingerprint."
-        -   `getTokenAttributions`: Identifies influential keywords.
+        -   `explainTransactionClassification`: Creates a human-like story (Money Memory Reconstruction).
+        -   `getTokenAttributions`: Identifies influential keywords (Transaction Semantic Radiograph).
         -   `generateCounterfactualExplanation`: Determines what would need to change for a different outcome.
+        -   `decodeSpendingIntent`: Infers the psychological intent and emotional temperature.
+        -   `generateSemanticDNA`: Simulates the creation of a privacy-preserving "Semantic DNA" vector.
+        -   `findSimilarMerchants`: Simulates a graph-based search for related merchants.
 
-This architecture ensures that simple transactions are handled instantly, while complex ones receive deep AI analysis without blocking the user interface.
+5.  **Stage 4: Uncertainty Quantification:**
+    -   The `quantifyUncertainty` flow is invoked to provide a deeper analysis of the model's prediction, decomposing uncertainty into its epistemic (model) and aleatoric (data) components.
+
+This architecture ensures that simple transactions are handled instantly, while complex ones receive deep AI analysis without blocking the user interface, with all reasoning made transparent.
 
 ---
 
@@ -84,26 +93,16 @@ All application data is stored in **Firestore**. The data structure is defined i
     -   **Schema:** `Category`
     -   **Description:** A global collection storing all available transaction categories, their icons, and associated metadata (like "universes"). All authenticated users can read this collection.
 
-### 3.2. Dataset Management & Preprocessing
+-   `/policies/{policyId}`
+    -   **Schema:** `Policy`
+    -   **Description:** Stores machine-readable policies generated from natural language, used by the Policy OS.
 
-To ensure model robustness and reproducibility, FinWiseAI employs a formal dataset management strategy.
-
--   **Data Sourcing:** The system is designed to work with standard financial transaction data. For development and demonstration, a synthetic data generation pipeline is used to create realistic, privacy-safe data.
-
--   **Synthetic Data Generation:** The `synthesize-transactions` Genkit flow is used to generate an arbitrary number of transactions for a given category. This is crucial for:
-    -   Bootstrapping the system without real user data.
-    -   Creating balanced datasets for training and evaluation.
-    -   Augmenting datasets for rare or new categories.
-
--   **Preprocessing Pipeline (`src/lib/preprocessing.ts`):** All transactions, whether from a real source or synthetically generated, are passed through a standardized preprocessing pipeline before being used in the model. This ensures consistency and enriches the data. The pipeline consists of two main stages:
-    1.  **Normalization (`normalizeDescription`):** Raw transaction descriptions are cleaned to remove noise and create a canonical representation. This involves converting to lowercase, removing common stopwords ('inc', 'corp'), and stripping out symbols and random numbers that don't add semantic value.
-    2.  **Enrichment (`enrichTransaction`):** Temporal features are extracted and added to the transaction. This includes the day of the week (e.g., 'Monday') and the time of day ('Morning', 'Afternoon', 'Evening', 'Night'), which are strong predictors of spending behavior.
-
-### 3.3. Core Data Models (`src/lib/types.ts`)
+### 3.2. Core Data Models (`src/lib/types.ts`)
 
 -   **`Transaction`**: Represents a single financial transaction. Includes fields for `description`, `amount`, `date`, `status`, and `multiCategory`, which stores different classifications for each "universe."
 -   **`Category`**: Defines a transaction category, including its `id`, `label`, `icon`, `moodColor`, and the `universes` it belongs to.
 -   **`Trip`**: A data model for grouping travel-related expenses, laying the groundwork for advanced travel finance management.
+-   **`Policy`**: A structured representation of a user-defined rule for the categorization engine.
 
 ---
 
@@ -112,15 +111,18 @@ To ensure model robustness and reproducibility, FinWiseAI employs a formal datas
 The intelligence of FinWiseAI is distributed across several specialized Genkit flows.
 
 -   **`categorizeTransactionWithLLM`**: The core re-ranking engine for low-confidence transactions.
--   **`explainTransactionClassification`**: Generates a human-like narrative for a transaction (The "Transaction Story").
+-   **`explainTransactionClassification`**: Generates a human-like narrative for a transaction (The "Money Memory").
 -   **`suggestTransactionCategories`**: Analyzes transaction descriptions to suggest new, relevant categories for the taxonomy.
--   **`synthesizeTransactions`**: Generates realistic, synthetic transaction data for a given category, useful for bootstrapping and model training.
--   **`reconstructTransactionFromText`**: Parses unstructured text (e.g., an email receipt) to extract structured transaction data.
--   **`generateSemanticDNA`**: Simulates the creation of a "Zero Interpretation Loss Embedding" (ZILE) by producing a "Semantic DNA" vector for a transaction.
--   **`getTokenAttributions`**: Implements token-level XAI by identifying the specific words in a description that were most influential for a classification decision.
--   **`generateCounterfactualExplanation`**: Provides "what-if" analysis by explaining what would need to change for a transaction to be classified differently.
+-   **`synthesizeTransactions`**: Generates realistic, synthetic transaction data for a given category.
+-   **`reconstructTransactionFromText`**: Parses unstructured text to extract structured transaction data.
+-   **`generateSemanticDNA`**: Simulates the creation of a "Zero Interpretation Loss Embedding" (ZILE) by producing a "Semantic DNA" vector.
+-   **`getTokenAttributions`**: Implements token-level XAI by identifying the influential words in a description.
+-   **`generateCounterfactualExplanation`**: Provides "what-if" analysis by explaining what would need to change for a different outcome.
 -   **`findSimilarMerchants`**: Simulates a semantic search for merchants, used for automated rule generation.
--   **`decodeSpendingIntent`**: Infers the likely psychological intent behind a purchase based on contextual clues.
+-   **`decodeSpendingIntent`**: Infers the likely psychological intent behind a purchase.
+-   **`generatePolicyFromText`**: Converts a natural language rule into a structured, machine-readable policy.
+-   **`generateAdversarialExamples`**: A "Red-Team" agent that creates adversarial inputs to test model robustness.
+-   **`quantifyUncertainty`**: Simulates a Bayesian Neural Ensemble to decompose and explain model uncertainty.
 
 ---
 
@@ -131,12 +133,11 @@ Security and responsibility are designed into the core of the application.
 -   **Authentication:** Handled by **Firebase Authentication**. User sessions are managed automatically and securely.
 -   **Authorization:** Enforced by **Firestore Security Rules** (`firestore.rules`). The rules implement a strict user-ownership model: users can only read/write their own data (`/users/{userId}`).
 -   **Data Privacy:**
-    -   The **Behavioural Anonymizer (BA)** simulation demonstrates how user-specific patterns can be transformed into anonymous "Semantic DNA" vectors, enabling privacy-preserving analytics.
-    -   The architecture avoids storing sensitive PII wherever possible, relying on Firebase Auth UIDs as the primary identifier.
+    -   The **Behavioural Anonymizer (BA)** simulation (`responsible-ai/page.tsx`) demonstrates how user-specific patterns can be transformed into anonymous "Semantic DNA" vectors, enabling privacy-preserving analytics.
 -   **Adversarial Defense:**
-    -   The **Adversarial Intent Filter (AIF)** simulation shows how the AI can detect and analyze malicious or ambiguous transaction strings designed to evade categorization.
+    -   The **Adversarial Attack Simulator (AAS)** (`security/page.tsx`) shows how the AI can detect and analyze malicious or ambiguous transaction strings designed to evade categorization.
 -   **Compliance:**
-    -   The **Policy-Aware Category Planner (PACP)** and **Auto-Compliance Verifier (ACV)** modules simulate a compliance layer that can flag transactions related to sensitive categories (e.g., AML/KYC heuristics), ensuring outputs adhere to regulatory policies.
+    -   The **Auto-Compliance Verifier (ACV)** module (`security/page.tsx`) simulates a compliance layer that can flag transactions related to sensitive categories and log decisions to a tamper-proof ledger, ensuring outputs adhere to regulatory policies.
 
 ---
 
@@ -145,12 +146,12 @@ Security and responsibility are designed into the core of the application.
 The system is architected for high scalability and real-time performance.
 
 -   **Scalability:**
-    -   **Firestore** is a massively scalable NoSQL database capable of handling millions of concurrent users.
+    -   **Firestore** is a massively scalable NoSQL database.
     -   **Firebase Authentication** is a managed service that scales automatically.
-    -   **Genkit flows**, running as serverless functions, can scale on demand to handle fluctuating AI inference workloads.
+    -   **Genkit flows**, running as serverless functions, scale on demand to handle AI workloads.
 -   **Performance:**
-    -   **Real-Time Database:** Firestore's real-time capabilities mean that UI updates happen instantly as data changes in the backend, without needing manual polling.
-    -   **Client-Side Caching:** The `useCollection` and `useDoc` hooks maintain a local cache of data, making the UI feel fast and responsive.
-    -   **Hybrid AI for Latency:** The two-stage AI architecture ensures low latency. The majority of transactions are handled by a fast, (simulated) rule-based engine, while only the most complex cases incur the latency of an LLM call.
-    -   **Optimistic UI Updates:** New data (e.g., from synthetic generation) is added to the local state immediately for a responsive feel, while the batch write to Firestore happens in the background.
-    -   **Code Splitting:** Next.js automatically splits code by route, so users only download the JavaScript needed for the page they are viewing.
+    -   **Real-Time Database:** Firestore's real-time capabilities mean that UI updates happen instantly.
+    -   **Client-Side Caching:** The `useCollection` and `useDoc` hooks maintain a local cache of data.
+    -   **Hybrid AI for Latency:** The two-stage AI architecture ensures low latency by handling most cases with a fast, (simulated) rule-based engine.
+    -   **Optimistic UI Updates:** New data is added to the local state immediately for a responsive feel.
+    -   **Code Splitting:** Next.js automatically splits code by route, optimizing load times.
