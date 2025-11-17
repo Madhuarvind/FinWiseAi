@@ -110,10 +110,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                     asChild
                     tooltip={label}
                   >
-                    <a href={item.href}>
+                    <Link href={item.href}>
                       <Icon />
                       <span>{label}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               );
@@ -133,10 +133,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                     asChild
                     tooltip={item.label}
                   >
-                    <a href={item.href}>
+                    <Link href={item.href}>
                       <Icon />
                       <span>{item.label}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               );
