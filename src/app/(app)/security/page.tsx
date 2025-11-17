@@ -175,7 +175,7 @@ export default function SecurityPage() {
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2"><ShieldCheck />Auto-Compliance Verifier (ACV)</CardTitle>
                     <CardDescription>
-                        Automatically verifies model outputs against a set of compliance policies (e.g., AML/KYC heuristics) before finalizing categories.
+                        Verifies model outputs against compliance policies. All checks are logged to a tamper-proof blockchain ledger for a full audit trail.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -190,7 +190,7 @@ export default function SecurityPage() {
                         <Badge variant="secondary" className="bg-green-100 text-green-900 dark:bg-green-900/30 dark:text-green-300">Active</Badge>
                     </div>
                     <div className="mt-4 text-sm text-muted-foreground">
-                        <p>The ACV engine uses a set of policy rules and statistical checks to flag transactions that may violate compliance regulations. This provides an essential audit trail and ensures outputs adhere to business and legal requirements.</p>
+                        <p>The ACV engine uses a set of policy rules and statistical checks to flag transactions that may violate compliance regulations. This provides an essential, immutable audit trail and ensures outputs adhere to business and legal requirements.</p>
                     </div>
                 </CardContent>
                  <CardFooter>
@@ -201,7 +201,7 @@ export default function SecurityPage() {
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2"><Landmark />Category Integrity Validator (CIV)</CardTitle>
                     <CardDescription>
-                        Prevents category "leakage" by learning the boundaries between classes and rejecting predictions that are semantically ambiguous.
+                        Prevents "category leakage" by learning boundaries and logging a hash of each decision to a simulated blockchain.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -216,7 +216,7 @@ export default function SecurityPage() {
                         <Badge variant="secondary" className="bg-green-100 text-green-900 dark:bg-green-900/30 dark:text-green-300">Active</Badge>
                     </div>
                     <div className="mt-4 text-sm text-muted-foreground">
-                        <p>Using a boundary model trained with triplet loss, the CIV measures the "distance" of a prediction from nearby category boundaries. If a prediction is too close to a boundary, it's flagged for review or auto-rerouted, preventing subtle misclassifications.</p>
+                        <p>Using a boundary model, the CIV measures the "distance" of a prediction from nearby category boundaries. If a prediction is too ambiguous, it's flagged for review, and the decision proof is recorded for a tamper-proof audit trail.</p>
                     </div>
                 </CardContent>
                  <CardFooter>
