@@ -1,8 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import { Label, Pie, PieChart, Sector } from 'recharts';
-
+import { Cell, Label, Pie, PieChart, Sector } from 'recharts';
+import { cn } from '@/lib/utils';
 import {
   ChartContainer,
   ChartTooltip,
@@ -23,70 +23,6 @@ const chartConfig = {
   spending: {
     label: 'Spending',
   },
-  'food-drink': {
-    label: 'Food & Drink',
-    color: 'hsl(var(--chart-1))',
-  },
-  shopping: {
-    label: 'Shopping',
-    color: 'hsl(var(--chart-2))',
-  },
-  transport: {
-    label: 'Transport',
-    color: 'hsl(var(--chart-3))',
-  },
-  groceries: {
-    label: 'Groceries',
-    color: 'hsl(var(--chart-4))',
-  },
-  home: {
-    label: 'Home',
-    color: 'hsl(var(--chart-5))',
-  },
-  entertainment: {
-    label: 'Entertainment',
-    color: 'hsl(var(--chart-1))',
-    theme: {
-      light: 'hsl(197 37% 44%)',
-      dark: 'hsl(197 37% 64%)',
-    },
-  },
-  health: {
-    label: 'Health',
-    color: 'hsl(var(--chart-2))',
-    theme: {
-        light: 'hsl(120 40% 40%)',
-        dark: 'hsl(120 40% 60%)',
-    }
-  },
-  utilities: {
-    label: 'Utilities',
-    color: 'hsl(var(--chart-3))',
-    theme: {
-        light: 'hsl(43 84% 56%)',
-        dark: 'hsl(43 84% 76%)',
-    }
-  },
-  travel: {
-    label: 'Travel',
-    color: 'hsl(var(--chart-4))',
-     theme: {
-        light: 'hsl(27 87% 57%)',
-        dark: 'hsl(27 87% 77%)',
-    }
-  },
-  'personal-care': {
-    label: 'Personal Care',
-    color: 'hsl(var(--chart-5))',
-    theme: {
-        light: 'hsl(340 75% 55%)',
-        dark: 'hsl(340 75% 75%)',
-    }
-  },
-  other: {
-    label: 'Other',
-    color: 'hsl(var(--muted))'
-  }
 };
 
 export function SpendingByCategoryChart({
@@ -111,14 +47,12 @@ export function SpendingByCategoryChart({
     return Object.entries(spending)
       .map(([categoryId, value]) => {
         const categoryInfo = categories.find((c) => c.id === categoryId);
-        const chartInfoKey = categoryId as keyof typeof chartConfig;
-        const chartInfo = chartConfig[chartInfoKey];
-
+        
         return {
           category: categoryId,
           value,
           label: categoryInfo?.label || 'Other',
-          fill: chartInfo?.color || 'hsl(var(--muted))',
+          fill: categoryInfo?.moodColor ? `var(--${categoryInfo.moodColor.replace('bg-', 'chart-')})` : 'hsl(var(--muted))',
           icon: getCategoryIcon(categoryInfo?.icon || 'ShoppingCart'),
         };
       })
@@ -155,7 +89,7 @@ export function SpendingByCategoryChart({
             formatter={(value, name, props) => (
               <div className='flex flex-col gap-0.5'>
                 <span className='font-medium'>{props.payload?.label}</span>
-                <span className='text-muted-foreground'>{value.toLocaleString('en-IN', {
+                <span className='text-muted-foreground'>{Number(value).toLocaleString('en-IN', {
                       style: 'currency',
                       currency: 'INR',
                 })}</span>
@@ -170,17 +104,20 @@ export function SpendingByCategoryChart({
           innerRadius={60}
           strokeWidth={5}
           activeIndex={activeIndex}
-          activeShape={(props) => (
-            <Sector {...props} cornerRadius={4} />
-          )}
+          activeShape={(props) => {
+            return (
+                <Sector {...props} cornerRadius={4} fill={props.fill} />
+            )
+          }}
         >
           {spendingByCategory.map((entry, index) => (
-            <Sector key={`sector-${index}`} fill={entry.fill} />
+            <Cell key={`cell-${index}`} fill={entry.fill} className={cn('outline-none ring-0 focus:ring-0 focus-visible:ring-0',
+              index === activeIndex && 'stroke-border'
+            )}/>
           ))}
           <Label
             content={() => {
               if (!activeSegment) return null;
-              const Icon = activeSegment.icon;
               return (
                 <g>
                   <text

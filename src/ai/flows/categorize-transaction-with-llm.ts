@@ -40,9 +40,12 @@ const categorizeTransactionPrompt = ai.definePrompt({
   output: {schema: z.object({ category: z.string() })},
   prompt: `You are a meticulous financial analyst. Your task is to categorize a transaction based on its description by choosing the most logical category from the provided list. Pay close attention to merchant names.
 
-Transaction Description:
-"{{{transactionDescription}}}"
-  
+Think step-by-step:
+1.  Analyze the transaction description: "{{transactionDescription}}".
+2.  Review the list of available categories.
+3.  Select the single most appropriate category from the list.
+4.  Your output MUST be one of the exact category names from the list provided.
+
 Available Categories:
 {{#each candidateCategories}}
 - {{{this}}}
@@ -50,7 +53,7 @@ Available Categories:
 
 Example:
 - Description: "Amazon Mktplace"
-- Your output should be "Shopping".
+- Your output must be "Shopping".
 
 Return only the single best category name from the list.`,
 });
