@@ -155,7 +155,6 @@ export const navIcons = {
   Support: LifeBuoy,
   Bias: Scale,
   Security: ShieldCheck,
-  Trips: Plane,
   Policy: FileText,
   Goals: Gem,
 };

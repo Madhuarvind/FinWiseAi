@@ -27,7 +27,6 @@ import {
   GoogleAuthProvider,
 } from 'firebase/auth';
 import { useAuth, useFirestore } from '@/firebase';
-import { Separator } from '../ui/separator';
 import { GoogleIcon } from '../icons';
 import { doc, setDoc } from 'firebase/firestore';
 
@@ -157,26 +156,6 @@ export function AuthForm({ mode }: AuthFormProps) {
 
   return (
     <div className="space-y-4">
-      <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isLoading}>
-        {isLoading ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-        ) : (
-            <GoogleIcon className="mr-2 h-4 w-4" />
-        )}
-        Sign {mode === 'login' ? 'in' : 'up'} with Google
-      </Button>
-
-       <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            Or continue with
-          </span>
-        </div>
-      </div>
-
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           {mode === 'register' && (
@@ -241,6 +220,15 @@ export function AuthForm({ mode }: AuthFormProps) {
           </Button>
         </form>
       </Form>
+
+      <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isLoading}>
+        {isLoading ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        ) : (
+            <GoogleIcon className="mr-2 h-4 w-4" />
+        )}
+        Sign {mode === 'login' ? 'in' : 'up'} with Google
+      </Button>
     </div>
   );
 }
