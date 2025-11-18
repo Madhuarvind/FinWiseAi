@@ -6,7 +6,7 @@ import Link from 'next/link';
 export default function LoginPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
-      <div className="mb-8">
+      <div className="mb-8 flex items-center gap-2 text-2xl font-semibold">
         <Logo />
       </div>
       <Card className="w-full max-w-md">

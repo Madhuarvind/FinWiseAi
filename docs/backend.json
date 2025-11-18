@@ -108,7 +108,9 @@
       },
       "required": [
         "id",
-        "email"
+        "email",
+        "firstName",
+        "lastName"
       ]
     },
     "Policy": {
@@ -140,7 +142,8 @@
   },
   "auth": {
     "providers": [
-      "password"
+      "password",
+      "google.com"
     ]
   },
   "firestore": {
