@@ -27,11 +27,11 @@ const chartConfig = {
 };
 
 const colorMap: Record<string, string> = {
-    'bg-blue-500': 'var(--chart-1)',
-    'bg-red-500': 'var(--chart-2)',
-    'bg-green-500': 'var(--chart-3)',
-    'bg-purple-500': 'var(--chart-4)',
-    'bg-yellow-500': 'var(--chart-5)',
+    'bg-blue-500': 'hsl(var(--chart-1))',
+    'bg-red-500': 'hsl(var(--chart-2))',
+    'bg-green-500': 'hsl(var(--chart-3))',
+    'bg-purple-500': 'hsl(var(--chart-4))',
+    'bg-yellow-500': 'hsl(var(--chart-5))',
     'bg-gray-500': 'hsl(var(--muted))'
   };
 
@@ -62,7 +62,9 @@ export function SpendingByCategoryChart({
           category: categoryId,
           value,
           label: categoryInfo?.label || 'Other',
-          fill: categoryInfo?.moodColor ? (colorMap[categoryInfo.moodColor] || 'hsl(var(--muted))') : 'hsl(var(--muted))',
+          fill: categoryInfo?.moodColor
+            ? (colorMap[categoryInfo.moodColor] || 'hsl(var(--chart-1))')
+            : 'hsl(var(--muted))',
           icon: getCategoryIcon(categoryInfo?.icon || 'ShoppingCart'),
         };
       })
@@ -87,11 +89,12 @@ export function SpendingByCategoryChart({
   const activeSegment = spendingByCategory[activeIndex];
 
   return (
-    <ChartContainer
-      config={chartConfig}
-      className="mx-auto aspect-square h-[250px]"
-    >
-      <PieChart onMouseEnter={onPieEnter}>
+    <div className="flex flex-col items-center gap-4">
+      <ChartContainer
+        config={chartConfig}
+        className="mx-auto aspect-square h-[260px] sm:h-[280px]"
+      >
+        <PieChart onMouseEnter={onPieEnter}>
         <ChartTooltip
           cursor={false}
           content={<ChartTooltipContent 
@@ -111,13 +114,24 @@ export function SpendingByCategoryChart({
           data={spendingByCategory}
           dataKey="value"
           nameKey="label"
-          innerRadius={60}
+          innerRadius={70}
+          outerRadius={100}
           strokeWidth={5}
+          startAngle={90}
+          endAngle={-270}
+          paddingAngle={spendingByCategory.length > 1 ? 2 : 0}
           activeIndex={activeIndex}
           activeShape={(props) => {
+            const outerRadius = (props.outerRadius as number) + 4;
             return (
-                <Sector {...props} cornerRadius={4} fill={props.fill} />
-            )
+              <Sector
+                {...props}
+                outerRadius={outerRadius}
+                cornerRadius={6}
+                stroke="hsl(var(--background))"
+                strokeWidth={2}
+              />
+            );
           }}
         >
           {spendingByCategory.map((entry, index) => (
@@ -135,21 +149,21 @@ export function SpendingByCategoryChart({
                     y="50%"
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    className="text-2xl font-bold fill-foreground"
+                    className="text-2xl font-semibold fill-foreground"
                     dy="-0.5em"
                   >
                     {activeSegment.value.toLocaleString('en-IN', {
                       style: 'currency',
                       currency: 'INR',
-                       maximumFractionDigits: 0,
+                      maximumFractionDigits: 0,
                     })}
                   </text>
-                   <text
+                  <text
                     x="50%"
                     y="50%"
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    className="text-sm fill-muted-foreground"
+                    className="text-xs sm:text-sm fill-muted-foreground"
                     dy="1.2em"
                   >
                     {activeSegment.label}
@@ -160,6 +174,43 @@ export function SpendingByCategoryChart({
           />
         </Pie>
       </PieChart>
-    </ChartContainer>
+      </ChartContainer>
+      <div className="grid w-full gap-2 text-sm text-muted-foreground sm:grid-cols-2">
+        {spendingByCategory.map((item, index) => {
+          const Icon = item.icon;
+          return (
+            <button
+              key={item.category}
+              type="button"
+              className={cn(
+                'flex items-center justify-between rounded-md border bg-background px-3 py-2 text-left transition-colors',
+                index === activeIndex && 'border-primary/60 bg-primary/5'
+              )}
+              onMouseEnter={() => setActiveIndex(index)}
+            >
+              <span className="flex items-center gap-2">
+                <span
+                  className="h-2.5 w-2.5 rounded-full"
+                  style={{ backgroundColor: item.fill }}
+                />
+                <span className="flex items-center gap-1">
+                  <Icon className="h-4 w-4 text-muted-foreground" />
+                  <span className="truncate font-medium text-foreground">
+                    {item.label}
+                  </span>
+                </span>
+              </span>
+              <span className="font-medium text-foreground">
+                {item.value.toLocaleString('en-IN', {
+                  style: 'currency',
+                  currency: 'INR',
+                  maximumFractionDigits: 0,
+                })}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 }
