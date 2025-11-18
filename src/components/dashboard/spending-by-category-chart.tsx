@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -24,6 +25,15 @@ const chartConfig = {
     label: 'Spending',
   },
 };
+
+const colorMap: Record<string, string> = {
+    'bg-blue-500': 'var(--chart-1)',
+    'bg-red-500': 'var(--chart-2)',
+    'bg-green-500': 'var(--chart-3)',
+    'bg-purple-500': 'var(--chart-4)',
+    'bg-yellow-500': 'var(--chart-5)',
+    'bg-gray-500': 'hsl(var(--muted))'
+  };
 
 export function SpendingByCategoryChart({
   transactions,
@@ -52,7 +62,7 @@ export function SpendingByCategoryChart({
           category: categoryId,
           value,
           label: categoryInfo?.label || 'Other',
-          fill: categoryInfo?.moodColor ? `var(--${categoryInfo.moodColor.replace('bg-', 'chart-')})` : 'hsl(var(--muted))',
+          fill: categoryInfo?.moodColor ? (colorMap[categoryInfo.moodColor] || 'hsl(var(--muted))') : 'hsl(var(--muted))',
           icon: getCategoryIcon(categoryInfo?.icon || 'ShoppingCart'),
         };
       })
