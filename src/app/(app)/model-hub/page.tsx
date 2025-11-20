@@ -344,6 +344,3 @@ export default function ModelHubPage() {
     </>
   );
 }
-
-    
-    
