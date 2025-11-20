@@ -41,6 +41,7 @@ const models = [
 
 const adapters = [
     {
+        id: "q2-retail",
         name: "Q2-Retail-Boost",
         basedOn: "FAI-BERT v1.2.0",
         description: "LoRA adapter for new retail merchants. Dataset curated by the SDMRB using uncertainty and diversity sampling.",
@@ -48,6 +49,7 @@ const adapters = [
         samples: 2350
     },
     {
+        id: "intl-travel",
         name: "International-Travel",
         basedOn: "FAI-BERT v1.2.0",
         description: "Prefix-Tuning adapter for identifying patterns in non-USD travel transactions.",
@@ -55,6 +57,7 @@ const adapters = [
         samples: 850
     },
      {
+        id: "util-v2",
         name: "Utility-Providers-v2",
         basedOn: "FAI-BERT v1.1.0",
         description: "Legacy adapter for utility payment patterns. This represents a previous stable version.",
@@ -129,6 +132,36 @@ export default function ModelHubPage() {
         }
     }
 
+    const handleFineTune = (adapterId: string) => {
+        setIsLoading(prev => ({ ...prev, [`tune-${adapterId}`]: true }));
+        toast({
+            title: "Fine-Tuning Process Initiated",
+            description: "The model adapter is now being trained on the new dataset..."
+        });
+        setTimeout(() => {
+            setIsLoading(prev => ({ ...prev, [`tune-${adapterId}`]: false }));
+            toast({
+                title: "Fine-Tuning Complete!",
+                description: "The model has been updated with the new data."
+            });
+        }, 3000); // Simulate a 3-second process
+    };
+
+    const handleDeploy = (adapterId: string) => {
+        setIsLoading(prev => ({ ...prev, [`deploy-${adapterId}`]: true }));
+        toast({
+            title: "Deployment Started",
+            description: "The updated model is being deployed to the production environment..."
+        });
+        setTimeout(() => {
+            setIsLoading(prev => ({ ...prev, [`deploy-${adapterId}`]: false }));
+            toast({
+                title: "Deployment Successful!",
+                description: "The new model is now live."
+            });
+        }, 3000); // Simulate a 3-second process
+    };
+
 
   return (
     <>
@@ -193,12 +226,12 @@ export default function ModelHubPage() {
                              <p className="text-xs text-muted-foreground">{adapter.samples.toLocaleString()} samples in dataset</p>
                         </CardContent>
                         <CardFooter className="flex items-center justify-between">
-                             <Button size="sm" disabled={adapter.status !== 'Needs Training'}>
-                                <Wrench className="mr-2 h-4 w-4"/>
+                             <Button size="sm" onClick={() => handleFineTune(adapter.id)} disabled={adapter.status !== 'Needs Training' || isLoading[`tune-${adapter.id}`]}>
+                                {isLoading[`tune-${adapter.id}`] ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Wrench className="mr-2 h-4 w-4"/>}
                                 Fine-Tune Model
                             </Button>
-                            <Button variant="ghost" size="sm" disabled={adapter.status !== 'Active'}>
-                                <Rocket className="mr-2 h-4 w-4"/>
+                            <Button variant="ghost" size="sm" onClick={() => handleDeploy(adapter.id)} disabled={adapter.status !== 'Active' || isLoading[`deploy-${adapter.id}`]}>
+                                {isLoading[`deploy-${adapter.id}`] ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Rocket className="mr-2 h-4 w-4"/>}
                                 Deploy
                             </Button>
                         </CardFooter>
@@ -304,3 +337,5 @@ export default function ModelHubPage() {
     </>
   );
 }
+
+    
