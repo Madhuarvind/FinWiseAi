@@ -11,6 +11,8 @@ import { useToast } from '@/hooks/use-toast';
 import { suggestTransactionCategories } from '@/ai/flows/suggest-transaction-categories';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { PlusCircle } from 'lucide-react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+
 
 export default function TaxonomyPage() {
   const firestore = useFirestore();
@@ -25,6 +27,7 @@ export default function TaxonomyPage() {
   const [isSuggesting, setIsSuggesting] = React.useState(false);
   const [suggestedCategories, setSuggestedCategories] = React.useState<string[]>([]);
   const [isSuggestionDialogOpen, setSuggestionDialogOpen] = React.useState(false);
+  const [isMergeDialogOpen, setIsMergeDialogOpen] = React.useState(false);
 
   const handleSuggestCategories = async () => {
     setIsSuggesting(true);
@@ -70,6 +73,14 @@ export default function TaxonomyPage() {
       toast({ variant: 'destructive', title: 'Save Failed', description: 'Could not save the new category.' });
     });
   }
+
+  const handleApproveMerge = () => {
+    setIsMergeDialogOpen(false);
+    toast({
+      title: 'Merge Approved',
+      description: 'The AI will now begin re-categorizing transactions. This may take a few moments.',
+    });
+  };
 
   if (isLoading) {
     return (
@@ -119,7 +130,7 @@ export default function TaxonomyPage() {
                     </div>
                 </CardContent>
                  <CardFooter>
-                    <Button variant="secondary" size="sm">
+                    <Button variant="secondary" size="sm" onClick={() => setIsMergeDialogOpen(true)}>
                         <Binary className="mr-2 h-4 w-4"/>
                         Review Merge Suggestion
                     </Button>
@@ -155,6 +166,23 @@ export default function TaxonomyPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      
+      <AlertDialog open={isMergeDialogOpen} onOpenChange={setIsMergeDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Approve Category Merge?</AlertDialogTitle>
+            <AlertDialogDescription>
+              The AI recommends merging "Food & Drink" and "Groceries" into a single "Food" category. This will improve model accuracy by removing ambiguity.
+              <br/><br/>
+              Approving this will re-categorize all affected transactions.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleApproveMerge}>Approve Merge</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
