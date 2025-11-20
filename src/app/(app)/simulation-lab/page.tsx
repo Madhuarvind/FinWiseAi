@@ -122,8 +122,22 @@ export default function SimulationLabPage() {
                         <li><span className='font-semibold text-foreground'>Spending Habits</span> become planets orbiting these stars.</li>
                         <li><span className='font-semibold text-foreground'>Transaction Frequency</span> defines the orbits and gravitational pull.</li>
                     </ul>
-                     <div className="flex h-64 w-full items-center justify-center rounded-lg border-2 border-dashed mt-4">
-                        <p className="text-muted-foreground">[3D Galaxy Visualization Placeholder]</p>
+                     <div className="relative flex h-80 w-full items-center justify-center rounded-lg border bg-muted/20 mt-4 overflow-hidden">
+                        <div className="absolute top-10 left-10 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl"></div>
+                        <div className="absolute bottom-16 right-20 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl"></div>
+                        <div className="absolute top-20 right-40 w-16 h-16 bg-red-500/10 rounded-full blur-2xl"></div>
+                        
+                        {/* Stars */}
+                        <div className="absolute top-1/4 left-1/4 w-1.5 h-1.5 bg-white rounded-full"></div>
+                        <div className="absolute top-1/2 left-1/3 w-1 h-1 bg-white/80 rounded-full"></div>
+                        <div className="absolute bottom-1/4 left-1/2 w-2 h-2 bg-white rounded-full"></div>
+                        <div className="absolute top-1/3 right-1/4 w-1 h-1 bg-white/70 rounded-full"></div>
+                        <div className="absolute bottom-1/3 right-1/3 w-1.5 h-1.5 bg-white rounded-full"></div>
+
+                        {/* Cluster Labels */}
+                        <div className="absolute top-12 left-12 text-xs text-blue-300">Shopping Nebula</div>
+                        <div className="absolute bottom-20 right-24 text-xs text-purple-300">Dining Out Cluster</div>
+                         <div className="absolute top-24 right-44 text-xs text-red-300">Subscriptions</div>
                     </div>
                 </CardContent>
             </Card>
