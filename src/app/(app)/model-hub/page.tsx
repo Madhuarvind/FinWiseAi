@@ -3,7 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { BrainCircuit, GitMerge, Layers3, Rocket, Wrench, CircleDashed, Bot, FlaskConical, Network, Zap, Telescope, Check, X, RefreshCw } from 'lucide-react';
+import { BrainCircuit, GitMerge, Layers3, Rocket, Wrench, CircleDashed, Bot, FlaskConical, Network, Zap, Telescope, Check, X, RefreshCw, ArrowDown, Share2 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import * as React from 'react';
 import { useToast } from '@/hooks/use-toast';
@@ -165,6 +165,36 @@ const SrmaDialogContent = () => {
     );
 };
 
+const ArchitectureDiagram = () => {
+    const Layer = ({ title, subtitle, icon, className }: { title: string, subtitle: string, icon: React.ReactNode, className?: string }) => (
+        <div className={cn("flex flex-col items-center", className)}>
+            <div className="flex items-center justify-center w-full p-3 bg-muted/60 border rounded-lg">
+                <div className="flex-shrink-0 mr-4">{icon}</div>
+                <div className="text-left">
+                    <p className="font-semibold text-foreground">{title}</p>
+                    <p className="text-xs text-muted-foreground">{subtitle}</p>
+                </div>
+            </div>
+        </div>
+    );
+    const Connector = () => (
+        <div className="flex justify-center items-center my-1">
+            <ArrowDown className="h-4 w-4 text-muted-foreground" />
+        </div>
+    );
+
+    return (
+        <div className="mt-4 p-4 bg-muted/30 rounded-lg text-sm text-muted-foreground">
+            <Layer title="Input Layer" subtitle="Raw Transaction String" icon={<Layers3 className="h-6 w-6 text-primary" />} />
+            <Connector />
+            <Layer title="Embedding Layer" subtitle="384 Dimensions" icon={<Share2 className="h-6 w-6 text-primary" />} />
+            <Connector />
+            <Layer title="Transformer Blocks x6" subtitle="Self-Attention Mechanism" icon={<BrainCircuit className="h-6 w-6 text-primary" />} />
+            <Connector />
+            <Layer title="Classification Head" subtitle="Softmax Activation" icon={<Zap className="h-6 w-6 text-primary" />} />
+        </div>
+    );
+}
 
 export default function ModelHubPage() {
     const { toast } = useToast();
@@ -250,20 +280,8 @@ export default function ModelHubPage() {
     const handleViewArchitecture = (modelName: string) => {
         setDialogContent({
             title: `Architecture: ${modelName}`,
-            description: "This is a simplified representation of the model architecture.",
-            content: (
-                <div className="mt-4 p-4 bg-muted/50 rounded-lg text-sm text-muted-foreground">
-                    <p className="font-mono">[Input Layer]</p>
-                    <p className="font-mono">  ↓</p>
-                    <p className="font-mono">[Embedding Layer (384 dims)]</p>
-                    <p className="font-mono">  ↓</p>
-                    <p className="font-mono">[Transformer Block x6]</p>
-                    <p className="font-mono">  ↓</p>
-                    <p className="font-mono">[Classification Head (Softmax)]</p>
-                    <p className="font-mono">  ↓</p>
-                    <p className="font-mono">[Output Layer]</p>
-                </div>
-            )
+            description: "This is a simplified representation of the model's data flow and layers.",
+            content: <ArchitectureDiagram />
         });
     };
 
@@ -331,11 +349,11 @@ export default function ModelHubPage() {
                              <p className="text-xs text-muted-foreground">{adapter.samples.toLocaleString()} samples in dataset</p>
                         </CardContent>
                         <CardFooter className="flex items-center justify-between">
-                             <Button size="sm" onClick={() => handleFineTune(adapter.id)} disabled={adapter.status === 'Archived' || adapter.status === 'Active' || isLoading[`tune-${adapter.id}`]}>
+                             <Button size="sm" onClick={() => handleFineTune(adapter.id)} disabled={adapter.status !== 'Needs Training' || isLoading[`tune-${adapter.id}`]}>
                                 {isLoading[`tune-${adapter.id}`] ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Wrench className="mr-2 h-4 w-4"/>}
                                 Fine-Tune Model
                             </Button>
-                            <Button variant="ghost" size="sm" onClick={() => handleDeploy(adapter.id)} disabled={adapter.status === 'Archived' || adapter.status === 'Needs Training' || isLoading[`deploy-${adapter.id}`]}>
+                            <Button variant="outline" size="sm" onClick={() => handleDeploy(adapter.id)} disabled={adapter.status !== 'Active' || isLoading[`deploy-${adapter.id}`]}>
                                 {isLoading[`deploy-${adapter.id}`] ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Rocket className="mr-2 h-4 w-4"/>}
                                 Deploy
                             </Button>
@@ -424,7 +442,7 @@ export default function ModelHubPage() {
 
     </div>
     <Dialog open={!!dialogContent} onOpenChange={() => setDialogContent(null)}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
             <DialogHeader>
             <DialogTitle>{dialogContent?.title}</DialogTitle>
             <DialogDescription>
@@ -442,7 +460,3 @@ export default function ModelHubPage() {
     </>
   );
 }
-
-    
-
-    
