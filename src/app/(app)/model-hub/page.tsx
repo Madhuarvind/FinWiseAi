@@ -331,11 +331,11 @@ export default function ModelHubPage() {
                              <p className="text-xs text-muted-foreground">{adapter.samples.toLocaleString()} samples in dataset</p>
                         </CardContent>
                         <CardFooter className="flex items-center justify-between">
-                             <Button size="sm" onClick={() => handleFineTune(adapter.id)} disabled={adapter.status !== 'Needs Training' || isLoading[`tune-${adapter.id}`]}>
+                             <Button size="sm" onClick={() => handleFineTune(adapter.id)} disabled={adapter.status === 'Archived' || adapter.status === 'Active' || isLoading[`tune-${adapter.id}`]}>
                                 {isLoading[`tune-${adapter.id}`] ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Wrench className="mr-2 h-4 w-4"/>}
                                 Fine-Tune Model
                             </Button>
-                            <Button variant="ghost" size="sm" onClick={() => handleDeploy(adapter.id)} disabled={adapter.status !== 'Active' || isLoading[`deploy-${adapter.id}`]}>
+                            <Button variant="ghost" size="sm" onClick={() => handleDeploy(adapter.id)} disabled={adapter.status === 'Archived' || adapter.status === 'Needs Training' || isLoading[`deploy-${adapter.id}`]}>
                                 {isLoading[`deploy-${adapter.id}`] ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Rocket className="mr-2 h-4 w-4"/>}
                                 Deploy
                             </Button>
@@ -442,5 +442,7 @@ export default function ModelHubPage() {
     </>
   );
 }
+
+    
 
     
