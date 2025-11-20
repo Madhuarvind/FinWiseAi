@@ -168,6 +168,26 @@ export default function ModelHubPage() {
             });
         }, 3000); // Simulate a 3-second process
     };
+    
+    const handleViewArchitecture = (modelName: string) => {
+        setDialogContent({
+            title: `Architecture: ${modelName}`,
+            description: "This is a simplified representation of the model architecture.",
+            content: (
+                <div className="mt-4 p-4 bg-muted/50 rounded-lg text-sm text-muted-foreground">
+                    <p className="font-mono">[Input Layer]</p>
+                    <p className="font-mono">  ↓</p>
+                    <p className="font-mono">[Embedding Layer (384 dims)]</p>
+                    <p className="font-mono">  ↓</p>
+                    <p className="font-mono">[Transformer Block x6]</p>
+                    <p className="font-mono">  ↓</p>
+                    <p className="font-mono">[Classification Head (Softmax)]</p>
+                    <p className="font-mono">  ↓</p>
+                    <p className="font-mono">[Output Layer]</p>
+                </div>
+            )
+        });
+    };
 
 
   return (
@@ -200,7 +220,7 @@ export default function ModelHubPage() {
                                 <p className="text-sm text-muted-foreground">{model.description}</p>
                             </CardContent>
                             <CardFooter>
-                                <Button variant="outline" size="sm" disabled>
+                                <Button variant="outline" size="sm" onClick={() => handleViewArchitecture(model.name)}>
                                     <CircleDashed className="mr-2 h-4 w-4"/>
                                     View Architecture
                                 </Button>
