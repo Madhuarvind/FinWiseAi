@@ -69,6 +69,7 @@ const initialAdapters = [
 
 const distilledModels = [
     {
+        id: 'nano-bert-1',
         name: "FAI-Nano-BERT (Student)",
         version: "v2.0.1-distilled",
         description: "A compact student model created via Counterfactual Knowledge Distillation. It captures the causal reasoning of the larger teacher ensemble at a fraction of the size, making it ideal for edge deployment.",
@@ -285,6 +286,21 @@ export default function ModelHubPage() {
         });
     };
 
+    const handleDeployToEdge = (modelId: string) => {
+        setIsLoading(prev => ({ ...prev, [`edge-${modelId}`]: true }));
+        toast({
+            title: "Deployment to Edge Started",
+            description: "The distilled model is being packaged for edge devices..."
+        });
+        setTimeout(() => {
+            setIsLoading(prev => ({ ...prev, [`edge-${modelId}`]: false }));
+            toast({
+                title: "Deployment to Edge Successful!",
+                description: "The model is now available for on-device inference."
+            });
+        }, 3000);
+    };
+
 
   return (
     <>
@@ -333,12 +349,15 @@ export default function ModelHubPage() {
             <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2"><GitMerge className="text-primary"/>Fine-Tuning Adapters (PEFT)</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                  {adapters.map(adapter => (
-                    <Card key={adapter.name} className="flex flex-col">
+                    <Card key={adapter.id} className="flex flex-col">
                         <CardHeader>
                             <CardTitle className="flex items-center justify-between">
                                 <span className="text-lg">{adapter.name}</span>
                                  <Badge variant={adapter.status === 'Active' ? 'secondary' : adapter.status === 'Needs Training' ? 'destructive' : 'outline'}
-                                    className={adapter.status === 'Active' ? "bg-green-100 text-green-900 dark:bg-green-900/30 dark:text-green-300" : ""}>
+                                    className={cn(
+                                        adapter.status === 'Active' && "bg-green-100 text-green-900 dark:bg-green-900/30 dark:text-green-300",
+                                        adapter.status === 'Archived' && "pointer-events-none"
+                                    )}>
                                     {adapter.status}
                                  </Badge>
                             </CardTitle>
@@ -371,7 +390,7 @@ export default function ModelHubPage() {
                 {distilledModels.map(model => {
                     const Icon = model.icon;
                     return (
-                        <Card key={model.name} className="flex flex-col">
+                        <Card key={model.id} className="flex flex-col">
                             <CardHeader>
                                 <CardTitle className="flex items-center justify-between">
                                     <span className="flex items-center gap-3"><Icon className="h-6 w-6"/> {model.name}</span>
@@ -383,9 +402,9 @@ export default function ModelHubPage() {
                                 <p className="text-sm text-muted-foreground">{model.description}</p>
                             </CardContent>
                              <CardFooter>
-                                <Button variant="outline" size="sm">
-                                    <Rocket className="mr-2 h-4 w-4"/>
-                                    Deploy to Edge
+                                <Button variant="outline" size="sm" onClick={() => handleDeployToEdge(model.id)} disabled={isLoading[`edge-${model.id}`]}>
+                                    {isLoading[`edge-${model.id}`] ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Rocket className="mr-2 h-4 w-4"/>}
+                                    {isLoading[`edge-${model.id}`] ? "Deploying..." : "Deploy to Edge"}
                                 </Button>
                             </CardFooter>
                         </Card>
