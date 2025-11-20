@@ -202,6 +202,7 @@ export default function ModelHubPage() {
     const [isLoading, setIsLoading] = React.useState<Record<string, boolean>>({});
     const [dialogContent, setDialogContent] = React.useState<{ title: string; description: string; content: React.ReactNode } | null>(null);
     const [adapters, setAdapters] = React.useState(initialAdapters);
+    const [edgeDeployedModels, setEdgeDeployedModels] = React.useState<Set<string>>(new Set());
 
 
     const handleRunMAS = async () => {
@@ -294,6 +295,7 @@ export default function ModelHubPage() {
         });
         setTimeout(() => {
             setIsLoading(prev => ({ ...prev, [`edge-${modelId}`]: false }));
+            setEdgeDeployedModels(prev => new Set(prev).add(modelId));
             toast({
                 title: "Deployment to Edge Successful!",
                 description: "The model is now available for on-device inference."
@@ -368,7 +370,7 @@ export default function ModelHubPage() {
                              <p className="text-xs text-muted-foreground">{adapter.samples.toLocaleString()} samples in dataset</p>
                         </CardContent>
                         <CardFooter className="flex items-center justify-between">
-                             <Button size="sm" onClick={() => handleFineTune(adapter.id)} disabled={adapter.status !== 'Needs Training' || isLoading[`tune-${adapter.id}`]}>
+                             <Button size="sm" onClick={() => handleFineTune(adapter.id)} disabled={adapter.status === 'Archived' || adapter.status === 'Active' || isLoading[`tune-${adapter.id}`]}>
                                 {isLoading[`tune-${adapter.id}`] ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Wrench className="mr-2 h-4 w-4"/>}
                                 Fine-Tune Model
                             </Button>
@@ -389,6 +391,7 @@ export default function ModelHubPage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {distilledModels.map(model => {
                     const Icon = model.icon;
+                    const isDeployed = edgeDeployedModels.has(model.id);
                     return (
                         <Card key={model.id} className="flex flex-col">
                             <CardHeader>
@@ -402,9 +405,15 @@ export default function ModelHubPage() {
                                 <p className="text-sm text-muted-foreground">{model.description}</p>
                             </CardContent>
                              <CardFooter>
-                                <Button variant="outline" size="sm" onClick={() => handleDeployToEdge(model.id)} disabled={isLoading[`edge-${model.id}`]}>
-                                    {isLoading[`edge-${model.id}`] ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Rocket className="mr-2 h-4 w-4"/>}
-                                    {isLoading[`edge-${model.id}`] ? "Deploying..." : "Deploy to Edge"}
+                                <Button variant="outline" size="sm" onClick={() => handleDeployToEdge(model.id)} disabled={isLoading[`edge-${model.id}`] || isDeployed}>
+                                    {isLoading[`edge-${model.id}`] ? (
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    ) : isDeployed ? (
+                                        <Check className="mr-2 h-4 w-4" />
+                                    ) : (
+                                        <Rocket className="mr-2 h-4 w-4"/>
+                                    )}
+                                    {isLoading[`edge-${model.id}`] ? "Deploying..." : isDeployed ? "Deployed" : "Deploy to Edge"}
                                 </Button>
                             </CardFooter>
                         </Card>
