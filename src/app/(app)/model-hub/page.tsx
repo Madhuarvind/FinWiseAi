@@ -39,7 +39,7 @@ const models = [
     }
 ];
 
-const adapters = [
+const initialAdapters = [
     {
         id: "q2-retail",
         name: "Q2-Retail-Boost",
@@ -82,6 +82,8 @@ export default function ModelHubPage() {
     const { toast } = useToast();
     const [isLoading, setIsLoading] = React.useState<Record<string, boolean>>({});
     const [dialogContent, setDialogContent] = React.useState<{ title: string; description: string; content: React.ReactNode } | null>(null);
+    const [adapters, setAdapters] = React.useState(initialAdapters);
+
 
     const handleRunMAS = async () => {
         setIsLoading(prev => ({...prev, mas: true}));
@@ -139,6 +141,11 @@ export default function ModelHubPage() {
             description: "The model adapter is now being trained on the new dataset..."
         });
         setTimeout(() => {
+            setAdapters(prevAdapters => 
+                prevAdapters.map(adapter => 
+                    adapter.id === adapterId ? { ...adapter, status: 'Active' } : adapter
+                )
+            );
             setIsLoading(prev => ({ ...prev, [`tune-${adapterId}`]: false }));
             toast({
                 title: "Fine-Tuning Complete!",
@@ -338,4 +345,5 @@ export default function ModelHubPage() {
   );
 }
 
+    
     
