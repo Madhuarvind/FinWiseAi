@@ -370,7 +370,7 @@ export default function ModelHubPage() {
                              <p className="text-xs text-muted-foreground">{adapter.samples.toLocaleString()} samples in dataset</p>
                         </CardContent>
                         <CardFooter className="flex items-center justify-between">
-                             <Button size="sm" onClick={() => handleFineTune(adapter.id)} disabled={adapter.status === 'Archived' || adapter.status === 'Active' || isLoading[`tune-${adapter.id}`]}>
+                             <Button size="sm" onClick={() => handleFineTune(adapter.id)} disabled={adapter.status !== 'Needs Training' || isLoading[`tune-${adapter.id}`]}>
                                 {isLoading[`tune-${adapter.id}`] ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Wrench className="mr-2 h-4 w-4"/>}
                                 Fine-Tune Model
                             </Button>
