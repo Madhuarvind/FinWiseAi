@@ -3,7 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { BrainCircuit, GitMerge, Layers3, Rocket, Wrench, CircleDashed, Bot, FlaskConical, Network, Zap, Telescope } from 'lucide-react';
+import { BrainCircuit, GitMerge, Layers3, Rocket, Wrench, CircleDashed, Bot, FlaskConical, Network, Zap, Telescope, Check, X, RefreshCw } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import * as React from 'react';
 import { useToast } from '@/hooks/use-toast';
@@ -11,6 +11,7 @@ import { Loader2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { synthesizeTransactions } from '@/ai/flows/synthesize-transactions';
 import { getTokenAttributions } from '@/ai/flows/get-token-attributions';
+import { cn } from '@/lib/utils';
 
 const models = [
     {
@@ -78,6 +79,93 @@ const distilledModels = [
     }
 ];
 
+// --- Dialog Content Components ---
+
+const SrmaDialogContent = () => {
+    const [attributions, setAttributions] = React.useState<string[]>([]);
+    const [feedback, setFeedback] = React.useState<Record<string, 'correct' | 'incorrect'>>({});
+    const [isRerunning, setIsRerunning] = React.useState(false);
+
+    const runAudit = async (isDeeperLayer = false) => {
+        setIsRerunning(true);
+        setFeedback({}); // Reset feedback on re-run
+        try {
+            const result = await getTokenAttributions({
+                transactionDescription: "UBER TRIP MUMBAI",
+                category: "Transport"
+            });
+            // Simulate different results for deeper layer
+            const newAttributions = isDeeperLayer ? result.influentialWords.concat(['mumbai']) : result.influentialWords;
+            setAttributions(newAttributions);
+        } catch (e) {
+            // Handle error, maybe show a toast
+        } finally {
+            setIsRerunning(false);
+        }
+    };
+
+    React.useEffect(() => {
+        runAudit(); // Initial run
+    }, []);
+
+    const handleFeedback = (token: string, newFeedback: 'correct' | 'incorrect') => {
+        setFeedback(prev => ({
+            ...prev,
+            [token]: prev[token] === newFeedback ? undefined : newFeedback,
+        }));
+    };
+
+    return (
+        <div className="mt-4 text-sm text-muted-foreground">
+            <p className="mb-4">For transaction "UBER TRIP MUMBAI", the key attribution tokens are:</p>
+            
+            <div className="space-y-3">
+                {isRerunning ? (
+                    <div className="flex items-center justify-center h-24">
+                        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                    </div>
+                ) : (
+                    attributions.map((word) => (
+                        <div key={word} className="flex items-center justify-between p-3 bg-secondary/30 rounded-lg">
+                            <Badge variant="secondary" className="text-base font-mono uppercase">{word}</Badge>
+                            <div className="flex items-center gap-2">
+                                <Button
+                                    size="sm"
+                                    variant={feedback[word] === 'correct' ? 'default' : 'outline'}
+                                    className={cn("h-8 w-8 p-0", feedback[word] === 'correct' && "bg-green-600 hover:bg-green-700")}
+                                    onClick={() => handleFeedback(word, 'correct')}
+                                >
+                                    <Check className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    variant={feedback[word] === 'incorrect' ? 'destructive' : 'outline'}
+                                    className="h-8 w-8 p-0"
+                                    onClick={() => handleFeedback(word, 'incorrect')}
+                                >
+                                    <X className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        </div>
+                    ))
+                )}
+            </div>
+            
+            <Separator className="my-4" />
+
+            <div className="space-y-2">
+                <p className="font-semibold text-foreground">Customization</p>
+                <Button variant="outline" className="w-full" onClick={() => runAudit(true)} disabled={isRerunning}>
+                    {isRerunning ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <RefreshCw className="h-4 w-4 mr-2" />}
+                    Re-run Audit on Deeper Layer
+                </Button>
+                 <p className="text-xs text-muted-foreground pt-1">Simulates inspecting a different layer of the neural network to understand how feature importance changes.</p>
+            </div>
+        </div>
+    );
+};
+
+
 export default function ModelHubPage() {
     const { toast } = useToast();
     const [isLoading, setIsLoading] = React.useState<Record<string, boolean>>({});
@@ -109,29 +197,19 @@ export default function ModelHubPage() {
     };
 
     const handleRunSRMA = async () => {
-        setIsLoading(prev => ({...prev, srma: true}));
+        setIsLoading(prev => ({ ...prev, srma: true }));
         toast({ title: "SRMA Auditor Initialized", description: "Generating self-confidence map for a sample transaction..."});
-        try {
-            const result = await getTokenAttributions({ transactionDescription: "UBER TRIP MUMBAI", category: "Transport"});
-            setDialogContent({
-                title: "SRMA Audit Complete",
-                description: "The auditor identified the most influential tokens for the 'Transport' classification.",
-                content: (
-                    <div className="mt-4 text-sm text-muted-foreground">
-                        <p>For transaction "UBER TRIP MUMBAI", the key attribution tokens are:</p>
-                         <div className="flex flex-wrap gap-2 pt-2">
-                            {result.influentialWords.map((word) => (
-                                <Badge key={word} variant="secondary" className="text-base">{word}</Badge>
-                            ))}
-                        </div>
-                    </div>
-                )
-            });
-        } catch (e) {
-            toast({ variant: 'destructive', title: "SRMA Failed", description: "Could not get token attributions."});
-        } finally {
-            setIsLoading(prev => ({...prev, srma: false}));
-        }
+        
+        // The dialog content is now a self-contained component that handles its own logic
+        setDialogContent({
+            title: "SRMA Audit Complete",
+            description: "The auditor identified the most influential tokens for the 'Transport' classification. You can now provide feedback.",
+            content: <SrmaDialogContent />
+        });
+        
+        // No need to await here, the dialog handles its own loading.
+        // We set loading to false for the main button after a short delay to allow the dialog to open.
+        setTimeout(() => setIsLoading(prev => ({ ...prev, srma: false })), 500);
     }
 
     const handleFineTune = (adapterId: string) => {
