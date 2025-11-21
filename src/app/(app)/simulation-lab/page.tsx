@@ -100,46 +100,6 @@ export default function SimulationLabPage() {
       </div>
 
        <div className="space-y-6">
-            <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2"><Telescope className="text-primary"/>Transaction Universe Explorer (TUE)</h2>
-            <Card>
-                <CardHeader>
-                    <CardTitle>Your Spending Galaxy</CardTitle>
-                    <CardDescription>
-                       Visualize your entire financial life as an interactive 3D galaxy. This explorer turns your transaction data into a stunning visual metaphor for exploration.
-                    </CardDescription>
-                </CardHeader>
-                 <CardContent className="text-sm text-muted-foreground space-y-2">
-                    <p>In this visualization:</p>
-                    <ul className='list-disc list-inside space-y-1 pl-4'>
-                        <li><span className='font-semibold text-foreground'>Category Clusters</span> form sprawling nebulae.</li>
-                        <li><span className='font-semibold text-foreground'>Merchants</span> are represented as individual stars.</li>
-                        <li><span className='font-semibold text-foreground'>Spending Habits</span> become planets orbiting these stars.</li>
-                        <li><span className='font-semibold text-foreground'>Transaction Frequency</span> defines the orbits and gravitational pull.</li>
-                    </ul>
-                     <div className="relative flex h-80 w-full items-center justify-center rounded-lg border bg-muted/20 mt-4 overflow-hidden">
-                        <div className="absolute top-10 left-10 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl"></div>
-                        <div className="absolute bottom-16 right-20 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl"></div>
-                        <div className="absolute top-20 right-40 w-16 h-16 bg-red-500/10 rounded-full blur-2xl"></div>
-                        
-                        {/* Stars */}
-                        <div className="absolute top-1/4 left-1/4 w-1.5 h-1.5 bg-white rounded-full"></div>
-                        <div className="absolute top-1/2 left-1/3 w-1 h-1 bg-white/80 rounded-full"></div>
-                        <div className="absolute bottom-1/4 left-1/2 w-2 h-2 bg-white rounded-full"></div>
-                        <div className="absolute top-1/3 right-1/4 w-1 h-1 bg-white/70 rounded-full"></div>
-                        <div className="absolute bottom-1/3 right-1/3 w-1.5 h-1.5 bg-white rounded-full"></div>
-
-                        {/* Cluster Labels */}
-                        <div className="absolute top-12 left-12 text-xs text-blue-300">Shopping Nebula</div>
-                        <div className="absolute bottom-20 right-24 text-xs text-purple-300">Dining Out Cluster</div>
-                         <div className="absolute top-24 right-44 text-xs text-red-300">Subscriptions</div>
-                    </div>
-                </CardContent>
-            </Card>
-       </div>
-
-       <Separator/>
-
-        <div className="space-y-6">
             <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2"><Repeat className="text-primary"/>Transaction "What-If" Playground</h2>
             <Card>
                 <CardHeader>
@@ -185,9 +145,9 @@ export default function SimulationLabPage() {
                 </CardContent>
             </Card>
        </div>
-       
-       <Separator/>
 
+       <Separator/>
+       
        <div className="space-y-6">
             <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2"><Network className="text-primary"/>Hyper-Contextual Transaction Rewriting (HTR)</h2>
             <Card>
