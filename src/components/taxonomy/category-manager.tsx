@@ -8,6 +8,7 @@ import {
   CardTitle,
   CardFooter,
   CardContent,
+  CardDescription,
 } from '@/components/ui/card';
 import {
   MoreVertical,
@@ -42,7 +43,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
+  DialogDescription as FormDialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -199,9 +200,9 @@ function RuleGenDialog({ category, isOpen, setIsOpen }: { category: Category | n
             <DialogContent>
             <DialogHeader>
                 <DialogTitle>Automated Rule Generation (ARG)</DialogTitle>
-                <DialogDescription>
+                <FormDialogDescription>
                     The AI is analyzing transactions in &quot;{category?.label}&quot; to generate keyword-matching rules.
-                </DialogDescription>
+                </FormDialogDescription>
             </DialogHeader>
             <div className="py-4">
                 {isLoading ? (
@@ -447,11 +448,11 @@ export default function CategoryManager({
             <DialogTitle>
               {selectedCategory ? 'Edit Category' : 'Add New Category'}
             </DialogTitle>
-            <DialogDescription>
+            <FormDialogDescription>
               {selectedCategory
                 ? `Editing "${selectedCategory.label}".`
                 : 'Create a new category for transactions.'}
-            </DialogDescription>
+            </FormDialogDescription>
           </DialogHeader>
           <CategoryForm
             category={selectedCategory}
