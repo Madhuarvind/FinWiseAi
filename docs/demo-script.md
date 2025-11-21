@@ -108,6 +108,8 @@
 
 "More importantly, it showcases our **Self-Evolving Category Discovery (SECDS)** system. By clicking 'Suggest Categories', the `suggestTransactionCategories` Genkit flow analyzes uncategorized or ambiguous transactions and proposes new, relevant categories, helping the user's financial taxonomy evolve over time."
 
+"Below, you see our **Category Integrity Validator (CIV)**, which has detected overlap between 'Food & Drink' and 'Groceries' and is recommending a merge to improve model accuracy."
+
 ### 4.2. Policy OS (`/policy-os`)
 
 **(Screen: `/policy-os`)**
@@ -148,17 +150,34 @@
 
 ### Script
 
-"Finally, the Model Hub provides a view into our simulated 'model factory'. It visualizes the different components of our AI architecture:"
-- "**Core Models:** The foundational 'teacher' models."
-- "**Fine-Tuning Adapters:** Smaller, specialized adapters for new or evolving categories, showcasing Parameter-Efficient Fine-Tuning (PEFT)."
-- "**Distilled Models:** Compact 'student' models designed for edge deployment, created through simulated Knowledge Distillation."
+"Finally, the Model Hub provides a view into our simulated 'model factory'. It visualizes our sophisticated, modular approach to AI model management."
 
-"This demonstrates a sophisticated, modular approach to AI model management, representing our simulated **Neural Architecture Search (NAS-OM)** system."
+1.  **Model Evaluation Workbench:** "Here, we can run a full evaluation on our model, generating a confusion matrix and key metrics like F1-score. The AI then provides an actionable recommendation, like creating a new adapter to resolve classification ambiguity, which we can do with one click."
+
+2.  **Fine-Tuning Adapters (PEFT):** "This section shows our smaller, specialized adapters for new or evolving categories, showcasing Parameter-Efficient Fine-Tuning."
+
+3.  **Neural Architecture Search (NAS-OM):** "And this workbench allows us to define a goal, like 'Optimize for Latency', and have the AI discover a new, optimal model architecture for our needs."
 
 ---
 
-## Part 5: Conclusion
+## Part 5: Specialized Use Cases & Conclusion
+
+### 5.1. Travel & Trips (`/trips`)
+
+**(Screen: `/trips`)**
 
 ### Script
+
+"FinWiseAI also demonstrates specialized intelligence. The 'Travel & Trips' page automatically detects and groups travel-related expenses into trip-specific budgets. It uses AI to infer the trip's intent—whether it's for business or leisure—and tracks your savings progress for each one."
+
+### 5.2. Responsible AI (`/responsible-ai`)
+
+**(Screen: `/responsible-ai`)**
+
+### Script
+
+"Our 'Responsible AI' dashboard demonstrates our commitment to fairness and privacy. It includes a **Fairness & Bias Report** to ensure the model performs equitably across all transaction types. It also showcases the **Behavioural Anonymizer**, which transforms transaction patterns into anonymous vectors for safe, privacy-preserving analytics."
+
+### Script (Conclusion)
 
 "In summary, FinWiseAI is more than an application; it's a demonstration of a multi-layered cognitive architecture. By combining a powerful AI engine with deep explainability, behavioral intelligence, and robust self-governance, it provides a truly intelligent and trustworthy financial co-pilot. Thank you."

@@ -53,7 +53,7 @@ A core design decision was to build a multi-stage, hybrid AI pipeline. This demo
 [Stage 2: LLM Re-Ranker] -> [Stage 3: Parallel XAI Enrichment] -> (Enriched Transaction)
 ```
 
-1.  **Stage 1: Confidence-Conditioned Pipeline (CCP):** A simulated, fast, rule-based engine first provides a confidence score. If the score is high (e.g., ≥ 95%), the transaction is categorized instantly and cheaply.
+1.  **Stage 1: Confidence-Conditioned Pipeline (CCP):** A simulated, fast, local classifier first provides a confidence score. If the score is high (e.g., ≥ 95%), the transaction is categorized instantly and cheaply.
 2.  **Stage 2: Adaptive LLM Re-Ranker:** For low-confidence transactions, the system automatically routes the task to a powerful Gemini-based LLM. This **"LLM as a fallback"** model ensures high accuracy for ambiguous cases without incurring LLM costs for every transaction.
 3.  **Stage 3: Parallel XAI & Enrichment Flows:** Once a classification is determined, the client triggers a suite of parallel Genkit flows to generate explainability data (token attributions, counterfactuals, etc.). This parallelization prevents a single long-running process from blocking the delivery of insights to the user.
 
@@ -96,7 +96,7 @@ This project moves beyond standard classification to introduce novel concepts th
 
 The system is designed to be highly transparent and customizable, empowering users to shape the AI's behavior.
 
--   **Taxonomy Management:** Users have full control over the category taxonomy via the **`/taxonomy`** page. They can add, edit, or delete categories, which are stored in the `/categories` Firestore collection. The initial set of categories is defined in `src/lib/categories.json` and can be seeded into the database.
+-   **Taxonomy Management:** Users have full control over the category taxonomy. They can add, edit, or delete categories, and the initial set is seeded from the `config/taxonomy.json` file, making the base system easily configurable.
 -   **User Feedback Loop:** The core feedback mechanism is built into the **`TransactionDetailSheet`**. When a transaction is flagged for review (due to low confidence), the user is prompted to verify or change the category. This correction is not just a label change; it's a signal that is fed back into the system. While full model retraining is out of scope for the hackathon, this feedback is logged and used to demonstrate how a continuous learning loop would be implemented, directly influencing future model iterations and fine-tuning adapters (as simulated in the Model Hub).
 
 ---
@@ -118,7 +118,7 @@ The system is architected for high scalability, real-time performance, and trans
 
 -   **Scalability:** The backend services (Firestore, Firebase Auth, Genkit Server Actions) are all serverless and scale on demand.
 -   **Performance Benchmarks (Simulated):**
-    -   **Latency:** The "fast path" (rule-based) classification is simulated with **<50ms** latency. The "slow path" (LLM re-ranker) averages **~800ms**. Thanks to the hybrid design, overall average latency is kept low.
+    -   **Latency:** The "fast path" (local classifier) is simulated with **<50ms** latency. The "slow path" (LLM re-ranker) averages **~800ms**. Thanks to the hybrid design, overall average latency is kept low.
     -   **Throughput:** The system is designed to handle a high volume of transactions, with the serverless architecture capable of scaling to meet demand. The primary bottleneck would be LLM rate limits, which the hybrid model effectively mitigates.
 -   **UI Responsiveness:** Firestore's real-time capabilities and the use of skeleton loaders ensure the UI feels fast and responsive, even during data fetches.
 

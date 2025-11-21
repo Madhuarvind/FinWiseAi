@@ -1,4 +1,3 @@
-
 # 🧠 FinWiseAI: A New Era of Financial Intelligence
 
 **FinWiseAI** is a next-generation financial application that redefines transaction management. Moving far beyond simple categorization, it functions as a multi-layered cognitive platform, providing users with deep, explainable, and hyper-personalized insights into their financial lives.
@@ -12,21 +11,25 @@ Built with a state-of-the-art tech stack including **Next.js**, **Firebase**, an
 The system's architecture is a multi-layered cognitive framework designed to deliver an end-to-end, reproducible, and transparent AI pipeline.
 
 ### 🧠 Tier 1: Core Intelligence Systems
-- **Quantum-Inspired Uncertainty Quantification (QIUQE):** Decomposes model uncertainty into its epistemic and aleatoric components, providing deeper insights than a simple confidence score.
-- **Self-Evolving Category Discovery (SECDS):** Autonomously discovers and suggests new spending categories from transaction data.
-- **Neural Architecture Search (NAS-OM):** A simulated model factory for optimizing, fine-tuning, and distilling models for peak performance.
+- **Hybrid AI Pipeline (TME):** A "Transaction Metacognition Engine" that dynamically chooses between a fast, local classifier for simple transactions and a powerful Gemini LLM re-ranker for ambiguous ones, optimizing for speed, cost, and accuracy.
+- **Self-Evolving Category Discovery (SECDS):** Autonomously discovers and suggests new spending categories from transaction data, allowing the user's financial taxonomy to evolve.
+- **Automated Rule Generation (ARG):** AI-powered system that analyzes transaction patterns within a category to suggest fuzzy-matching keyword rules, automating the process of making categories more accurate.
+- **Neural Architecture Search (NAS-OM):** A simulated model factory for discovering and optimizing model architectures based on user-defined goals like latency or accuracy.
 
-### 🛡️ Tier 2: Robustness & Security
-- **Adversarial Robustness Testing (ARTS):** A "Red-Team" AI agent generates adversarial examples to constantly test and improve model resilience.
-- **Federated Learning Privacy Layer (FLPL):** Simulates transforming sensitive data into anonymous "Semantic DNA" vectors for privacy-preserving analytics.
-- **Blockchain-Based Model Provenance (BMP):** A simulated immutable audit trail for every model decision, ensuring transparency and compliance.
+### 💖 Tier 2: Behavioral & Health Intelligence
+- **Behavioral Intelligence Engine:** A suite of features including a **Financial Entropy Score (FES)** to measure spending chaos, a **Neuro-Financial Reflex System (NFRS)** to suggest "cognitive repairs" for impulse buys, and an **Emotion-Time Fusion Engine (ETFE)** to identify emotional spending danger zones.
+- **Health & Medical Analytics:** A specialized module that includes a **Health Risk Score Engine (HSRE)** to analyze health-related spending and a **Medical Expense Forecaster (MEF)** to predict future medical costs and suggest savings.
 
-### 🔍 Tier 3-5: Explainable & Predictive AI (XAI)
-- **Explainable AI Narrative Generator (XAING):** Generates human-like stories to explain the "why" behind every transaction classification.
-- **Feature Attribution Visualizer (FAV):** The "Transaction Semantic Radiograph" visually highlights the specific words that influenced the AI's decision.
+### 🔍 Tier 3: Explainable & Predictive AI (XAI)
+- **Explainable AI Narrative Generator (GMMR):** Generates human-like stories to explain the "why" behind every transaction classification, reconstructing the "money memory."
+- **Feature Attribution Visualizer (TSR):** The "Transaction Semantic Radiograph" visually highlights the specific words that most influenced the AI's decision.
 - **Causal Inference Engine (CIES):** A "What-If" playground that allows users to explore alternate financial universes by simulating different spending choices.
-- **Predictive Spending Forecaster (PSF):** Forecasts future spending patterns and predicts when the next purchase in a category is likely to occur.
-- **Real-Time Concept Drift Detector (RCDD):** Tracks how merchant meanings evolve over time and alerts for "category drift."
+- **Privacy-Preserving Semantic DNA (ZILE):** Simulates the transformation of a transaction into a rich, anonymous "Zero Interpretation Loss Embedding" for advanced analytics without exposing raw data.
+
+### 🛡️ Tier 4: Robustness & Governance
+- **Policy-Driven Categorization OS (PD-COS):** A "Teach Mode" where users can write rules in plain English, which are then converted by AI into machine-readable policies that govern the classification engine.
+- **Adversarial Robustness Testing (AAS):** A "Red-Team" AI agent generates adversarial examples to constantly test and improve model resilience.
+- **Model Evaluation Workbench:** An in-app tool to run evaluations, view performance metrics (F1, Precision, Recall), and analyze a confusion matrix, with AI-driven recommendations for improvement.
 
 ---
 
@@ -50,7 +53,7 @@ The following benchmarks are based on simulated tests running in a cloud develop
 
 | Metric | Value | Notes |
 | :--- | :--- | :--- |
-| **Fast Path Latency** | **~45ms** | For high-confidence transactions using the local classifier (LLM-free). |
+| **Fast Path Latency** | **~45ms** | For high-confidence transactions using the simulated local classifier (LLM-free). |
 | **LLM Path Latency** | **~750ms** | For low-confidence transactions routed to the Gemini LLM re-ranker. |
 | **Avg. Throughput**| **~120 trans/sec** | Calculated based on a 90/10 split between fast-path and LLM-path. |
 | **Avg. Token Usage**| **~35 tokens/txn** | Average across the entire pipeline, including XAI enrichment flows. |
