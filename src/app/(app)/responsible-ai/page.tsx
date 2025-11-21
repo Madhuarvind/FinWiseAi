@@ -1,5 +1,5 @@
 'use client';
-import { ShieldCheck, Scale, FileText, Bot, UserX, Loader2 } from "lucide-react";
+import { ShieldCheck, Scale, FileText, Bot, UserX, Loader2, HelpCircle } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from "@/components/ui/card";
 import { FairnessMetricsTable } from "@/components/analytics/fairness-metrics-table";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +8,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from "@/components/ui/button";
 import { generateSemanticDNA } from "@/ai/flows/generate-semantic-dna";
+import { explainTransactionClassification } from "@/ai/flows/explain-transaction-classification";
+import { Separator } from "@/components/ui/separator";
 
 const fairnessData = {
     groups: ['Low Value (<$20)', 'Med Value ($20-$100)', 'High Value (>$100)'],
@@ -35,37 +37,91 @@ const fairnessData = {
     ],
   };
 
+const AnonymizationResultContent = ({ transactionDescription }: { transactionDescription: string }) => {
+    const { toast } = useToast();
+    const [isLoading, setIsLoading] = React.useState(true);
+    const [dnaResult, setDnaResult] = React.useState<{ baseSequence: string; interpretationVector: string } | null>(null);
+    const [explanation, setExplanation] = React.useState<string | null>(null);
+    const [isExplaining, setIsExplaining] = React.useState(false);
+
+    React.useEffect(() => {
+        async function getDna() {
+            try {
+                const result = await generateSemanticDNA(transactionDescription);
+                setDnaResult(result);
+            } catch (e) {
+                toast({ variant: 'destructive', title: "Anonymization Failed", description: "Could not generate Semantic DNA." });
+            } finally {
+                setIsLoading(false);
+            }
+        }
+        getDna();
+    }, [transactionDescription, toast]);
+    
+    const handleExplainVector = async () => {
+      if (!dnaResult) return;
+      setIsExplaining(true);
+      try {
+          const result = await explainTransactionClassification({
+              transactionDescription: `An anonymized vector: S-DNA=${dnaResult.baseSequence}, IV=${dnaResult.interpretationVector}`,
+              predictedCategory: 'Unknown',
+              confidenceScore: 0.9
+          });
+          setExplanation(result.explanation);
+      } catch (e) {
+          toast({ variant: 'destructive', title: "Explanation Failed", description: "The AI could not interpret the vector." });
+      } finally {
+          setIsExplaining(false);
+      }
+    };
+
+
+    if (isLoading) {
+        return <div className="flex items-center justify-center h-40"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
+    }
+    
+    if (!dnaResult) {
+      return <p className="text-destructive">Failed to generate the Semantic DNA vector.</p>
+    }
+
+    return (
+        <div className="mt-4 space-y-4 text-sm">
+            <div>
+              <p className="font-semibold text-foreground flex items-center gap-1">Base Sequence (S-DNA) <HelpCircle className="h-4 w-4 text-muted-foreground" title="Represents core semantics like merchant type, temporal context, and user behavior."/></p>
+              <p className="text-muted-foreground font-mono text-xs break-all bg-secondary/30 p-2 rounded-md">{dnaResult.baseSequence}</p>
+            </div>
+            <div>
+              <p className="font-semibold text-foreground flex items-center gap-1">Interpretation Vector <HelpCircle className="h-4 w-4 text-muted-foreground" title="Represents explainability signals like SHAP values and category cluster data."/></p>
+              <p className="text-muted-foreground font-mono text-xs break-all bg-secondary/30 p-2 rounded-md">{dnaResult.interpretationVector}</p>
+            </div>
+            <Separator/>
+            <Button onClick={handleExplainVector} disabled={isExplaining} className="w-full">
+              {isExplaining ? <Loader2 className="h-4 w-4 mr-2 animate-spin"/> : <Bot className="h-4 w-4 mr-2"/>}
+              {isExplaining ? 'AI is Explaining...' : 'Explain this Vector'}
+            </Button>
+            {explanation && (
+                <div className="p-3 bg-primary/10 rounded-lg text-primary-foreground/90 border border-primary/20">
+                    <p className="font-semibold text-primary">AI Explanation:</p>
+                    <p className="text-primary/90">{explanation}</p>
+                </div>
+            )}
+        </div>
+    );
+};
+
 export default function ResponsibleAIPage() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = React.useState(false);
-  const [dialogContent, setDialogContent] = React.useState<{ title: string; description: string; content: React.ReactNode } | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const transactionToAnonymize = "STARBUCKS #12345 8.75 USD";
 
   const handleRunAnonymizer = async () => {
     setIsLoading(true);
     toast({ title: "Behavioural Anonymizer Initialized", description: "Transforming user-specific patterns into an anonymous vector..."});
-    try {
-      const result = await generateSemanticDNA("STARBUCKS #12345 8.75 USD");
-      setDialogContent({
-        title: "Anonymization Complete",
-        description: "The transaction has been transformed into a privacy-preserving 'Semantic DNA' vector.",
-        content: (
-          <div className="mt-4 space-y-4 text-sm">
-            <div>
-              <p className="font-semibold text-foreground">Base Sequence (S-DNA)</p>
-              <p className="text-muted-foreground font-mono text-xs break-all bg-secondary/30 p-2 rounded-md">{result.baseSequence}</p>
-            </div>
-            <div>
-              <p className="font-semibold text-foreground">Interpretation Vector</p>
-              <p className="text-muted-foreground font-mono text-xs break-all bg-secondary/30 p-2 rounded-md">{result.interpretationVector}</p>
-            </div>
-          </div>
-        )
-      });
-    } catch (e) {
-      toast({ variant: 'destructive', title: "Anonymization Failed", description: "Could not generate Semantic DNA."});
-    } finally {
-      setIsLoading(false);
-    }
+    
+    // The dialog will handle the actual generation, we just open it.
+    setIsDialogOpen(true);
+    setIsLoading(false);
   };
 
 
@@ -147,19 +203,17 @@ export default function ResponsibleAIPage() {
             </CardFooter>
         </Card>
     </div>
-    <Dialog open={!!dialogContent} onOpenChange={() => setDialogContent(null)}>
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
             <DialogHeader>
-            <DialogTitle>{dialogContent?.title}</DialogTitle>
+            <DialogTitle>Anonymization Complete</DialogTitle>
             <DialogDescription>
-                {dialogContent?.description}
+                The transaction has been transformed into a privacy-preserving 'Semantic DNA' vector.
             </DialogDescription>
             </DialogHeader>
-            <div>
-                {dialogContent?.content}
-            </div>
+            <AnonymizationResultContent transactionDescription={transactionToAnonymize} />
             <DialogFooter>
-                <Button onClick={() => setDialogContent(null)}>Close</Button>
+                <Button onClick={() => setIsDialogOpen(false)}>Close</Button>
             </DialogFooter>
         </DialogContent>
     </Dialog>
