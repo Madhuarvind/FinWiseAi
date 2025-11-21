@@ -3,7 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { BrainCircuit, GitMerge, Layers3, Rocket, Wrench, CircleDashed, Bot, FlaskConical, Network, Zap, Telescope, Check, X, RefreshCw, ArrowDown, Share2 } from 'lucide-react';
+import { BrainCircuit, GitMerge, Layers3, Rocket, Wrench, CircleDashed, Bot, FlaskConical, Network, Zap, Telescope, Check, X, RefreshCw, ArrowDown, Share2, Binary, Eye, FileText, Activity } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import * as React from 'react';
 import { useToast } from '@/hooks/use-toast';
@@ -12,6 +12,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { synthesizeTransactions } from '@/ai/flows/synthesize-transactions';
 import { getTokenAttributions } from '@/ai/flows/get-token-attributions';
 import { cn } from '@/lib/utils';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 
 const models = [
     {
@@ -197,13 +199,28 @@ const ArchitectureDiagram = () => {
     );
 }
 
+const CkdLogContent = () => (
+  <div className="mt-4 space-y-4 text-sm font-mono bg-secondary/30 p-4 rounded-lg text-secondary-foreground max-h-80 overflow-y-auto">
+    <p>&gt; [Teacher]: Query: &quot;AMAZON MKTPLACE&quot;. Why is this Shopping?</p>
+    <p>&gt; [Student]: Response: Contains &quot;MKTPLACE&quot;, associated with retail. Confidence: 85%.</p>
+    <p>&gt; [Teacher]: Feedback: Correct. Counterfactual: What if it was &quot;AMAZON WEB SERVICES&quot;?</p>
+    <p>&gt; [Student]: Response: Would be &quot;Business Services&quot;. Confidence: 92%.</p>
+    <p className="text-green-400">&gt; [Teacher]: Feedback: Excellent. Causal reasoning captured. KL Divergence: 0.08.</p>
+    <p>&gt; [Teacher]: Query: &quot;DELTA FLIGHT 123&quot;. Why is this Travel?</p>
+    <p>&gt; [Student]: Response: Contains &quot;FLIGHT&quot;, associated with airlines. Confidence: 99%.</p>
+    <p className="text-green-400">&gt; [Teacher]: Feedback: Correct. No counterfactual needed. KL Divergence: 0.02.</p>
+  </div>
+);
+
+
 export default function ModelHubPage() {
     const { toast } = useToast();
     const [isLoading, setIsLoading] = React.useState<Record<string, boolean>>({});
     const [dialogContent, setDialogContent] = React.useState<{ title: string; description: string; content: React.ReactNode } | null>(null);
     const [adapters, setAdapters] = React.useState(initialAdapters);
     const [edgeDeployedModels, setEdgeDeployedModels] = React.useState<Set<string>>(new Set());
-
+    const [nasGoal, setNasGoal] = React.useState<string>("latency");
+    const [nasResult, setNasResult] = React.useState<string | null>(null);
 
     const handleRunMAS = async () => {
         setIsLoading(prev => ({...prev, mas: true}));
@@ -243,6 +260,20 @@ export default function ModelHubPage() {
         // We set loading to false for the main button after a short delay to allow the dialog to open.
         setTimeout(() => setIsLoading(prev => ({ ...prev, srma: false })), 500);
     }
+    
+    const handleRunNAS = () => {
+        setIsLoading(prev => ({ ...prev, nas: true }));
+        setNasResult(null);
+        toast({ title: "Neural Architecture Search Started", description: `Optimizing for: ${nasGoal === 'latency' ? 'Mobile Latency' : 'Accuracy'}` });
+        setTimeout(() => {
+            const result = nasGoal === 'latency'
+                ? `Discovered Architecture 'Mobile-FinBERT-v3': { Layers: 4, AttentionHeads: 4, EmbeddingDim: 128 }, Est. Latency: 45ms`
+                : `Discovered Architecture 'Accuracy-Max-v2': { Layers: 12, AttentionHeads: 8, EmbeddingDim: 512 }, Est. F1-Score: 0.96`;
+            setNasResult(result);
+            setIsLoading(prev => ({ ...prev, nas: false }));
+        }, 3000);
+    };
+
 
     const handleFineTune = (adapterId: string) => {
         setIsLoading(prev => ({ ...prev, [`tune-${adapterId}`]: true }));
@@ -301,6 +332,14 @@ export default function ModelHubPage() {
                 description: "The model is now available for on-device inference."
             });
         }, 3000);
+    };
+    
+    const handleViewCkdLog = () => {
+        setDialogContent({
+            title: "Counterfactual Knowledge Distillation Log",
+            description: "Simulated log of the student model learning from the teacher model's reasoning.",
+            content: <CkdLogContent />
+        });
     };
 
 
@@ -404,7 +443,7 @@ export default function ModelHubPage() {
                             <CardContent className="flex-grow">
                                 <p className="text-sm text-muted-foreground">{model.description}</p>
                             </CardContent>
-                             <CardFooter>
+                             <CardFooter className="flex items-center justify-between">
                                 <Button variant="outline" size="sm" onClick={() => handleDeployToEdge(model.id)} disabled={isLoading[`edge-${model.id}`] || isDeployed}>
                                     {isLoading[`edge-${model.id}`] ? (
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -415,6 +454,12 @@ export default function ModelHubPage() {
                                     )}
                                     {isLoading[`edge-${model.id}`] ? "Deploying..." : isDeployed ? "Deployed" : "Deploy to Edge"}
                                 </Button>
+                                {isDeployed && (
+                                     <Button variant="secondary" size="sm" onClick={handleViewCkdLog}>
+                                        <FileText className="mr-2 h-4 w-4"/>
+                                        View Distillation Log
+                                     </Button>
+                                )}
                             </CardFooter>
                         </Card>
                     )
@@ -423,7 +468,7 @@ export default function ModelHubPage() {
        </div>
 
        <Separator />
-
+       
        <div className="space-y-6">
             <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2"><Zap className="text-primary"/>Automated Model Operations</h2>
             <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
@@ -466,6 +511,40 @@ export default function ModelHubPage() {
                     </CardFooter>
                 </Card>
             </div>
+            
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><Activity className="text-primary"/>Neural Architecture Search (NAS-OM) Workbench</CardTitle>
+                    <CardDescription>
+                        Define a goal and let the AI discover an optimal model architecture for your needs.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <RadioGroup value={nasGoal} onValueChange={setNasGoal}>
+                        <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="latency" id="latency" />
+                            <Label htmlFor="latency" className="font-normal">Optimize for Mobile Latency</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="accuracy" id="accuracy" />
+                            <Label htmlFor="accuracy" className="font-normal">Maximize F1-Score Accuracy</Label>
+                        </div>
+                    </RadioGroup>
+                    
+                    <Button onClick={handleRunNAS} disabled={isLoading['nas']}>
+                        {isLoading['nas'] ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Binary className="mr-2 h-4 w-4" />}
+                        {isLoading['nas'] ? 'Searching...' : 'Run Architecture Search'}
+                    </Button>
+                    
+                    {nasResult && (
+                         <div className="p-3 bg-primary/10 rounded-lg text-primary-foreground/90 border border-primary/20">
+                            <p className="font-semibold text-primary">AI Result:</p>
+                            <p className="text-primary/90 font-mono text-sm">{nasResult}</p>
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+
        </div>
 
     </div>
@@ -488,5 +567,7 @@ export default function ModelHubPage() {
     </>
   );
 }
+
+    
 
     
