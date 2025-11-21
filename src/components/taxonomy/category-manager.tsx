@@ -8,7 +8,6 @@ import {
   CardTitle,
   CardFooter,
   CardContent,
-  CardDescription,
 } from '@/components/ui/card';
 import {
   MoreVertical,
