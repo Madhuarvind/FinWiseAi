@@ -102,6 +102,37 @@ export default function SecurityPage() {
         setIsLoading(prev => ({ ...prev, product: false }));
     };
 
+    const handleViewPolicies = () => {
+        setDialogContent({
+            title: "Simulated Compliance Policies",
+            description: "A list of active policies the ACV engine checks against.",
+            content: (
+                <ul className="mt-4 space-y-2 text-sm list-disc list-inside text-muted-foreground bg-secondary/30 p-4 rounded-lg">
+                    <li>Flag any transaction from a high-risk country.</li>
+                    <li>Escalate for review if a transaction over ₹5,00,000 is categorized as 'Personal'.</li>
+                    <li>Verify that all 'Gambling' transactions are tagged correctly and not masked.</li>
+                    <li>Log all international transfers to the audit ledger.</li>
+                </ul>
+            )
+        });
+    };
+
+    const handleViewMetrics = () => {
+        setDialogContent({
+            title: "Simulated Boundary Metrics",
+            description: "The CIV measures semantic distance to prevent category leakage.",
+            content: (
+                <div className="mt-4 space-y-2 text-sm text-muted-foreground bg-secondary/30 p-4 rounded-lg">
+                    <p><span className="font-semibold text-foreground">Transaction:</span> 'Zomato Food Delivery'</p>
+                    <p><span className="font-semibold text-foreground">Distance to 'Food & Drink':</span> 0.08 (Low - Confident)</p>
+                    <p><span className="font-semibold text-foreground">Distance to 'Groceries':</span> 0.72 (High - Distinct)</p>
+                    <p><span className="font-semibold text-foreground">Distance to 'Transport':</span> 0.91 (High - Distinct)</p>
+                    <p className="mt-2 text-xs">A low distance score indicates high similarity. The model is confident this does not "leak" into other categories.</p>
+                </div>
+            )
+        });
+    };
+
 
   return (
     <>
@@ -232,7 +263,7 @@ export default function SecurityPage() {
                     </div>
                 </CardContent>
                  <CardFooter>
-                    <Button variant="outline" disabled>View Compliance Policies</Button>
+                    <Button variant="outline" onClick={handleViewPolicies}>View Compliance Policies</Button>
                 </CardFooter>
             </Card>
             <Card>
@@ -258,7 +289,7 @@ export default function SecurityPage() {
                     </div>
                 </CardContent>
                  <CardFooter>
-                    <Button variant="outline" disabled>View Boundary Metrics</Button>
+                    <Button variant="outline" onClick={handleViewMetrics}>View Boundary Metrics</Button>
                 </CardFooter>
             </Card>
         </div>
