@@ -58,7 +58,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '../ui/badge';
 import { universes } from '@/lib/data';
-import initialCategoriesForSeed from '@/lib/categories.json';
+import initialCategoriesForSeed from '../../../config/taxonomy.json';
 import { useFirestore } from '@/firebase';
 import { collection, doc, setDoc, deleteDoc, writeBatch } from 'firebase/firestore';
 import { findSimilarMerchants } from '@/ai/flows/find-similar-merchants';

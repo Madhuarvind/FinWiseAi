@@ -4,6 +4,7 @@
  *
  * The flow takes a transaction description and a confidence score as input.
  * If the confidence score is below a threshold, it uses an LLM to re-rank the predicted categories.
+ * Otherwise, it uses a simulated local, LLM-free classifier.
  *
  * @interface CategorizeTransactionWithLLMInput - The input type for the categorizeTransactionWithLLM function.
  * @interface CategorizeTransactionWithLLMOutput - The output type for the categorizeTransactionWithLLM function.
@@ -15,8 +16,8 @@ import {z} from 'genkit';
 
 const CategorizeTransactionWithLLMInputSchema = z.object({
   transactionDescription: z.string().describe('The description of the transaction.'),
-  confidenceScore: z.number().describe('The confidence score from the rule-based system.'),
-  candidateCategories: z.array(z.string()).describe('Candidate categories from the rule-based system.'),
+  confidenceScore: z.number().describe('The confidence score from the initial local classifier.'),
+  candidateCategories: z.array(z.string()).describe('A list of candidate categories.'),
 });
 
 export type CategorizeTransactionWithLLMInput = z.infer<typeof CategorizeTransactionWithLLMInputSchema>;
@@ -65,11 +66,14 @@ const categorizeTransactionWithLLMFlow = ai.defineFlow(
     outputSchema: CategorizeTransactionWithLLMOutputSchema,
   },
   async input => {
-    // This simulates the threshold for the symbolic, rule-based engine.
+    // This simulates the confidence threshold for the local, non-LLM classifier.
     const confidenceThreshold = 0.95; 
 
-    // If confidence is high, use the "Fast Path": the top candidate from the symbolic engine.
+    // If confidence is high, use the "Fast Path": the top candidate from the local classifier.
+    // This demonstrates the LLM-free local inference capability.
     if (input.confidenceScore >= confidenceThreshold) {
+      // In a real implementation, this would involve a local model (e.g., embeddings + SVM).
+      // Here, we simulate its output by taking the first candidate.
       return {
         category: input.candidateCategories[0] || 'Unknown',
         llmReRanked: false,
