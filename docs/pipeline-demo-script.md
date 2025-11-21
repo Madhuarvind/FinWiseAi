@@ -59,4 +59,4 @@
 3.  **Point to GMMR:** "The **Money Memory Reconstruction** gives us a human-like story, explaining the likely context behind the purchase."
 4.  **Point to Counterfactual:** "And the **Counterfactual Simulator** even tells us what would need to change—like adding the term 'services'—for it to be classified differently."
 
-**Script:** "This entire suite of insights is generated in parallel to give the user complete transparency and build trust, transforming a simple category label into a rich, understandable financial story. Thank you."
+**Script:** "So we’ve seen high-confidence instant classification, low-confidence LLM reranking, and full explainability — all without relying on any third-party transaction categorization APIs. This entire suite of insights is generated in parallel to give the user complete transparency and build trust, transforming a simple category label into a rich, understandable financial story. Thank you."

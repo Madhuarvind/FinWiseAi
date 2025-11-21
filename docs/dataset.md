@@ -22,6 +22,8 @@ The generation and evaluation pipeline is an integral part of the FinWiseAI appl
     2.  The `synthesizeTransactions` flow is invoked with a prompt instructing the LLM to create diverse and plausible transaction data.
     3.  The LLM returns a structured JSON array of synthetic transactions.
 
+Synthetic data is generated following realistic spending patterns (merchant names, amounts, timestamps, categories) but contains zero real user information. This approach ensures a high-fidelity evaluation while upholding the strictest standards of privacy and data protection.
+
 ---
 
 ## 3. Dataset Composition for Standard Evaluation

@@ -1,5 +1,6 @@
+
 import type { Universe } from '@/lib/types';
-import initialCategoriesForSeed from './categories.json';
+import initialCategoriesForSeed from '../../config/taxonomy.json';
 
 export const universes: Universe[] = [
   { id: 'banking', label: 'Strict Banking View', description: 'Standard categories like Dining, Shopping, etc.' },
