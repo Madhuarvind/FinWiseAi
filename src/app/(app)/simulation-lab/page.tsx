@@ -1,3 +1,4 @@
+
 'use client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,57 +9,50 @@ import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { generateCounterfactualExplanation } from '@/ai/flows/generate-counterfactual-explanation';
 import { generateSemanticDNA } from '@/ai/flows/generate-semantic-dna';
-
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 
 export default function SimulationLabPage() {
     const { toast } = useToast();
     const [isLoading, setIsLoading] = React.useState<Record<string, boolean>>({});
     const [dialogContent, setDialogContent] = React.useState<{ title: string; description: string; content: React.ReactNode } | null>(null);
 
-    const handleRunCounterfactual = async (scenario: 'delivery' | 'subscription') => {
-        setIsLoading(prev => ({ ...prev, counterfactual: true }));
-        let input;
-        let toastTitle;
+    // New state for the "What-If" playground
+    const [selectedScenario, setSelectedScenario] = React.useState<string | null>(null);
+    const [simulationResult, setSimulationResult] = React.useState<string | null>(null);
+    const [isSimulating, setIsSimulating] = React.useState(false);
 
-        switch(scenario) {
-            case 'delivery':
-                toastTitle = "Simulating 'No Food Delivery' Scenario...";
-                input = {
-                    transactionDescription: "Doordash*Taco Bell",
-                    originalCategory: "Food & Drink",
-                    targetCategory: "Groceries"
-                };
-                break;
-            case 'subscription':
-                toastTitle = "Simulating 'Cut Subscriptions' Scenario...";
-                 input = {
-                    transactionDescription: "Netflix.com",
-                    originalCategory: "Entertainment",
-                    targetCategory: "Savings"
-                };
-                break;
+    const scenarios = [
+        { id: 'delivery', label: 'What if I stop food delivery?', input: { transactionDescription: "Doordash*Taco Bell", originalCategory: "Food & Drink", targetCategory: "Groceries" } },
+        { id: 'subscription', label: 'What if I cut all subscriptions?', input: { transactionDescription: "Netflix.com", originalCategory: "Entertainment", targetCategory: "Savings" } },
+        { id: 'save', label: 'What if I save 20% more?', input: { transactionDescription: "Monthly Salary Credit", originalCategory: "Income", targetCategory: "Savings" } }
+    ];
+
+    const handleRunSimulation = async () => {
+        if (!selectedScenario) {
+            toast({ variant: 'destructive', title: 'No scenario selected', description: 'Please choose a simulation scenario first.' });
+            return;
         }
 
-        toast({ title: toastTitle, description: "The AI is calculating the counterfactual outcome..." });
+        setIsSimulating(true);
+        setSimulationResult(null);
+
+        const scenario = scenarios.find(s => s.id === selectedScenario);
+        if (!scenario) {
+            setIsSimulating(false);
+            return;
+        }
+
+        toast({ title: `Simulating "${scenario.label}"...`, description: "The AI is calculating the counterfactual outcome..." });
 
         try {
-            const result = await generateCounterfactualExplanation(input);
-            setDialogContent({
-                title: "Counterfactual Simulation Complete",
-                description: `What would need to change for a "${input.originalCategory}" transaction to become "${input.targetCategory}"?`,
-                content: (
-                    <div className="mt-4 text-sm">
-                        <p className="font-semibold text-primary bg-primary/10 p-3 rounded-lg">
-                           {result.counterfactualExplanation}
-                        </p>
-                        <p className="text-muted-foreground mt-2">This simulates a behavioral change where spending is re-allocated, impacting future financial outcomes.</p>
-                    </div>
-                )
-            });
+            const result = await generateCounterfactualExplanation(scenario.input);
+            setSimulationResult(result.counterfactualExplanation);
         } catch (e) {
-            toast({ variant: 'destructive', title: "Simulation Failed", description: "Could not generate counterfactual explanation."});
+            toast({ variant: 'destructive', title: "Simulation Failed", description: "Could not generate counterfactual explanation." });
+            setSimulationResult('The AI simulation failed to run for this scenario.');
         } finally {
-            setIsLoading(prev => ({ ...prev, counterfactual: false }));
+            setIsSimulating(false);
         }
     };
     
@@ -156,24 +150,36 @@ export default function SimulationLabPage() {
                 </CardHeader>
                 <CardContent>
                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="space-y-2">
+                        <div className="space-y-4">
                             <p className="font-medium">Choose a Simulation Scenario</p>
-                            <Button variant="outline" className="w-full justify-start text-left" onClick={() => handleRunCounterfactual('delivery')} disabled={isLoading['counterfactual']}>
-                                {isLoading['counterfactual'] ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Binary className="mr-2 h-4 w-4" />}
-                                What if I stop food delivery?
+                            <RadioGroup value={selectedScenario || ''} onValueChange={setSelectedScenario}>
+                                {scenarios.map(scenario => (
+                                    <div key={scenario.id} className="flex items-center space-x-2">
+                                        <RadioGroupItem value={scenario.id} id={scenario.id} />
+                                        <Label htmlFor={scenario.id} className="font-normal cursor-pointer">{scenario.label}</Label>
+                                    </div>
+                                ))}
+                            </RadioGroup>
+                            <Button onClick={handleRunSimulation} disabled={!selectedScenario || isSimulating} className="w-full mt-4">
+                                {isSimulating ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Binary className="mr-2 h-4 w-4" />}
+                                {isSimulating ? 'Simulating...' : 'Run Simulation'}
                             </Button>
-                            <Button variant="secondary" className="w-full justify-start text-left" onClick={() => handleRunCounterfactual('subscription')} disabled={isLoading['counterfactual']}>
-                                {isLoading['counterfactual'] ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Binary className="mr-2 h-4 w-4" />}
-                                What if I cut all subscriptions?
-                            </Button>
-                            <Button variant="outline" className="w-full justify-start text-left" disabled>What if I save 20% more?</Button>
                         </div>
-                        <div className="md:col-span-2 rounded-lg border bg-background p-4 flex items-center justify-center">
-                            <div className="text-center">
-                                <Bot className="h-12 w-12 mx-auto text-muted-foreground" />
-                                <p className="mt-4 font-medium text-foreground">AI Simulation Results</p>
-                                <p className="text-muted-foreground text-sm">Select a scenario to see the simulated outcome.</p>
-                            </div>
+                        <div className="md:col-span-2 rounded-lg border bg-background p-4 flex items-center justify-center min-h-[150px]">
+                            {isSimulating ? (
+                                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                            ) : simulationResult ? (
+                                <div>
+                                    <p className="font-semibold text-foreground">AI Simulation Result:</p>
+                                    <p className="text-primary mt-2 bg-primary/10 p-3 rounded-lg">{simulationResult}</p>
+                                </div>
+                            ) : (
+                                <div className="text-center">
+                                    <Bot className="h-12 w-12 mx-auto text-muted-foreground" />
+                                    <p className="mt-4 font-medium text-foreground">AI Simulation Results</p>
+                                    <p className="text-muted-foreground text-sm">Select a scenario to see the simulated outcome.</p>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </CardContent>
