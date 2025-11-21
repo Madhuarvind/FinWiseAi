@@ -1,3 +1,4 @@
+
 'use client';
 import CategoryManager from '@/components/taxonomy/category-manager';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -12,6 +13,37 @@ import { suggestTransactionCategories } from '@/ai/flows/suggest-transaction-cat
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { PlusCircle } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { Skeleton } from '@/components/ui/skeleton';
+
+
+const TaxonomySkeleton = () => (
+    <div className="space-y-6">
+        <div>
+            <Skeleton className="h-9 w-72" />
+            <Skeleton className="h-5 w-96 mt-2" />
+        </div>
+        <div className="flex justify-end gap-2">
+            <Skeleton className="h-10 w-44" />
+            <Skeleton className="h-10 w-48" />
+            <Skeleton className="h-10 w-36" />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {[...Array(8)].map((_, i) => (
+                <Card key={i} className="h-[150px]">
+                    <CardHeader className="pb-2">
+                        <Skeleton className="h-5 w-3/4" />
+                    </CardHeader>
+                    <CardContent>
+                        <Skeleton className="h-5 w-1/2" />
+                    </CardContent>
+                    <CardFooter>
+                        <Skeleton className="h-8 w-8 ml-auto" />
+                    </CardFooter>
+                </Card>
+            ))}
+        </div>
+    </div>
+);
 
 
 export default function TaxonomyPage() {
@@ -83,11 +115,7 @@ export default function TaxonomyPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return <TaxonomySkeleton />;
   }
 
   return (

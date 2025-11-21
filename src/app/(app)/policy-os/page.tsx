@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -55,6 +56,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const TableSkeleton = () => (
+    <div className="space-y-2">
+        {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-14 w-full" />)}
+    </div>
+);
 
 export default function PolicyOSPage() {
   const { toast } = useToast();
@@ -193,9 +201,7 @@ export default function PolicyOSPage() {
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <div className="flex justify-center items-center h-40">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              </div>
+              <TableSkeleton />
             ) : (
               <Table>
                 <TableHeader>

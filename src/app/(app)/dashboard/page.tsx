@@ -22,6 +22,47 @@ import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebas
 import { collection } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const DashboardSkeleton = () => (
+    <div className="space-y-6">
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+            <div>
+                <Skeleton className="h-9 w-64" />
+                <Skeleton className="h-5 w-96 mt-2" />
+            </div>
+            <Skeleton className="h-[76px] w-full md:w-[320px]" />
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Card><CardHeader className="pb-2"><Skeleton className="h-5 w-3/4" /></CardHeader><CardContent><Skeleton className="h-7 w-1/2" /><Skeleton className="h-4 w-full mt-2" /></CardContent></Card>
+            <Card><CardHeader className="pb-2"><Skeleton className="h-5 w-3/4" /></CardHeader><CardContent><Skeleton className="h-7 w-1/2" /><Skeleton className="h-4 w-full mt-2" /></CardContent></Card>
+            <Card><CardHeader className="pb-2"><Skeleton className="h-5 w-3/4" /></CardHeader><CardContent><Skeleton className="h-7 w-1/2" /><Skeleton className="h-4 w-full mt-2" /></CardContent></Card>
+            <Card><CardHeader className="pb-2"><Skeleton className="h-5 w-3/4" /></CardHeader><CardContent><Skeleton className="h-7 w-1/2" /><Skeleton className="h-4 w-full mt-2" /></CardContent></Card>
+        </div>
+        <div className='grid grid-cols-1 lg:grid-cols-3 gap-4'>
+            <Card className="h-[128px]"><CardHeader><Skeleton className="h-5 w-1/2" /><Skeleton className="h-4 w-3/4 mt-2" /></CardHeader><CardContent><Skeleton className="h-9 w-24"/></CardContent></Card>
+            <Card className="h-[128px]"><CardHeader><Skeleton className="h-5 w-1/2" /><Skeleton className="h-4 w-3/4 mt-2" /></CardHeader><CardContent><Skeleton className="h-9 w-24"/></CardContent></Card>
+            <Card className="h-[128px]"><CardHeader><Skeleton className="h-5 w-1/2" /><Skeleton className="h-4 w-3/4 mt-2" /></CardHeader><CardContent><Skeleton className="h-4 w-1/2"/><Skeleton className="h-4 w-1/3 mt-2"/></CardContent></Card>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+            <Card className="col-span-4">
+                <CardHeader><CardTitle>Recent Transactions</CardTitle></CardHeader>
+                <CardContent className="pl-2">
+                    <div className="space-y-2">
+                        {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
+                    </div>
+                </CardContent>
+            </Card>
+            <Card className="col-span-4 lg:col-span-3">
+                <CardHeader><CardTitle>Spending by Category</CardTitle></CardHeader>
+                <CardContent className="flex justify-center items-center">
+                    <Skeleton className="h-64 w-64 rounded-full" />
+                </CardContent>
+            </Card>
+        </div>
+    </div>
+);
+
 
 export default function DashboardPage() {
   const [activeUniverseId, setActiveUniverseId] = React.useState<Universe['id']>('banking');
@@ -73,11 +114,7 @@ export default function DashboardPage() {
   const isLoading = isLoadingTransactions || isLoadingCategories;
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   const handleActivateEmotionSafeMode = () => {

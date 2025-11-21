@@ -12,6 +12,7 @@ import { FairnessMetricsTable } from '@/components/analytics/fairness-metrics-ta
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection } from 'firebase/firestore';
 import type { Transaction, Category } from '@/lib/types';
+import { Skeleton } from '@/components/ui/skeleton';
 
 // This is still simulated as there's no real data source for this.
 const confusionMatrixData = {
@@ -32,6 +33,68 @@ const merchantDriftData = [
     { month: 'May', drift: 0.08 },
     { month: 'Jun', drift: 0.11 },
 ];
+
+const AnalyticsSkeleton = () => (
+    <div className="space-y-6">
+        <div>
+            <Skeleton className="h-9 w-1/2" />
+            <Skeleton className="h-5 w-3/4 mt-2" />
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Macro F1 Score (Simulated)</CardTitle>
+                    <Target className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <Skeleton className="h-8 w-1/3" />
+                    <Skeleton className="h-4 w-1/2 mt-2" />
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Avg. Inference Latency</CardTitle>
+                    <Gauge className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <Skeleton className="h-8 w-1/3" />
+                    <Skeleton className="h-4 w-1/2 mt-2" />
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Error Clusters Detected</CardTitle>
+                    <Frown className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <Skeleton className="h-8 w-1/4" />
+                    <Skeleton className="h-4 w-2/3 mt-2" />
+                </CardContent>
+            </Card>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Confusion Matrix (Simulated)</CardTitle>
+                    <CardDescription><Skeleton className="h-4 w-48" /></CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Skeleton className="h-[350px] w-full" />
+                </CardContent>
+            </Card>
+             <Card>
+                <CardHeader>
+                    <CardTitle>Per-Category Accuracy</CardTitle>
+                    <CardDescription><Skeleton className="h-4 w-48" /></CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Skeleton className="h-[350px] w-full" />
+                </CardContent>
+            </Card>
+        </div>
+    </div>
+);
+
 
 export default function AnalyticsPage() {
     const { user } = useUser();
@@ -134,7 +197,7 @@ export default function AnalyticsPage() {
     const isLoading = isLoadingTransactions || isLoadingCategories;
 
     if (isLoading) {
-        return <div className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin" /></div>;
+        return <AnalyticsSkeleton />;
     }
 
     return (

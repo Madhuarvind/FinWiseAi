@@ -22,6 +22,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, addDoc, serverTimestamp, doc, setDoc, writeBatch } from 'firebase/firestore';
 import { Textarea } from '@/components/ui/textarea';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const TableSkeleton = () => (
+    <div className="space-y-2">
+        {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}
+    </div>
+);
 
 export default function DataIngestionPage() {
   const { toast } = useToast();
@@ -462,9 +469,7 @@ export default function DataIngestionPage() {
         </CardHeader>
         <CardContent className="pl-2">
           {isLoadingTransactions ? (
-            <div className='flex items-center justify-center h-40'>
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
+            <TableSkeleton />
           ) : (
             <TransactionTable
               transactions={allTransactions}
